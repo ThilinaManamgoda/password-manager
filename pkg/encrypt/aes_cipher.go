@@ -16,9 +16,6 @@ import (
 	"io"
 )
 
-// AESEncryptID is the unique identifier for this encryptor
-const AESEncryptID = "AES"
-
 // AESEncryptor struct represent the data needed for AES encryption and decryption.
 type AESEncryptor struct {
 }

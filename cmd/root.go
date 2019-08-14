@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -51,10 +52,10 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "c", "config file (default is $HOME/.password-manager.yaml)")
-
+	rootCmd.PersistentFlags().StringP(MasterPassword, "m", "", "Master password")
+	//addCmd.Flags().StringP(MasterPassword, "m", "", "Master password")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -74,9 +75,9 @@ func initConfig() {
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".password-manager")
 	}
-
+	viper.SetEnvPrefix("PASSWORD_MANAGER")
 	viper.AutomaticEnv() // read in environment variables that match
-
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())

@@ -15,6 +15,8 @@
 // Package encrypt holds required functionality for encryption and decryption
 package encrypt
 
+import "github.com/password-manager/pkg/utils"
+
 // Encryptor interface exposes functions for encrypt/decrypt
 type Encryptor interface {
 	Encrypt(data []byte, passphrase string) ([]byte, error)
@@ -29,7 +31,7 @@ type Factory struct {
 // GetEncryptor method returns an Encryptor
 func (f *Factory) GetEncryptor() Encryptor {
 	switch f.ID {
-	case AESEncryptID:
+	case utils.AESEncryptID:
 		return &AESEncryptor{}
 	default:
 		return &AESEncryptor{}

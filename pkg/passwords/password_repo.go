@@ -17,6 +17,7 @@ import (
 
 type PasswordEntry struct {
 	ID       string   `json:"id"`
+	Username string    `json:"username"`
 	Password string   `json:"password"`
 	Labels   []string `json:"labels"`
 }
@@ -80,7 +81,7 @@ func (p *PasswordRepository) savePasswordDB(passwordDB *PasswordDB, masterPasswo
 	return nil
 }
 
-func (p *PasswordRepository) Add(id, password string, labels []string) error {
+func (p *PasswordRepository) Add(id, uN, password string, labels []string) error {
 	passwordDB, err := p.loadPasswordDBEntries()
 	if err != nil {
 		return err
@@ -92,6 +93,7 @@ func (p *PasswordRepository) Add(id, password string, labels []string) error {
 
 	passwordDB.Entries = append(passwordDB.Entries, PasswordEntry{
 		ID:       id,
+		Username: uN,
 		Password: password,
 		Labels:   labels,
 	})

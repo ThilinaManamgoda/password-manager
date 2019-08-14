@@ -15,52 +15,33 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/password-manager/pkg/encrypt"
 	"github.com/password-manager/pkg/passwords"
 	"github.com/password-manager/pkg/utils"
+	"github.com/pkg/errors"
+
 	"github.com/spf13/cobra"
 )
 
-const (
-	Username       = "username"
-	Password       = "password"
-	Labels         = "labels"
-	MasterPassword = "masterPassword"
-	Id             = "id"
-)
+const ShowPassword  = "show-pass"
 
-// addCmd represents the add command
-var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a new password",
-	Long:  `Add a new password`,
+// getCmd represents the get command
+var getCmd = &cobra.Command{
+	Use:   "get",
+	Short: "Get a password",
+	Long:  `Get a password`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		id, err := utils.GetFlagStringVal(cmd, Id)
-		if err != nil {
-			return err
-		}
-		uN, err := utils.GetFlagStringVal(cmd,Username)
-		if err != nil {
-			return err
-		}
-		password, err := utils.GetFlagStringVal(cmd,Password)
-		if err != nil {
-			return err
-		}
-		labels, err := utils.GetFlagStringArrayVal(cmd,Labels)
-		if err != nil {
-			return err
-		}
-		mPassword, err := utils.GetFlagStringVal(cmd,MasterPassword)
-		if err != nil {
-			return err
-		}
 		config, err := utils.Configuration()
 		if err != nil {
 			return err
 		}
 		encriptorFac := &encrypt.Factory{
 			ID: config.EncryptorID,
+		}
+		mPassword, err := utils.GetFlagStringVal(cmd, MasterPassword)
+		if err != nil {
+			return err
 		}
 		passwordRepo := &passwords.PasswordRepository{
 			MasterPassword: mPassword,
@@ -69,7 +50,17 @@ var addCmd = &cobra.Command{
 				File: config.PasswordFilePath,
 			},
 		}
-		err = passwordRepo.Add(id, uN, password, labels)
+		showPass, err := utils.GetFlagBoolVal(cmd, ShowPassword)
+		if err != nil {
+			return err
+		}
+		if ! isArgSValid(args) {
+			return errors.New("Give password entry ID")
+		}
+		if ! isArgValid(args[0]) {
+			return errors.New(fmt.Sprintf("Invalid ID: %s", args[0]))
+		}
+		err = passwordRepo.GetPassword(args[0], showPass)
 		if err != nil {
 			return err
 		}
@@ -77,20 +68,25 @@ var addCmd = &cobra.Command{
 	},
 }
 
+func isArgSValid(args []string) bool {
+	return len(args) != 0
+}
+
+func isArgValid(arg string) bool {
+	return arg != ""
+}
+
 func init() {
-	rootCmd.AddCommand(addCmd)
+	rootCmd.AddCommand(getCmd)
 
 	// Here you will define your flags and configuration settings.
 
-	// Cobra supports Pexxrsistent Flags which will work for this command
+	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// getCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	addCmd.Flags().StringP(Password, "p", "", "Password")
-	addCmd.Flags().StringP(Username, "u", "", "User Name")
-	addCmd.Flags().StringP(Id, "i", "", "Id for entry")
-	addCmd.Flags().StringArrayP(Labels, "l", nil, "Labels for the entry")
+	getCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
 	//addCmd.Flags().StringP(MasterPassword, "m", "", "Master password")
 }
