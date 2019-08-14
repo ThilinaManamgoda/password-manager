@@ -10,8 +10,6 @@ import (
 	"testing"
 )
 
-const ErrMsgTestIncorrectResult = "expected value: %v but then returned value: %v"
-
 func TestIsValidByteSlice(t *testing.T) {
 	t.Run("SuccessTest", testIsValidByteSliceSuccessFunc())
 	t.Run("FailTestEmptySlice", testIsValidByteSliceFailEmptySliceFunc())
@@ -122,7 +120,6 @@ func testGetFlagStringValFailsFunc() func(t *testing.T) {
 func TestGetFlagStringArrayVal(t *testing.T) {
 	t.Run("SuccessTest", testGetFlagStringArrayValSuccessFunc())
 	t.Run("FailTest",testGetFlagStringArrayValFailsFunc() )
-	//t.Run("FailTestEmptyPassword", )
 }
 
 func testGetFlagStringArrayValSuccessFunc() func(t *testing.T) {
@@ -148,4 +145,17 @@ func testGetFlagStringArrayValFailsFunc() func(t *testing.T) {
 			t.Error("Expecting an error")
 		}
 	}
+}
+
+func TestConfiguration(t *testing.T) {
+	defaultConf, err := defaultConf()
+	if err != nil {
+		t.Error(err)
+	}
+	result, err := Configuration()
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t,defaultConf.PasswordFilePath, result.PasswordFilePath)
+	assert.Equal(t,defaultConf.EncryptorID, result.EncryptorID)
 }
