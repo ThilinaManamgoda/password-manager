@@ -88,5 +88,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	getCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
-	//addCmd.Flags().StringP(MasterPassword, "m", "", "Master password")
 }

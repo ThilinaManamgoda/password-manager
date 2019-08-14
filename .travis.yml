@@ -1,0 +1,14 @@
+language: go
+
+go:
+  - 1.12.1
+
+go_import_path: github.com/password-manager
+
+install:
+
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always

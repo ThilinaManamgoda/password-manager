@@ -92,5 +92,4 @@ func init() {
 	addCmd.Flags().StringP(Username, "u", "", "User Name")
 	addCmd.Flags().StringP(Id, "i", "", "Id for entry")
 	addCmd.Flags().StringArrayP(Labels, "l", nil, "Labels for the entry")
-	//addCmd.Flags().StringP(MasterPassword, "m", "", "Master password")
 }
