@@ -5,20 +5,24 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BINARY_NAME=password-manager
+DEP=dep
+GOLINT=golint
 
-all: deps test build
+all: clean deps test build
+
 
 build:
 		$(GOBUILD) -o $(BINARY_NAME) -v
 test:
 		$(GOTEST) -v ./...
+lint:
+		$(GOGET) -u golang.org/x/lint/golint
+		$(GOLINT)  cmd/... pkg/...
 clean:
 		$(GOCLEAN)
 		rm -f $(BINARY_NAME)
-		rm -f $(BINARY_UNIX)
 run:
 		$(GOBUILD) -o $(BINARY_NAME) -v ./...
 		./$(BINARY_NAME)
 deps:
-		$(GOGET) -v -u github.com/golang/dep/cmd/dep
-		dep ensure
+		$(DEP) ensure
