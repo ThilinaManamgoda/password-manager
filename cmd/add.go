@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"errors"
+	"github.com/manifoldco/promptui"
 	"github.com/password-manager/pkg/encrypt"
 	"github.com/password-manager/pkg/passwords"
 	"github.com/password-manager/pkg/utils"
@@ -31,30 +33,56 @@ const (
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add [ID]",
 	Short: "Add a new password",
 	Long:  `Add a new password`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		id, err := utils.GetFlagStringVal(cmd, Id)
+		if ! utils.IsArgSValid(args) {
+			return errors.New("invalid argument")
+		}
+		if ! isIDValid(args[0]) {
+			return errors.New("invalid ID")
+		}
+		id := args[0]
+
+		iMode, err := utils.GetFlagBoolVal(cmd, InteractiveMode)
 		if err != nil {
 			return err
 		}
-		uN, err := utils.GetFlagStringVal(cmd,Username)
-		if err != nil {
-			return err
+		var uN, password, mPassword string
+		var labels []string
+		if isInteractiveMode(iMode) {
+			uN, err = promptForUsername()
+			if err != nil {
+				return err
+			}
+			password, err = promptForPassword()
+			if err != nil {
+				return err
+			}
+			mPassword, err = promptForMPassword()
+			if err != nil {
+				return err
+			}
+		} else {
+			uN, err = utils.GetFlagStringVal(cmd, Username)
+			if err != nil {
+				return err
+			}
+			password, err = utils.GetFlagStringVal(cmd, Password)
+			if err != nil {
+				return err
+			}
+			labels, err = utils.GetFlagStringArrayVal(cmd, Labels)
+			if err != nil {
+				return err
+			}
+			mPassword, err = utils.GetFlagStringVal(cmd, MasterPassword)
+			if err != nil {
+				return err
+			}
 		}
-		password, err := utils.GetFlagStringVal(cmd,Password)
-		if err != nil {
-			return err
-		}
-		labels, err := utils.GetFlagStringArrayVal(cmd,Labels)
-		if err != nil {
-			return err
-		}
-		mPassword, err := utils.GetFlagStringVal(cmd,MasterPassword)
-		if err != nil {
-			return err
-		}
+
 		config, err := utils.Configuration()
 		if err != nil {
 			return err
@@ -77,6 +105,58 @@ var addCmd = &cobra.Command{
 	},
 }
 
+func promptForUsername()(string, error) {
+	validate := func(input string) error {
+		if len(input) < 3 {
+			return errors.New("username must have more than 3 characters")
+		}
+		return nil
+	}
+	prompt := promptui.Prompt{
+		Label:    "Username",
+		Validate: validate,
+	}
+	return prompt.Run()
+}
+
+func promptForMPassword()(string, error) {
+	validate := func(input string) error {
+		if len(input) < 6 {
+			return errors.New("master password must have more than 6 characters")
+		}
+		return nil
+	}
+	prompt := promptui.Prompt{
+		Label:    "Master password",
+		Validate: validate,
+		Mask:     '*',
+	}
+	return prompt.Run()
+}
+
+func promptForPassword()(string, error) {
+	validate := func(input string) error {
+		if len(input) < 6 {
+			return errors.New("password must have more than 6 characters")
+		}
+		return nil
+	}
+	prompt := promptui.Prompt{
+		Label:    "Password",
+		Validate: validate,
+		Mask:     '*',
+	}
+	return prompt.Run()
+}
+
+func isIDValid(id string) bool {
+	return  utils.IsArgValid(id)
+}
+
+func isInteractiveMode(iMode bool) bool {
+	return iMode
+}
+
 func init() {
 	rootCmd.AddCommand(addCmd)
 
@@ -90,6 +170,5 @@ func init() {
 	// is called directly, e.g.:
 	addCmd.Flags().StringP(Password, "p", "", "Password")
 	addCmd.Flags().StringP(Username, "u", "", "User Name")
-	addCmd.Flags().StringP(Id, "i", "", "Id for entry")
 	addCmd.Flags().StringArrayP(Labels, "l", nil, "Labels for the entry")
 }

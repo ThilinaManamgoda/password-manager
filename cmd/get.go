@@ -54,10 +54,10 @@ var getCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if ! isArgSValid(args) {
+		if ! utils.IsArgSValid(args) {
 			return errors.New("Give password entry ID")
 		}
-		if ! isArgValid(args[0]) {
+		if ! utils.IsArgValid(args[0]) {
 			return errors.New(fmt.Sprintf("Invalid ID: %s", args[0]))
 		}
 		err = passwordRepo.GetPassword(args[0], showPass)
@@ -68,13 +68,6 @@ var getCmd = &cobra.Command{
 	},
 }
 
-func isArgSValid(args []string) bool {
-	return len(args) != 0
-}
-
-func isArgValid(arg string) bool {
-	return arg != ""
-}
 
 func init() {
 	rootCmd.AddCommand(getCmd)

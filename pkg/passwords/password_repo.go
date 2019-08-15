@@ -43,7 +43,7 @@ type PasswordRepository struct {
 }
 
 func (p *PasswordRepository) loadPasswordDB() ([]byte, error) {
-	encryptedData, err := p.PasswordFile.GetPasswords()
+	encryptedData, err := p.PasswordFile.ReadFile()
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (p *PasswordRepository) savePasswordDB(passwordDB *PasswordDB, masterPasswo
 	if err != nil {
 		return err
 	}
-	err = p.PasswordFile.StorePasswords(encryptedData)
+	err = p.PasswordFile.WriteToFile(encryptedData)
 	if err != nil {
 		return err
 	}
@@ -92,6 +92,9 @@ func (p *PasswordRepository) savePasswordDB(passwordDB *PasswordDB, masterPasswo
 }
 
 func (p *PasswordRepository) Add(id, uN, password string, labels []string) error {
+	if id == "" {
+		return errors.New("please specify thee ID")
+	}
 	passwordDB, err := p.loadPasswordDBEntries()
 	if err != nil {
 		return err

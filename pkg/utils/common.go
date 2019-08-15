@@ -83,3 +83,11 @@ func GetFlagStringArrayVal(cmd *cobra.Command, flag string) ([]string, error) {
 	}
 	return val, nil
 }
+
+func IsArgSValid(args []string) bool {
+	return len(args) != 0
+}
+
+func IsArgValid(arg string) bool {
+	return arg != ""
+}

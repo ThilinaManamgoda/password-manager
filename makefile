@@ -8,12 +8,12 @@ BINARY_NAME=password-manager
 DEP=dep
 GOLINT=golint
 
-all: clean deps test build
+all: clean deps unit-test build
 
 
 build:
 		$(GOBUILD) -o $(BINARY_NAME) -v
-test:
+unit-test:
 		$(GOTEST) -v ./...
 lint:
 		$(GOGET) -u golang.org/x/lint/golint

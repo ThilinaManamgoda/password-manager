@@ -23,7 +23,7 @@ type PasswordFile struct {
 	File string
 }
 
-func (p *PasswordFile) GetPasswords() ([]byte, error) {
+func (p *PasswordFile) ReadFile() ([]byte, error) {
 	f, err := os.OpenFile(p.File, os.O_CREATE|os.O_RDONLY, 0640)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (p *PasswordFile) GetPasswords() ([]byte, error) {
 	return data, nil
 }
 
-func (p *PasswordFile) StorePasswords(data []byte) error {
+func (p *PasswordFile) WriteToFile(data []byte) error {
 	err := ioutil.WriteFile(p.File, data,0640 )
 	if err != nil {
 		return err

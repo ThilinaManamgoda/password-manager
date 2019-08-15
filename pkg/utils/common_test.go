@@ -22,62 +22,60 @@ import (
 
 func TestIsValidByteSlice(t *testing.T) {
 	t.Run("SuccessTest", testIsValidByteSliceSuccessFunc())
-	t.Run("FailTestEmptySlice", testIsValidByteSliceFailEmptySliceFunc())
-	t.Run("FailTestNilSlice", testIsValidByteSliceFailNilSliceFunc())
+	t.Run("FailedTestEmptySlice", testIsValidByteSliceFailEmptySliceFunc())
+	t.Run("FailedTestNilSlice", testIsValidByteSliceFailNilSliceFunc())
 }
 
 func testIsValidByteSliceSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		result := IsValidByteSlice([]byte("test"))
-		assert.Equal(t,true ,result)
+		assert.Equal(t, true, result)
 	}
 }
 
 func testIsValidByteSliceFailEmptySliceFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		result := IsValidByteSlice([]byte(""))
-		assert.Equal(t,false ,result)
+		assert.Equal(t, false, result)
 	}
 }
 
 func testIsValidByteSliceFailNilSliceFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		result := IsValidByteSlice(nil)
-		assert.Equal(t,false ,result)
+		assert.Equal(t, false, result)
 	}
 }
 
 func TestIsPasswordValid(t *testing.T) {
 	t.Run("SuccessTest", testIsPasswordValidSuccessFunc())
-	t.Run("FailTestEmptyPassword", testIsValidByteSliceFailEmptySliceFunc())
-	t.Run("FailTestEmptyPassword", testIsPasswordValidFailsFunc())
+	t.Run("FailedTestEmptyPassword", testIsPasswordValidFailedEmptyFunc())
 }
 
 func testIsPasswordValidSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		result := IsPasswordValid("password")
-		assert.Equal(t,true ,result)
+		assert.Equal(t, true, result)
 	}
 }
 
-func testIsPasswordValidFailsFunc() func(t *testing.T) {
+func testIsPasswordValidFailedEmptyFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		result := IsPasswordValid("")
-		assert.Equal(t,false ,result)
+		assert.Equal(t, false, result)
 	}
 }
 
 func TestGetFlagBoolVal(t *testing.T) {
 	t.Run("SuccessTest", testGetFlagBoolValSuccessFunc())
-	t.Run("FailTest",testGetFlagBoolValFailsFunc() )
-	//t.Run("FailTestEmptyPassword", )
+	t.Run("FailedTest", testGetFlagBoolValFailedFunc())
 }
 
 func testGetFlagBoolValSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		cmd := &cobra.Command{
 		}
-		cmd.Flags().BoolP("param", "p", false,"Test parameter")
+		cmd.Flags().BoolP("param", "p", false, "Test parameter")
 		result, err := GetFlagBoolVal(cmd, "param")
 		if err != nil {
 			t.Error(err)
@@ -86,7 +84,7 @@ func testGetFlagBoolValSuccessFunc() func(t *testing.T) {
 	}
 }
 
-func testGetFlagBoolValFailsFunc() func(t *testing.T) {
+func testGetFlagBoolValFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		cmd := &cobra.Command{
 		}
@@ -99,15 +97,14 @@ func testGetFlagBoolValFailsFunc() func(t *testing.T) {
 
 func TestGetFlagStringVal(t *testing.T) {
 	t.Run("SuccessTest", testGetFlagStringValSuccessFunc())
-	t.Run("FailTest",testGetFlagStringValFailsFunc() )
-	//t.Run("FailTestEmptyPassword", )
+	t.Run("FailedTest", testGetFlagStringValFailedFunc())
 }
 
 func testGetFlagStringValSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		cmd := &cobra.Command{
 		}
-		cmd.Flags().StringP("param", "p", "DEFAULT_VAL","Test parameter")
+		cmd.Flags().StringP("param", "p", "DEFAULT_VAL", "Test parameter")
 		result, err := GetFlagStringVal(cmd, "param")
 		if err != nil {
 			t.Error(err)
@@ -116,7 +113,7 @@ func testGetFlagStringValSuccessFunc() func(t *testing.T) {
 	}
 }
 
-func testGetFlagStringValFailsFunc() func(t *testing.T) {
+func testGetFlagStringValFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		cmd := &cobra.Command{
 		}
@@ -129,14 +126,14 @@ func testGetFlagStringValFailsFunc() func(t *testing.T) {
 
 func TestGetFlagStringArrayVal(t *testing.T) {
 	t.Run("SuccessTest", testGetFlagStringArrayValSuccessFunc())
-	t.Run("FailTest",testGetFlagStringArrayValFailsFunc() )
+	t.Run("FailedTest", testGetFlagStringArrayValFailedFunc())
 }
 
 func testGetFlagStringArrayValSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		cmd := &cobra.Command{
 		}
-		cmd.Flags().StringArrayP("param", "p", []string{"a", "b"},"Test parameter")
+		cmd.Flags().StringArrayP("param", "p", []string{"a", "b"}, "Test parameter")
 		result, err := GetFlagStringArrayVal(cmd, "param")
 		if err != nil {
 			t.Error(err)
@@ -146,7 +143,7 @@ func testGetFlagStringArrayValSuccessFunc() func(t *testing.T) {
 	}
 }
 
-func testGetFlagStringArrayValFailsFunc() func(t *testing.T) {
+func testGetFlagStringArrayValFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
 		cmd := &cobra.Command{
 		}
@@ -166,6 +163,40 @@ func TestConfiguration(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t,defaultConf.PasswordFilePath, result.PasswordFilePath)
-	assert.Equal(t,defaultConf.EncryptorID, result.EncryptorID)
+	assert.Equal(t, defaultConf.PasswordFilePath, result.PasswordFilePath)
+	assert.Equal(t, defaultConf.EncryptorID, result.EncryptorID)
+}
+
+func TestIsArgSValid(t *testing.T) {
+	t.Run("SuccessTest", testIsArgSValidSuccessFunc())
+	t.Run("FailedTest", testIsArgSValidFailedFunc())
+}
+
+func testIsArgSValidSuccessFunc() func(t *testing.T) {
+	return func(t *testing.T) {
+		assert.Equal(t, true, IsArgSValid([]string{"a", "b"}))
+	}
+}
+
+func testIsArgSValidFailedFunc() func(t *testing.T) {
+	return func(t *testing.T) {
+		assert.Equal(t, false, IsArgSValid([]string{}))
+	}
+}
+
+func TestIsArgValid(t *testing.T) {
+	t.Run("SuccessTest", testIsArgValidSuccessFunc())
+	t.Run("FailedTest", testIsArgValidFailedFunc())
+}
+
+func testIsArgValidSuccessFunc() func(t *testing.T) {
+	return func(t *testing.T) {
+		assert.Equal(t, true, IsArgValid("test"))
+	}
+}
+
+func testIsArgValidFailedFunc() func(t *testing.T) {
+	return func(t *testing.T) {
+		assert.Equal(t, false, IsArgValid(""))
+	}
 }

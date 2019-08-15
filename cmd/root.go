@@ -26,6 +26,7 @@ import (
 
 var cfgFile string
 
+const InteractiveMode  = "interactive"
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "password-manager",
@@ -53,6 +54,7 @@ func init() {
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "c", "config file (default is $HOME/.password-manager.yaml)")
 	rootCmd.PersistentFlags().StringP(MasterPassword, "m", "", "Master password")
+	rootCmd.PersistentFlags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
 	//addCmd.Flags().StringP(MasterPassword, "m", "", "Master password")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
