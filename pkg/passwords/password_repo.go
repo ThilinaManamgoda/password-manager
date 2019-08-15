@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package password contains the in memory data manipulations
+// Package passwords contains the in memory data manipulations
 package passwords
 
 import (
@@ -25,6 +25,7 @@ import (
 	"github.com/thedevsaddam/gojsonq"
 )
 
+// PasswordEntry struct represents entry in the password DB
 type PasswordEntry struct {
 	ID       string   `json:"id"`
 	Username string    `json:"username"`
@@ -32,10 +33,12 @@ type PasswordEntry struct {
 	Labels   []string `json:"labels"`
 }
 
+// PasswordDB struct represents password DB
 type PasswordDB struct {
 	Entries []PasswordEntry `json:"entries"`
 }
 
+// PasswordRepository struct handles Password DB
 type PasswordRepository struct {
 	Encryptor      encrypt.Encryptor
 	PasswordFile   utils.PasswordFile
@@ -66,13 +69,12 @@ func (p *PasswordRepository) loadPasswordDBEntries() (*PasswordDB, error) {
 
 	if ! utils.IsValidByteSlice(decryptedData) {
 		return &PasswordDB{}, nil
-	} else {
-		var passwordEntries PasswordDB
-		if err := json.Unmarshal(decryptedData, &passwordEntries); err != nil {
-			return &PasswordDB{}, err
-		}
-		return &passwordEntries, nil
 	}
+	var passwordEntries PasswordDB
+	if err := json.Unmarshal(decryptedData, &passwordEntries); err != nil {
+		return &PasswordDB{}, err
+	}
+	return &passwordEntries, nil
 }
 
 func (p *PasswordRepository) savePasswordDB(passwordDB *PasswordDB, masterPassword string) error {
@@ -91,6 +93,7 @@ func (p *PasswordRepository) savePasswordDB(passwordDB *PasswordDB, masterPasswo
 	return nil
 }
 
+// Add method add new password entry to Password DB
 func (p *PasswordRepository) Add(id, uN, password string, labels []string) error {
 	if id == "" {
 		return errors.New("please specify thee ID")
@@ -130,13 +133,14 @@ func isResultEmpty(result []PasswordEntry) bool {
 	return len(result) == 0
 }
 
+// GetPassword method retrieve password entry from Password DB
 func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
 	passwordDB, err := p.loadPasswordDB()
 	if err != nil {
 		return err
 	}
 	if ! utils.IsValidByteSlice(passwordDB) {
-		return errors.New("No passwords are available. Add one !")
+		return errors.New("no passwords are available. Add one")
 	}
 	var result []PasswordEntry
 	gojsonq.New().JSONString(string(passwordDB)).From("entries").Where("id", "=", id).Out(&result)

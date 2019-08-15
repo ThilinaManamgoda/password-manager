@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// ShowPassword flag
 const ShowPassword  = "show-pass"
 
 // getCmd represents the get command

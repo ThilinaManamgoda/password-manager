@@ -24,11 +24,13 @@ import (
 // AESEncryptID is the unique identifier for this encryptor
 const AESEncryptID = "AES"
 
+// Config struct represent the configuration for the tool
 type Config struct {
 	PasswordFilePath string `mapstructure:"passwordFilePath"`
 	EncryptorID      string `mapstructure:"encryptorID"`
 }
 
+// Configuration method loads the configuration
 func Configuration() (*Config, error) {
 	var config, err = defaultConf()
 	if err != nil {
@@ -52,14 +54,17 @@ func defaultConf() (*Config, error) {
 	}, nil
 }
 
+// IsValidByteSlice method check whether the Slice is valid or not
 func IsValidByteSlice(data []byte) bool {
 	return (data != nil) && (len(data) != 0)
 }
 
+// IsPasswordValid method check whether the Password is valid or not
 func IsPasswordValid(passphrase string) bool {
 	return passphrase != ""
 }
 
+// GetFlagStringVal method returns the String flag value
 func GetFlagStringVal(cmd *cobra.Command, flag string) (string, error) {
 	val, err := cmd.Flags().GetString(flag)
 	if err != nil {
@@ -68,6 +73,7 @@ func GetFlagStringVal(cmd *cobra.Command, flag string) (string, error) {
 	return val, nil
 }
 
+// GetFlagBoolVal method returns the Boolean flag value
 func GetFlagBoolVal(cmd *cobra.Command, flag string) (bool, error) {
 	val, err := cmd.Flags().GetBool(flag)
 	if err != nil {
@@ -76,6 +82,7 @@ func GetFlagBoolVal(cmd *cobra.Command, flag string) (bool, error) {
 	return val, nil
 }
 
+// GetFlagStringArrayVal method returns the String array flag value
 func GetFlagStringArrayVal(cmd *cobra.Command, flag string) ([]string, error) {
 	val, err := cmd.Flags().GetStringArray(flag)
 	if err != nil {
@@ -84,10 +91,12 @@ func GetFlagStringArrayVal(cmd *cobra.Command, flag string) ([]string, error) {
 	return val, nil
 }
 
+// IsArgSValid method check whether the CMD args are valid or not
 func IsArgSValid(args []string) bool {
 	return len(args) != 0
 }
 
+// IsArgValid method check whether the CMD arg are valid or not
 func IsArgValid(arg string) bool {
 	return arg != ""
 }

@@ -26,6 +26,7 @@ import (
 
 var cfgFile string
 
+// InteractiveMode flag
 const InteractiveMode  = "interactive"
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

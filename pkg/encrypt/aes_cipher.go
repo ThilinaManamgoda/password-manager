@@ -36,7 +36,7 @@ func createHash(key string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-// Encryptor method encrypts the given data
+// Encrypt method encrypts the given data
 func (a *AESEncryptor) Encrypt(data []byte, passphrase string) ([]byte, error) {
 	if ! utils.IsPasswordValid(passphrase) {
 		return nil, errors.New("invalid password")

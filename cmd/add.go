@@ -24,11 +24,16 @@ import (
 )
 
 const (
+	// Username flag
 	Username       = "username"
+	// Password flag
 	Password       = "password"
+	// Labels flag
 	Labels         = "labels"
+	// MasterPassword flag
 	MasterPassword = "masterPassword"
-	Id             = "id"
+	// ID flag
+	ID             = "id"
 )
 
 // addCmd represents the add command
