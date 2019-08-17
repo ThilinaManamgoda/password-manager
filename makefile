@@ -8,7 +8,7 @@ BINARY_NAME=password-manager
 DEP=dep
 GOLINT=golint
 
-all: clean deps lint unit-test build
+all: clean deps unit-test build
 
 
 build:

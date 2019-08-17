@@ -200,3 +200,4 @@ func testIsArgValidFailedFunc() func(t *testing.T) {
 		assert.Equal(t, false, IsArgValid(""))
 	}
 }
+

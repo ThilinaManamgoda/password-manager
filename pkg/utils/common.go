@@ -15,7 +15,9 @@
 package utils
 
 import (
+	"github.com/manifoldco/promptui"
 	"github.com/mitchellh/go-homedir"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"path/filepath"
@@ -34,11 +36,11 @@ type Config struct {
 func Configuration() (*Config, error) {
 	var config, err = defaultConf()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot load default config")
 	}
 	err = viper.Unmarshal(config)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot unmarshal the configuration")
 	}
 	return config, nil
 }
@@ -46,7 +48,7 @@ func Configuration() (*Config, error) {
 func defaultConf() (*Config, error) {
 	home, err := homedir.Dir()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot retrieve Home directory path")
 	}
 	return &Config{
 		PasswordFilePath: filepath.Join(home, "/passwordDB"),
@@ -99,4 +101,23 @@ func IsArgSValid(args []string) bool {
 // IsArgValid method check whether the CMD arg are valid or not
 func IsArgValid(arg string) bool {
 	return arg != ""
+}
+
+// PromptForString function prompt for string and returns the input
+func PromptForString(label string, validate promptui.ValidateFunc) (string, error) {
+	prompt := promptui.Prompt{
+		Label:    label,
+		Validate: validate,
+	}
+	return prompt.Run()
+}
+
+// PromptForPassword function prompt for password and returns the input
+func PromptForPassword(label string, validate promptui.ValidateFunc)(string, error) {
+	prompt := promptui.Prompt{
+		Label:    label,
+		Validate: validate,
+		Mask:     '*',
+	}
+	return prompt.Run()
 }

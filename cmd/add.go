@@ -15,11 +15,10 @@
 package cmd
 
 import (
-	"errors"
-	"github.com/manifoldco/promptui"
 	"github.com/password-manager/pkg/encrypt"
 	"github.com/password-manager/pkg/passwords"
 	"github.com/password-manager/pkg/utils"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -45,46 +44,46 @@ var addCmd = &cobra.Command{
 		if ! utils.IsArgSValid(args) {
 			return errors.New("invalid argument")
 		}
-		if ! isIDValid(args[0]) {
+		if ! utils.IsArgValid(args[0]) {
 			return errors.New("invalid ID")
 		}
 		id := args[0]
 
-		iMode, err := utils.GetFlagBoolVal(cmd, InteractiveMode)
+		isInteractiveMode, err := utils.GetFlagBoolVal(cmd, InteractiveMode)
 		if err != nil {
 			return err
 		}
 		var uN, password, mPassword string
 		var labels []string
-		if isInteractiveMode(iMode) {
+		if isInteractiveMode {
 			uN, err = promptForUsername()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "cannot prompt for Username")
 			}
 			password, err = promptForPassword()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "cannot prompt for password")
 			}
 			mPassword, err = promptForMPassword()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		} else {
 			uN, err = utils.GetFlagStringVal(cmd, Username)
 			if err != nil {
-				return err
+				return errors.Wrapf(err, "cannot get value of %s flag", Username)
 			}
 			password, err = utils.GetFlagStringVal(cmd, Password)
 			if err != nil {
-				return err
+				return errors.Wrapf(err, "cannot get value of %s flag", Password)
 			}
 			labels, err = utils.GetFlagStringArrayVal(cmd, Labels)
 			if err != nil {
-				return err
+				return errors.Wrapf(err, "cannot get value of %s flag", Labels)
 			}
 			mPassword, err = utils.GetFlagStringVal(cmd, MasterPassword)
 			if err != nil {
-				return err
+				return errors.Wrapf(err, "cannot get value of %s flag", MasterPassword)
 			}
 		}
 
@@ -117,11 +116,7 @@ func promptForUsername()(string, error) {
 		}
 		return nil
 	}
-	prompt := promptui.Prompt{
-		Label:    "Username",
-		Validate: validate,
-	}
-	return prompt.Run()
+	return utils.PromptForString("Username", validate)
 }
 
 func promptForMPassword()(string, error) {
@@ -131,12 +126,7 @@ func promptForMPassword()(string, error) {
 		}
 		return nil
 	}
-	prompt := promptui.Prompt{
-		Label:    "Master password",
-		Validate: validate,
-		Mask:     '*',
-	}
-	return prompt.Run()
+	return utils.PromptForPassword("Master password", validate)
 }
 
 func promptForPassword()(string, error) {
@@ -146,20 +136,7 @@ func promptForPassword()(string, error) {
 		}
 		return nil
 	}
-	prompt := promptui.Prompt{
-		Label:    "Password",
-		Validate: validate,
-		Mask:     '*',
-	}
-	return prompt.Run()
-}
-
-func isIDValid(id string) bool {
-	return  utils.IsArgValid(id)
-}
-
-func isInteractiveMode(iMode bool) bool {
-	return iMode
+	return utils.PromptForPassword("Password", validate)
 }
 
 func init() {

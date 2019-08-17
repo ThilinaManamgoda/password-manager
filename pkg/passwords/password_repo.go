@@ -48,15 +48,16 @@ type PasswordRepository struct {
 func (p *PasswordRepository) loadPasswordDB() ([]byte, error) {
 	encryptedData, err := p.PasswordFile.ReadFile()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot read password DB file")
 	}
+	// initialize the Password DB for the first time
 	if ! utils.IsValidByteSlice(encryptedData) {
 		emptyArray := encryptedData
 		return emptyArray, nil
 	}
 	decryptedData, err := p.Encryptor.Decrypt(encryptedData, p.MasterPassword)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err,"cannot decrypt password DB")
 	}
 	return decryptedData, nil
 }
@@ -64,7 +65,7 @@ func (p *PasswordRepository) loadPasswordDB() ([]byte, error) {
 func (p *PasswordRepository) loadPasswordDBEntries() (*PasswordDB, error) {
 	decryptedData, err := p.loadPasswordDB()
 	if err != nil {
-		return &PasswordDB{}, err
+		return &PasswordDB{}, errors.Wrap(err, "cannot load password DB")
 	}
 
 	if ! utils.IsValidByteSlice(decryptedData) {
@@ -80,15 +81,15 @@ func (p *PasswordRepository) loadPasswordDBEntries() (*PasswordDB, error) {
 func (p *PasswordRepository) savePasswordDB(passwordDB *PasswordDB, masterPassword string) error {
 	passwordDBJSON, err := json.Marshal(passwordDB)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot marshal the password DB")
 	}
 	encryptedData, err := p.Encryptor.Encrypt(passwordDBJSON, masterPassword)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot encrypt password DB")
 	}
 	err = p.PasswordFile.WriteToFile(encryptedData)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot write to password DB file")
 	}
 	return nil
 }
@@ -100,7 +101,7 @@ func (p *PasswordRepository) Add(id, uN, password string, labels []string) error
 	}
 	passwordDB, err := p.loadPasswordDBEntries()
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot load password DB entries")
 	}
 
 	if isIDExists(id, passwordDB.Entries) {
@@ -115,7 +116,7 @@ func (p *PasswordRepository) Add(id, uN, password string, labels []string) error
 	})
 	err = p.savePasswordDB(passwordDB, p.MasterPassword)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot save passoword")
 	}
 	return nil
 }
