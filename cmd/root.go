@@ -56,7 +56,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "c", "config file (default is $HOME/.password-manager.yaml)")
 	rootCmd.PersistentFlags().StringP(MasterPassword, "m", "", "Master password")
 	rootCmd.PersistentFlags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
-	//addCmd.Flags().StringP(MasterPassword, "m", "", "Master password")
+	//addCmd.Flags().StringP(mPassword, "m", "", "Master password")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 }

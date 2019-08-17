@@ -23,10 +23,10 @@ func testReadFileSuccessFunc() func(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		p := &PasswordFile{
-			File: filepath.Join(wDir,"../../test/test_read_file_success"),
+		p := &File{
+			Path: filepath.Join(wDir,"../../test/test_read_file_success"),
 		}
-		result, err := p.ReadFile()
+		result, err := p.Read()
 		if err != nil {
 			t.Error(err)
 		}
@@ -36,10 +36,10 @@ func testReadFileSuccessFunc() func(t *testing.T) {
 
 func testReadFileFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		p := &PasswordFile{
-			File: "",
+		p := &File{
+			Path: "",
 		}
-		_, err :=p.ReadFile()
+		_, err :=p.Read()
 		if pathErr, ok := err.(*os.PathError); ok{
 			assert.Equal(t, "open : no such file or directory", pathErr.Error())
 		} else {

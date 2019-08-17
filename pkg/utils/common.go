@@ -113,11 +113,31 @@ func PromptForString(label string, validate promptui.ValidateFunc) (string, erro
 }
 
 // PromptForPassword function prompt for password and returns the input
-func PromptForPassword(label string, validate promptui.ValidateFunc)(string, error) {
+func PromptForPassword(label string, validate promptui.ValidateFunc) (string, error) {
 	prompt := promptui.Prompt{
 		Label:    label,
 		Validate: validate,
 		Mask:     '*',
 	}
 	return prompt.Run()
+}
+
+// PromptForSelect start selection and return the selected value
+func PromptForSelect(l string, items []string) (string, error) {
+	prompt := promptui.Select{
+		Label: l,
+		Items: items,
+	}
+	_, result, err := prompt.Run()
+	return result, err
+}
+
+//
+func StringSliceContains(key string, s []string) bool {
+	for _, v := range s {
+		if key == v {
+			return true
+		}
+	}
+	return false
 }

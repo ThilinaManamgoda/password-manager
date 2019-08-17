@@ -15,24 +15,28 @@
 package cmd
 
 import (
-	"github.com/password-manager/pkg/encrypt"
 	"github.com/password-manager/pkg/passwords"
 	"github.com/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 const (
 	// Username flag
-	Username       = "username"
+	Username = "username"
 	// Password flag
-	Password       = "password"
+	Password = "password"
 	// Labels flag
-	Labels         = "labels"
-	// MasterPassword flag
+	Labels = "labels"
+	// mPassword flag
 	MasterPassword = "masterPassword"
 	// ID flag
-	ID             = "id"
+	ID = "id"
+	// cannot prompt for
+	ErrMSGCannotPrompt = "cannot prompt for %s"
+	// cannot get inputs
+	ErrMsgCannotGetInput = "cannot get input"
 )
 
 // addCmd represents the add command
@@ -56,50 +60,19 @@ var addCmd = &cobra.Command{
 		var uN, password, mPassword string
 		var labels []string
 		if isInteractiveMode {
-			uN, err = promptForUsername()
+			err := inputFromPrompt(&uN, &password, &mPassword, &labels)
 			if err != nil {
-				return errors.Wrap(err, "cannot prompt for Username")
-			}
-			password, err = promptForPassword()
-			if err != nil {
-				return errors.Wrap(err, "cannot prompt for password")
-			}
-			mPassword, err = promptForMPassword()
-			if err != nil {
-				return errors.Wrap(err, "cannot prompt for Master password")
+				return errors.Wrapf(err, ErrMsgCannotGetInput)
 			}
 		} else {
-			uN, err = utils.GetFlagStringVal(cmd, Username)
+			err := inputFromFlags(cmd, &uN, &password, &mPassword, &labels)
 			if err != nil {
-				return errors.Wrapf(err, "cannot get value of %s flag", Username)
-			}
-			password, err = utils.GetFlagStringVal(cmd, Password)
-			if err != nil {
-				return errors.Wrapf(err, "cannot get value of %s flag", Password)
-			}
-			labels, err = utils.GetFlagStringArrayVal(cmd, Labels)
-			if err != nil {
-				return errors.Wrapf(err, "cannot get value of %s flag", Labels)
-			}
-			mPassword, err = utils.GetFlagStringVal(cmd, MasterPassword)
-			if err != nil {
-				return errors.Wrapf(err, "cannot get value of %s flag", MasterPassword)
+				return errors.Wrapf(err, ErrMsgCannotGetInput)
 			}
 		}
-
-		config, err := utils.Configuration()
+		passwordRepo, err := passwords.InitPasswordRepo(mPassword)
 		if err != nil {
-			return err
-		}
-		encriptorFac := &encrypt.Factory{
-			ID: config.EncryptorID,
-		}
-		passwordRepo := &passwords.PasswordRepository{
-			MasterPassword: mPassword,
-			Encryptor:      encriptorFac.GetEncryptor(),
-			PasswordFile: utils.PasswordFile{
-				File: config.PasswordFilePath,
-			},
+			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 		err = passwordRepo.Add(id, uN, password, labels)
 		if err != nil {
@@ -109,34 +82,98 @@ var addCmd = &cobra.Command{
 	},
 }
 
-func promptForUsername()(string, error) {
+func inputFromFlags(cmd *cobra.Command, uN, password, mPassword *string, labels *[]string) error {
+	uNVal, err := utils.GetFlagStringVal(cmd, Username)
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotGetFlag, Username)
+	}
+	*uN = uNVal
+	passwordVal, err := utils.GetFlagStringVal(cmd, Password)
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
+	}
+	*password = passwordVal
+	labelsVal, err := utils.GetFlagStringArrayVal(cmd, Labels)
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotGetFlag, Labels)
+	}
+	*labels = labelsVal
+	mPasswordVal, err := utils.GetFlagStringVal(cmd, MasterPassword)
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotGetFlag, MasterPassword)
+	}
+	*mPassword = mPasswordVal
+	return nil
+}
+
+func inputFromPrompt(uN, password, mPassword *string, labels *[]string) error {
+	uNVal, err := promptForUsername()
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotPrompt, "Username")
+	}
+	*uN = uNVal
+	passwordVal, err := promptForPassword()
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotPrompt, "Password")
+	}
+	*password = passwordVal
+	labelsVal, err := promptForLabels()
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotPrompt, "Labels")
+	}
+	*labels = labelsVal
+	mPasswordVal, err := promptForMPassword()
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotPrompt, "Master password")
+	}
+	*mPassword = mPasswordVal
+	return nil
+}
+
+func promptForUsername() (string, error) {
 	validate := func(input string) error {
 		if len(input) < 3 {
 			return errors.New("username must have more than 3 characters")
 		}
 		return nil
 	}
-	return utils.PromptForString("Username", validate)
+	return utils.PromptForString("Username: ", validate)
 }
 
-func promptForMPassword()(string, error) {
+func promptForLabels() ([]string, error) {
+	validate := func(input string) error {
+		return nil
+	}
+	lInput, err := utils.PromptForString("Labels", validate)
+	if err != nil {
+		return nil, nil
+	}
+	l := strings.Split(lInput, ",")
+	if len(l) == 0 {
+		return nil, nil
+	} else {
+		return l, nil
+	}
+}
+
+func promptForMPassword() (string, error) {
 	validate := func(input string) error {
 		if len(input) < 6 {
 			return errors.New("master password must have more than 6 characters")
 		}
 		return nil
 	}
-	return utils.PromptForPassword("Master password", validate)
+	return utils.PromptForPassword("Master password: ", validate)
 }
 
-func promptForPassword()(string, error) {
+func promptForPassword() (string, error) {
 	validate := func(input string) error {
 		if len(input) < 6 {
 			return errors.New("password must have more than 6 characters")
 		}
 		return nil
 	}
-	return utils.PromptForPassword("Password", validate)
+	return utils.PromptForPassword("Password: ", validate)
 }
 
 func init() {
@@ -152,5 +189,5 @@ func init() {
 	// is called directly, e.g.:
 	addCmd.Flags().StringP(Password, "p", "", "Password")
 	addCmd.Flags().StringP(Username, "u", "", "User Name")
-	addCmd.Flags().StringArrayP(Labels, "l", nil, "Labels for the entry")
+	addCmd.Flags().StringArrayP(Labels, "l", nil, "Labels for the password entry")
 }

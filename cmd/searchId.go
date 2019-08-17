@@ -19,29 +19,27 @@ import (
 	"github.com/password-manager/pkg/passwords"
 	"github.com/password-manager/pkg/utils"
 	"github.com/pkg/errors"
+
 	"github.com/spf13/cobra"
 )
 
-// ShowPassword flag
-const (
-	// ShowPassword flag
-	ShowPassword = "show-pass"
-	// ErrMSGCannotGetFlag message
-	ErrMSGCannotGetFlag = "cannot get value of %s flag"
-)
+// searchIdCmd represents the searchId command
+var searchIdCmd = &cobra.Command{
+	Use:   "searchId",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
 
-// getCmd represents the get command
-var getCmd = &cobra.Command{
-	Use:   "get [ID]",
-	Short: "Get a password",
-	Long:  `Get a password`,
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if ! utils.IsArgSValid(args) {
-			return errors.New("please give a ID")
+			return errors.New("Please give a ID")
 		}
-		id := args[0]
-		if ! utils.IsArgValid(id) {
-			return errors.New(fmt.Sprintf("invalid argument: %s", id))
+		searchID := args[0]
+		if ! utils.IsArgValid(searchID) {
+			return errors.New(fmt.Sprintf("Invalid argument: %s", searchID))
 		}
 		mPassword, err := utils.GetFlagStringVal(cmd, MasterPassword)
 		if err != nil {
@@ -58,29 +56,49 @@ var getCmd = &cobra.Command{
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
 		}
 
+		if ! utils.IsArgSValid(args) {
+			return errors.New("Please give a ID")
+		}
+
 		passwordRepo, err := passwords.InitPasswordRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 
-		err = passwordRepo.GetPassword(id, showPass)
+
+		passwordEntries, err := passwordRepo.SearchID(searchID, showPass)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "cannot search ID")
+		}
+
+		if len(passwordEntries) != 0 {
+			var idList [] string
+			for _, val := range passwordEntries {
+				idList = append(idList, val.ID)
+			}
+			sID, _ := utils.PromptForSelect("Choose", idList)
+			err := passwordRepo.GetPassword(sID, showPass)
+			if err != nil {
+				return errors.Wrapf(err, "cannot get password for ID: %s", sID)
+			}
+		} else {
+			return errors.New("cannot find any match")
 		}
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(searchIdCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// getCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// searchIdCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	getCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
+	// searchIdCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	searchIdCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
 }

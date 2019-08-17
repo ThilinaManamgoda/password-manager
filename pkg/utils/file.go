@@ -19,14 +19,14 @@ import (
 	"os"
 )
 
-// PasswordFile struct represent the file for password DB
-type PasswordFile struct {
-	File string
+// Path struct represent a file
+type File struct {
+	Path string
 }
 
-// ReadFile method reads the password DB file
-func (p *PasswordFile) ReadFile() ([]byte, error) {
-	f, err := os.OpenFile(p.File, os.O_CREATE|os.O_RDONLY, 0640)
+// Read method reads the file
+func (p *File) Read() ([]byte, error) {
+	f, err := os.OpenFile(p.Path, os.O_CREATE|os.O_RDONLY, 0640)
 	if err != nil {
 		return nil, err
 	}
@@ -37,9 +37,9 @@ func (p *PasswordFile) ReadFile() ([]byte, error) {
 	return data, nil
 }
 
-// WriteToFile method writes data to the password DB file
-func (p *PasswordFile) WriteToFile(data []byte) error {
-	err := ioutil.WriteFile(p.File, data,0640 )
+// Write method writes data to the file
+func (p *File) Write(data []byte) error {
+	err := ioutil.WriteFile(p.Path, data,0640 )
 	if err != nil {
 		return err
 	}

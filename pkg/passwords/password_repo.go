@@ -25,84 +25,82 @@ import (
 	"github.com/thedevsaddam/gojsonq"
 )
 
-// PasswordEntry struct represents entry in the password DB
+// PasswordEntry struct represents entry in the password db
 type PasswordEntry struct {
 	ID       string   `json:"id"`
-	Username string    `json:"username"`
+	Username string   `json:"username"`
 	Password string   `json:"password"`
 	Labels   []string `json:"labels"`
 }
 
-// PasswordDB struct represents password DB
+// PasswordDB struct represents password db
 type PasswordDB struct {
 	Entries []PasswordEntry `json:"entries"`
 }
 
-// PasswordRepository struct handles Password DB
+// PasswordRepository struct handles Password db
 type PasswordRepository struct {
-	Encryptor      encrypt.Encryptor
-	PasswordFile   utils.PasswordFile
-	MasterPassword string
+	encryptor     encrypt.Encryptor
+	mPassword     string
+	rawPasswordDB []byte
+	db            *PasswordDB
+	file          *utils.File
 }
 
-func (p *PasswordRepository) loadPasswordDB() ([]byte, error) {
-	encryptedData, err := p.PasswordFile.ReadFile()
+func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *utils.File) ([]byte, error) {
+	encryptedData, err := f.Read()
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot read password DB file")
+		return nil, errors.Wrap(err, "cannot read password db file")
 	}
-	// initialize the Password DB for the first time
+	// initialize the Password db for the first time
 	if ! utils.IsValidByteSlice(encryptedData) {
 		emptyArray := encryptedData
 		return emptyArray, nil
 	}
-	decryptedData, err := p.Encryptor.Decrypt(encryptedData, p.MasterPassword)
+	decryptedData, err := e.Decrypt(encryptedData, mPassword)
 	if err != nil {
-		return nil, errors.Wrap(err,"cannot decrypt password DB")
+		return nil, errors.Wrap(err, "cannot decrypt password db")
 	}
 	return decryptedData, nil
 }
 
-func (p *PasswordRepository) loadPasswordDBEntries() (*PasswordDB, error) {
-	decryptedData, err := p.loadPasswordDB()
-	if err != nil {
-		return &PasswordDB{}, errors.Wrap(err, "cannot load password DB")
-	}
-
-	if ! utils.IsValidByteSlice(decryptedData) {
-		return &PasswordDB{}, nil
-	}
+func loadPasswordDB(passwordDB []byte) (*PasswordDB, error) {
 	var passwordEntries PasswordDB
-	if err := json.Unmarshal(decryptedData, &passwordEntries); err != nil {
-		return &PasswordDB{}, err
+	if isFirstDBInitialize(passwordDB) {
+		return &passwordEntries, nil
+	}
+	if err := json.Unmarshal(passwordDB, &passwordEntries); err != nil {
+		return &PasswordDB{}, errors.Wrapf(err, "cannot unmarshal password db")
 	}
 	return &passwordEntries, nil
+}
+
+func isFirstDBInitialize(db []byte) bool {
+	return len(db) == 0
 }
 
 func (p *PasswordRepository) savePasswordDB(passwordDB *PasswordDB, masterPassword string) error {
 	passwordDBJSON, err := json.Marshal(passwordDB)
 	if err != nil {
-		return errors.Wrap(err, "cannot marshal the password DB")
+		return errors.Wrap(err, "cannot marshal the password db")
 	}
-	encryptedData, err := p.Encryptor.Encrypt(passwordDBJSON, masterPassword)
+	encryptedData, err := p.encryptor.Encrypt(passwordDBJSON, masterPassword)
 	if err != nil {
-		return errors.Wrap(err, "cannot encrypt password DB")
+		return errors.Wrap(err, "cannot encrypt password db")
 	}
-	err = p.PasswordFile.WriteToFile(encryptedData)
+	err = p.file.Write(encryptedData)
 	if err != nil {
-		return errors.Wrap(err, "cannot write to password DB file")
+		return errors.Wrap(err, "cannot write to password db file")
 	}
 	return nil
 }
 
-// Add method add new password entry to Password DB
+// Add method add new password entry to Password db
 func (p *PasswordRepository) Add(id, uN, password string, labels []string) error {
 	if id == "" {
-		return errors.New("please specify thee ID")
+		return errors.New("invalid the ID")
 	}
-	passwordDB, err := p.loadPasswordDBEntries()
-	if err != nil {
-		return errors.Wrap(err, "cannot load password DB entries")
-	}
+	passwordDB := p.db
 
 	if isIDExists(id, passwordDB.Entries) {
 		return errors.New(fmt.Sprintf("ID: %s is already there !", id))
@@ -114,7 +112,7 @@ func (p *PasswordRepository) Add(id, uN, password string, labels []string) error
 		Password: password,
 		Labels:   labels,
 	})
-	err = p.savePasswordDB(passwordDB, p.MasterPassword)
+	err := p.savePasswordDB(passwordDB, p.mPassword)
 	if err != nil {
 		return errors.Wrap(err, "cannot save passoword")
 	}
@@ -134,14 +132,11 @@ func isResultEmpty(result []PasswordEntry) bool {
 	return len(result) == 0
 }
 
-// GetPassword method retrieve password entry from Password DB
+// GetPassword method retrieve password entry from Password db
 func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
-	passwordDB, err := p.loadPasswordDB()
-	if err != nil {
-		return err
-	}
+	passwordDB := p.rawPasswordDB
 	if ! utils.IsValidByteSlice(passwordDB) {
-		return errors.New("no passwords are available. Add one")
+		return errors.New("no passwords are available")
 	}
 	var result []PasswordEntry
 	gojsonq.New().JSONString(string(passwordDB)).From("entries").Where("id", "=", id).Out(&result)
@@ -151,9 +146,66 @@ func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
 	if showPassword {
 		fmt.Println(result[0].Password)
 	}
-	err = clipboard.WriteAll(result[0].Password)
+	err := clipboard.WriteAll(result[0].Password)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]PasswordEntry, error) {
+	passwordDB := p.rawPasswordDB
+	if ! utils.IsValidByteSlice(passwordDB) {
+		return nil, errors.New("no passwords are available")
+	}
+	var result []PasswordEntry
+	gojsonq.New().JSONString(string(passwordDB)).From("entries").WhereContains("id", id).Out(&result)
+	if isResultEmpty(result) {
+		return nil, errors.New("No entries")
+	}
+	return result, nil
+}
+
+func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]PasswordEntry, error) {
+	if len(p.db.Entries) == 0 {
+		return nil, errors.New("no passwords are available")
+	}
+	var searchResult []PasswordEntry
+	for _, e := range p.db.Entries {
+		if utils.StringSliceContains(label, e.Labels) {
+			searchResult = append(searchResult, e)
+		}
+	}
+	return searchResult, nil
+}
+
+
+// InitPasswordRepo initializes the Password repository
+func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
+	config, err := utils.Configuration()
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot get configuration")
+	}
+	eFac := &encrypt.Factory{
+		ID: config.EncryptorID,
+	}
+	file := &utils.File{
+		Path: config.PasswordFilePath,
+	}
+	rawDb, err:= loadPasswordDBFile(mPassword, eFac.GetEncryptor(), file)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot get Raw PasswordDB")
+	}
+	db, err := loadPasswordDB(rawDb)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot get PasswordDB")
+	}
+	passwordRepo := &PasswordRepository{
+		mPassword:     mPassword,
+		encryptor:     eFac.GetEncryptor(),
+		rawPasswordDB: rawDb,
+		db:            db,
+		file:          file,
+	}
+	return passwordRepo, nil
 }

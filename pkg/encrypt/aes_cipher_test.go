@@ -54,11 +54,11 @@ func testDecryptSuccessFunc() func(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		p := &utils.PasswordFile{
-			File: filepath.Join(wDir, "../../test/test_decrypt_success"),
+		p := &utils.File{
+			Path: filepath.Join(wDir, "../../test/test_decrypt_success"),
 		}
 		a := &AESEncryptor{}
-		content, err := p.ReadFile()
+		content, err := p.Read()
 		if err != nil {
 			t.Error(err)
 		}
