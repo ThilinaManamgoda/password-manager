@@ -314,14 +314,6 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:48702a7b31ffeb1ccce5db38ba75998906a74479ec0c7f50546a58105ba44972"
-  name = "github.com/thedevsaddam/gojsonq"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "69113724147bdb0973fc7b64d71de08e6cd476cb"
-  version = "v2.2.2"
-
-[[projects]]
   branch = "master"
   digest = "1:ba52e5a5fb800ce55108b7a5f181bb809aab71c16736051312b0aa969f82ad39"
   name = "github.com/tsenart/deadcode"
@@ -407,7 +399,6 @@
     "github.com/spf13/cobra/doc",
     "github.com/spf13/viper",
     "github.com/stretchr/testify/assert",
-    "github.com/thedevsaddam/gojsonq",
     "gotest.tools/assert",
   ]
   solver-name = "gps-cdcl"

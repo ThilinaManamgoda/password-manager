@@ -133,7 +133,7 @@ func promptForUsername() (string, error) {
 		}
 		return nil
 	}
-	return inputs.PromptForString("Username: ", validate)
+	return inputs.PromptForString("Username ", validate)
 }
 
 func promptForLabels() ([]string, error) {
@@ -158,7 +158,7 @@ func promptForMPassword() (string, error) {
 		}
 		return nil
 	}
-	return inputs.PromptForPassword("Master password: ", validate)
+	return inputs.PromptForPassword("Master password ", validate)
 }
 
 func promptForPassword() (string, error) {
@@ -168,7 +168,7 @@ func promptForPassword() (string, error) {
 		}
 		return nil
 	}
-	return inputs.PromptForPassword("Password: ", validate)
+	return inputs.PromptForPassword("Password ", validate)
 }
 
 func init() {

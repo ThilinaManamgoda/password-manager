@@ -1,6 +1,6 @@
 # Go parameters
 
-TOOL_VERSION=0.9.1
+TOOL_VERSION=0.9.0
 GENERATE_DOC=false
 GOCMD=go
 GOBUILD=$(GOCMD) build
@@ -16,7 +16,7 @@ TEST_PKGS=./pkg/...
 FMT_PKGS=./cmd/... ./pkg/...
 LDFLAGS=-X github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSION) -X github.com/ThilinaManamgoda/password-manager/cmd.IsGenerateDoc=$(GENERATE_DOC)
 
-all: clean deps lint unit-test build
+all: clean deps lint unit-test build-linux build-darwin build-windows
 
 build:
 		$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_NAME) -v
@@ -41,3 +41,12 @@ run:
 
 deps:
 		$(DEP) ensure
+
+build-linux:
+		env GOOS="linux" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/linux/v$(TOOL_VERSION)/$(BINARY_NAME)" -v
+
+build-windows:
+		env GOOS="windows" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/windows/v$(TOOL_VERSION)/$(BINARY_NAME).exe" -v
+
+build-darwin:
+		env GOOS="darwin" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/darwin/v$(TOOL_VERSION)/$(BINARY_NAME)" -v

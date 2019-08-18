@@ -12,33 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-// Package passwords contains the in memory data manipulations
+// Package passwords contains the in memory data manipulations for password repo
 package passwords
 
 import (
 	"encoding/json"
 	"fmt"
-	config2 "github.com/ThilinaManamgoda/password-manager/pkg/config"
+	config "github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/encrypt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/fileio"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
 	"github.com/pkg/errors"
-	"github.com/thedevsaddam/gojsonq"
+	"strings"
 )
 
 // PasswordEntry struct represents entry in the password db
 type PasswordEntry struct {
-	ID       string   `json:"id"`
-	Username string   `json:"username"`
-	Password string   `json:"password"`
-	Labels   []string `json:"labels"`
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 // PasswordDB struct represents password db
 type PasswordDB struct {
-	Entries []PasswordEntry `json:"entries"`
+	Entries map[string]PasswordEntry `json:"entries"`
+	Labels  map[string][]string      `json:"labels"`
 }
 
 // PasswordRepository struct handles Password db
@@ -68,14 +67,18 @@ func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) (
 }
 
 func loadPasswordDB(passwordDB []byte) (*PasswordDB, error) {
-	var passwordEntries PasswordDB
+
 	if isFirstDBInitialize(passwordDB) {
-		return &passwordEntries, nil
+		return &PasswordDB{
+			Entries: map[string]PasswordEntry{},
+			Labels: map[string][]string{},
+		}, nil
 	}
-	if err := json.Unmarshal(passwordDB, &passwordEntries); err != nil {
+	var db PasswordDB
+	if err := json.Unmarshal(passwordDB, &db); err != nil {
 		return &PasswordDB{}, errors.Wrapf(err, "cannot unmarshal password db")
 	}
-	return &passwordEntries, nil
+	return &db, nil
 }
 
 func isFirstDBInitialize(db []byte) bool {
@@ -103,18 +106,19 @@ func (p *PasswordRepository) Add(id, uN, password string, labels []string) error
 	if id == "" {
 		return errors.New("invalid the ID")
 	}
-	passwordDB := p.db
+	passwordDBEntries := p.db.Entries
 
-	if isIDExists(id, passwordDB.Entries) {
+	if p.isIDExists(id) {
 		return errors.New(fmt.Sprintf("ID: %s is already there !", id))
 	}
 
-	passwordDB.Entries = append(passwordDB.Entries, PasswordEntry{
+	passwordDBEntries[id] = PasswordEntry{
 		ID:       id,
 		Username: uN,
 		Password: password,
-		Labels:   labels,
-	})
+	}
+
+	p.assignLabels(id, labels)
 	err := p.savePasswordDB()
 	if err != nil {
 		return errors.Wrap(err, "cannot save passoword")
@@ -122,79 +126,109 @@ func (p *PasswordRepository) Add(id, uN, password string, labels []string) error
 	return nil
 }
 
-func isIDExists(id string, passwordEntries []PasswordEntry) bool {
-	for _, val := range passwordEntries {
-		if id == val.ID {
-			return true
-		}
-	}
-	return false
+func (p *PasswordRepository) isIDExists(id string) bool {
+	_, ok := p.db.Entries[id]
+	return ok
 }
 
-func isResultEmpty(result []PasswordEntry) bool {
-	return len(result) == 0
+func (p *PasswordRepository) isLabelExists(l string) bool {
+	_, ok := p.db.Labels[l]
+	return ok
 }
 
 // GetPassword method retrieve password entry from Password db
 func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
-	passwordDB := p.rawPasswordDB
-	if !utils.IsValidByteSlice(passwordDB) {
+	passwordDB := p.db.Entries
+	if len(passwordDB) == 0 {
 		return errors.New("no passwords are available")
 	}
-	var result []PasswordEntry
-	gojsonq.New().JSONString(string(passwordDB)).From("entries").Where("id", "=", id).Out(&result)
-	if isResultEmpty(result) {
+	var result PasswordEntry
+	result, ok := passwordDB[id]
+	if !ok {
 		return errors.New(fmt.Sprintf("Invalid ID:  %s", id))
 	}
+	fmt.Println(fmt.Sprintf("Username: %s", result.Username))
 	if showPassword {
-		fmt.Println(result[0].Password)
-	}
-	err := clipboard.WriteAll(result[0].Password)
-	if err != nil {
-		return errors.Wrapf(err, "cannot write to clip board")
+		fmt.Println(fmt.Sprintf("Password: %s", result.Password))
+	} else {
+		fmt.Println("Password is copied to the clip board")
+		err := clipboard.WriteAll(result.Password)
+		if err != nil {
+			return errors.Wrapf(err, "cannot write to clip board")
+		}
 	}
 	return nil
 }
 
 // SearchID will return the password entries if the password ID contains the provide key
-func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]PasswordEntry, error) {
-	passwordDB := p.rawPasswordDB
-	if !utils.IsValidByteSlice(passwordDB) {
+func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]string, error) {
+	if p.isDBEmpty() {
 		return nil, errors.New("no passwords are available")
 	}
-	var result []PasswordEntry
-	gojsonq.New().JSONString(string(passwordDB)).From("entries").WhereContains("id", id).Out(&result)
-	if isResultEmpty(result) {
+	var result []string
+	for key, _ := range p.db.Entries {
+		if strings.Contains(key, id) {
+			result = append(result, key)
+		}
+	}
+	if len(result) == 0 {
 		return nil, errors.New("cannot find any match")
 	}
 	return result, nil
 }
 
-// SearchLabel will return the password entries if the password labels contains the provide label
-func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]PasswordEntry, error) {
-	if len(p.db.Entries) == 0 {
+func (p *PasswordRepository) isDBEmpty() bool {
+	return len(p.db.Entries) == 0
+}
+
+// SearchLabel will return the password ids if the password labels contains the provide label
+func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]string, error) {
+	if p.isDBEmpty() {
 		return nil, errors.New("no passwords are available")
 	}
-	var searchResult []PasswordEntry
-	for _, e := range p.db.Entries {
-		if utils.StringSliceContains(label, e.Labels) {
-			searchResult = append(searchResult, e)
+	var ids []string
+	for key, val := range p.db.Labels {
+		if strings.Contains(key, label) {
+			ids = append(ids, val...)
 		}
 	}
-	return searchResult, nil
+	uniqueIDs := uniqueStringSlice(ids)
+	return uniqueIDs, nil
+}
+
+func (p *PasswordRepository) assignLabels(id string, labels []string) {
+	for _,val := range labels {
+		if p.isLabelExists(val) {
+			p.db.Labels[val]= append(p.db.Labels[val], id)
+		} else {
+			p.db.Labels[val] = []string{id}
+		}
+	}
+}
+
+func uniqueStringSlice(input []string) []string {
+	u := make([]string, 0, len(input))
+	m := make(map[string]struct{})
+	for _, val := range input {
+		if _, ok := m[val]; !ok {
+			m[val] = struct{}{}
+			u = append(u, val)
+		}
+	}
+	return u
 }
 
 // InitPasswordRepo initializes the Password repository
 func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
-	config, err := config2.Configuration()
+	conf, err := config.Configuration()
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get configuration")
 	}
 	eFac := &encrypt.Factory{
-		ID: config.EncryptorID,
+		ID: conf.EncryptorID,
 	}
 	fSpec := &fileio.File{
-		Path: config.PasswordFilePath,
+		Path: conf.PasswordFilePath,
 	}
 	rawDb, err := loadPasswordDBFile(mPassword, eFac.GetEncryptor(), fSpec)
 	if err != nil {

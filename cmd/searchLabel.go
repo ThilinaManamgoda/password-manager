@@ -50,13 +50,9 @@ var searchLabelCmd = &cobra.Command{
 		}
 
 		label := args[0]
-		passwordEntries, err := passwordRepo.SearchLabel(label, showPass)
-		if len(passwordEntries) != 0 {
-			var idList []string
-			for _, val := range passwordEntries {
-				idList = append(idList, val.ID)
-			}
-			sID, _ := inputs.PromptForSelect("Choose", idList)
+		passwordIDs, err := passwordRepo.SearchLabel(label, showPass)
+		if len(passwordIDs) != 0 {
+			sID, _ := inputs.PromptForSelect("Choose", passwordIDs)
 			err := passwordRepo.GetPassword(sID, showPass)
 			if err != nil {
 				return errors.Wrapf(err, "cannot get password for ID: %s", sID)
