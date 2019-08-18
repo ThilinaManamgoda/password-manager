@@ -1,7 +1,7 @@
 // Copyright © 2019 Thilina Manamgoda
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this fileio except in compliance with the License.
+// you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -82,12 +82,12 @@ func isFirstDBInitialize(db []byte) bool {
 	return len(db) == 0
 }
 
-func (p *PasswordRepository) savePasswordDB(passwordDB *PasswordDB, masterPassword string) error {
-	passwordDBJSON, err := json.Marshal(passwordDB)
+func (p *PasswordRepository) savePasswordDB() error {
+	passwordDBJSON, err := json.Marshal(p.db)
 	if err != nil {
 		return errors.Wrap(err, "cannot marshal the password db")
 	}
-	encryptedData, err := p.encryptor.Encrypt(passwordDBJSON, masterPassword)
+	encryptedData, err := p.encryptor.Encrypt(passwordDBJSON, p.mPassword)
 	if err != nil {
 		return errors.Wrap(err, "cannot encrypt password db")
 	}
@@ -115,7 +115,7 @@ func (p *PasswordRepository) Add(id, uN, password string, labels []string) error
 		Password: password,
 		Labels:   labels,
 	})
-	err := p.savePasswordDB(passwordDB, p.mPassword)
+	err := p.savePasswordDB()
 	if err != nil {
 		return errors.Wrap(err, "cannot save passoword")
 	}
@@ -151,7 +151,7 @@ func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
 	}
 	err := clipboard.WriteAll(result[0].Password)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "cannot write to clip board")
 	}
 	return nil
 }
@@ -165,7 +165,7 @@ func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]PasswordE
 	var result []PasswordEntry
 	gojsonq.New().JSONString(string(passwordDB)).From("entries").WhereContains("id", id).Out(&result)
 	if isResultEmpty(result) {
-		return nil, errors.New("No entries")
+		return nil, errors.New("cannot find any match")
 	}
 	return result, nil
 }

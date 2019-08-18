@@ -1,7 +1,7 @@
 // Copyright © 2019 Thilina Manamgoda
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this fileio except in compliance with the License.
+// you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-// Package fileio handles the interaction with files
+// Package file handles the interaction with files
 package fileio
 
 import (
@@ -39,7 +39,7 @@ func (p *File) Read() ([]byte, error) {
 	return data, nil
 }
 
-// Write method writes data to the fileio
+// Write method writes data to the file
 func (p *File) Write(data []byte) error {
 	err := ioutil.WriteFile(p.Path, data, 0640)
 	if err != nil {

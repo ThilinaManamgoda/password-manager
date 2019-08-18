@@ -1,7 +1,7 @@
 // Copyright © 2019 Thilina Manamgoda
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this fileio except in compliance with the License.
+// you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -51,7 +51,7 @@ func testReadFileFailedFunc() func(t *testing.T) {
 		}
 		_, err := p.Read()
 		if pathErr, ok := err.(*os.PathError); ok {
-			assert.Equal(t, "open : no such fileio or directory", pathErr.Error())
+			assert.Equal(t, "open : no such file or directory", pathErr.Error())
 		} else {
 			t.Error(err)
 		}

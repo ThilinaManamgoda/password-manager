@@ -1,6 +1,7 @@
 # Go parameters
 
 TOOL_VERSION=0.9.1
+GENERATE_DOC=false
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
@@ -13,7 +14,7 @@ GOFMT=$(GOCMD) fmt
 
 TEST_PKGS=./pkg/...
 FMT_PKGS=./cmd/... ./pkg/...
-LDFLAGS=-X github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSION)
+LDFLAGS=-X github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSION) -X github.com/ThilinaManamgoda/password-manager/cmd.IsGenerateDoc=$(GENERATE_DOC)
 
 all: clean deps lint unit-test build
 

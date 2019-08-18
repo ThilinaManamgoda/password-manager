@@ -1,7 +1,7 @@
 // Copyright © 2019 NAME HERE <EMAIL ADDRESS>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this fileio except in compliance with the License.
+// you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -14,7 +14,9 @@
 
 package main
 
-import "github.com/ThilinaManamgoda/password-manager/cmd"
+import (
+	"github.com/ThilinaManamgoda/password-manager/cmd"
+)
 
 func main() {
 	cmd.Execute()
