@@ -16,29 +16,24 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/password-manager/pkg/passwords"
-	"github.com/password-manager/pkg/utils"
+	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
+	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 
 	"github.com/spf13/cobra"
 )
 
-// searchIdCmd represents the searchId command
-var searchIdCmd = &cobra.Command{
-	Use:   "searchId",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+// searchIDCmd represents the searchId command
+var searchIDCmd = &cobra.Command{
+	Use:   "searchId [ID]",
+	Short: "Search Password with ID",
+	Long:  `You can use either complete or part of ID for searching`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if ! utils.IsArgSValid(args) {
+		if !utils.IsArgSValid(args) {
 			return errors.New("Please give a ID")
 		}
 		searchID := args[0]
-		if ! utils.IsArgValid(searchID) {
+		if !utils.IsArgValid(searchID) {
 			return errors.New(fmt.Sprintf("Invalid argument: %s", searchID))
 		}
 		mPassword, err := utils.GetFlagStringVal(cmd, MasterPassword)
@@ -56,7 +51,7 @@ to quickly create a Cobra application.`,
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
 		}
 
-		if ! utils.IsArgSValid(args) {
+		if !utils.IsArgSValid(args) {
 			return errors.New("Please give a ID")
 		}
 
@@ -65,14 +60,13 @@ to quickly create a Cobra application.`,
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 
-
 		passwordEntries, err := passwordRepo.SearchID(searchID, showPass)
 		if err != nil {
 			return errors.Wrapf(err, "cannot search ID")
 		}
 
 		if len(passwordEntries) != 0 {
-			var idList [] string
+			var idList []string
 			for _, val := range passwordEntries {
 				idList = append(idList, val.ID)
 			}
@@ -89,16 +83,16 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(searchIdCmd)
+	rootCmd.AddCommand(searchIDCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// searchIdCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// searchIDCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// searchIdCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	searchIdCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
+	// searchIDCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	searchIDCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
 }

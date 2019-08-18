@@ -18,9 +18,9 @@ package passwords
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ThilinaManamgoda/password-manager/pkg/encrypt"
+	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
-	"github.com/password-manager/pkg/encrypt"
-	"github.com/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 	"github.com/thedevsaddam/gojsonq"
 )
@@ -53,7 +53,7 @@ func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *utils.File) ([
 		return nil, errors.Wrap(err, "cannot read password db file")
 	}
 	// initialize the Password db for the first time
-	if ! utils.IsValidByteSlice(encryptedData) {
+	if !utils.IsValidByteSlice(encryptedData) {
 		emptyArray := encryptedData
 		return emptyArray, nil
 	}
@@ -135,7 +135,7 @@ func isResultEmpty(result []PasswordEntry) bool {
 // GetPassword method retrieve password entry from Password db
 func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
 	passwordDB := p.rawPasswordDB
-	if ! utils.IsValidByteSlice(passwordDB) {
+	if !utils.IsValidByteSlice(passwordDB) {
 		return errors.New("no passwords are available")
 	}
 	var result []PasswordEntry
@@ -153,9 +153,10 @@ func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
 	return nil
 }
 
+// SearchID will return the password entries if the password ID contains the provide key
 func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]PasswordEntry, error) {
 	passwordDB := p.rawPasswordDB
-	if ! utils.IsValidByteSlice(passwordDB) {
+	if !utils.IsValidByteSlice(passwordDB) {
 		return nil, errors.New("no passwords are available")
 	}
 	var result []PasswordEntry
@@ -166,6 +167,7 @@ func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]PasswordE
 	return result, nil
 }
 
+// SearchLabel will return the password entries if the password labels contains the provide label
 func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]PasswordEntry, error) {
 	if len(p.db.Entries) == 0 {
 		return nil, errors.New("no passwords are available")
@@ -179,7 +181,6 @@ func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]Pas
 	return searchResult, nil
 }
 
-
 // InitPasswordRepo initializes the Password repository
 func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
 	config, err := utils.Configuration()
@@ -192,7 +193,7 @@ func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
 	file := &utils.File{
 		Path: config.PasswordFilePath,
 	}
-	rawDb, err:= loadPasswordDBFile(mPassword, eFac.GetEncryptor(), file)
+	rawDb, err := loadPasswordDBFile(mPassword, eFac.GetEncryptor(), file)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get Raw PasswordDB")
 	}

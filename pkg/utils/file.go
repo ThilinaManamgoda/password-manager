@@ -19,7 +19,7 @@ import (
 	"os"
 )
 
-// Path struct represent a file
+// File struct represent a file
 type File struct {
 	Path string
 }
@@ -39,7 +39,7 @@ func (p *File) Read() ([]byte, error) {
 
 // Write method writes data to the file
 func (p *File) Write(data []byte) error {
-	err := ioutil.WriteFile(p.Path, data,0640 )
+	err := ioutil.WriteFile(p.Path, data, 0640)
 	if err != nil {
 		return err
 	}

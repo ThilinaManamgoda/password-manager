@@ -15,9 +15,9 @@
 // Package encrypt holds required functionality for encryption and decryption
 package encrypt
 
-import "github.com/password-manager/pkg/utils"
+import "github.com/ThilinaManamgoda/password-manager/pkg/utils"
 
-// encryptor interface exposes functions for encrypt/decrypt
+// Encryptor interface exposes functions for encrypt/decrypt
 type Encryptor interface {
 	Encrypt(data []byte, passphrase string) ([]byte, error)
 	Decrypt(data []byte, passphrase string) ([]byte, error)

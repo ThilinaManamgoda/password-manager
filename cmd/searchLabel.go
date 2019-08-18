@@ -16,8 +16,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/password-manager/pkg/passwords"
-	"github.com/password-manager/pkg/utils"
+	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
+	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 
 	"github.com/spf13/cobra"
@@ -25,20 +25,15 @@ import (
 
 // searchLabelCmd represents the searchLabel command
 var searchLabelCmd = &cobra.Command{
-	Use:   "search-label",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	RunE: func(cmd *cobra.Command, args []string)error {
-		if ! utils.IsArgSValid(args) {
+	Use:   "search-label [ID]",
+	Short: "Search Password with Label",
+	Long:  `You can use either complete or part of Label for searching`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if !utils.IsArgSValid(args) {
 			return errors.New("Please give label")
 		}
 		label := args[0]
-		if ! utils.IsArgValid(label) {
+		if !utils.IsArgValid(label) {
 			return errors.New(fmt.Sprintf("Invalid argument: %s", label))
 		}
 		mPassword, err := utils.GetFlagStringVal(cmd, MasterPassword)
@@ -63,7 +58,7 @@ to quickly create a Cobra application.`,
 
 		passwordEntries, err := passwordRepo.SearchLabel(label, showPass)
 		if len(passwordEntries) != 0 {
-			var idList [] string
+			var idList []string
 			for _, val := range passwordEntries {
 				idList = append(idList, val.ID)
 			}

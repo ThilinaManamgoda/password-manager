@@ -2,7 +2,6 @@
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  */
 
-
 package utils
 
 import (
@@ -24,7 +23,7 @@ func testReadFileSuccessFunc() func(t *testing.T) {
 			t.Error(err)
 		}
 		p := &File{
-			Path: filepath.Join(wDir,"../../test/test_read_file_success"),
+			Path: filepath.Join(wDir, "../../test/test_read_file_success"),
 		}
 		result, err := p.Read()
 		if err != nil {
@@ -39,8 +38,8 @@ func testReadFileFailedFunc() func(t *testing.T) {
 		p := &File{
 			Path: "",
 		}
-		_, err :=p.Read()
-		if pathErr, ok := err.(*os.PathError); ok{
+		_, err := p.Read()
+		if pathErr, ok := err.(*os.PathError); ok {
 			assert.Equal(t, "open : no such file or directory", pathErr.Error())
 		} else {
 			t.Error(err)

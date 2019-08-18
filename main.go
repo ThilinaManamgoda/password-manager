@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/password-manager/cmd"
+import "github.com/ThilinaManamgoda/password-manager/cmd"
 
 func main() {
 	cmd.Execute()

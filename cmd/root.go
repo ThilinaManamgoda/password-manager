@@ -26,13 +26,17 @@ import (
 
 var cfgFile string
 
+// tool version. Should be initialized at build time
+var Version string
+
 // InteractiveMode flag
-const InteractiveMode  = "interactive"
+const InteractiveMode = "interactive"
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "password-manager",
 	Short: "A local Password Manager",
-	Long: `A local password manager`,
+	Long:  `A local password manager`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -59,6 +63,8 @@ func init() {
 	//addCmd.Flags().StringP(mPassword, "m", "", "Master password")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
+	rootCmd.Version = Version
+	//rootCmd.SetVersionTemplate("0.9.0")
 }
 
 // initConfig reads in config file and ENV variables if set.

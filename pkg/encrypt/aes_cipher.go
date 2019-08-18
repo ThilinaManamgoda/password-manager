@@ -22,7 +22,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"github.com/password-manager/pkg/utils"
+	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"io"
 )
 
@@ -38,10 +38,10 @@ func createHash(key string) string {
 
 // Encrypt method encrypts the given data
 func (a *AESEncryptor) Encrypt(data []byte, passphrase string) ([]byte, error) {
-	if ! utils.IsPasswordValid(passphrase) {
+	if !utils.IsPasswordValid(passphrase) {
 		return nil, errors.New("invalid password")
 	}
-	if ! utils.IsValidByteSlice(data) {
+	if !utils.IsValidByteSlice(data) {
 		return nil, errors.New("invalid content")
 	}
 	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
@@ -59,10 +59,10 @@ func (a *AESEncryptor) Encrypt(data []byte, passphrase string) ([]byte, error) {
 
 // Decrypt method decrypts the given data
 func (a *AESEncryptor) Decrypt(data []byte, passphrase string) ([]byte, error) {
-	if ! utils.IsPasswordValid(passphrase) {
+	if !utils.IsPasswordValid(passphrase) {
 		return nil, errors.New("invalid password")
 	}
-	if ! utils.IsValidByteSlice(data) {
+	if !utils.IsValidByteSlice(data) {
 		return nil, errors.New("invalid content")
 	}
 	key := []byte(createHash(passphrase))

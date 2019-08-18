@@ -5,7 +5,7 @@
 package encrypt
 
 import (
-	"github.com/password-manager/pkg/utils"
+	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"gotest.tools/assert"
 	"os"
 	"path/filepath"

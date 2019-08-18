@@ -73,8 +73,7 @@ func TestGetFlagBoolVal(t *testing.T) {
 
 func testGetFlagBoolValSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		cmd := &cobra.Command{
-		}
+		cmd := &cobra.Command{}
 		cmd.Flags().BoolP("param", "p", false, "Test parameter")
 		result, err := GetFlagBoolVal(cmd, "param")
 		if err != nil {
@@ -86,8 +85,7 @@ func testGetFlagBoolValSuccessFunc() func(t *testing.T) {
 
 func testGetFlagBoolValFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		cmd := &cobra.Command{
-		}
+		cmd := &cobra.Command{}
 		_, err := GetFlagBoolVal(cmd, "param")
 		if err == nil {
 			t.Error("Expecting an error")
@@ -102,8 +100,7 @@ func TestGetFlagStringVal(t *testing.T) {
 
 func testGetFlagStringValSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		cmd := &cobra.Command{
-		}
+		cmd := &cobra.Command{}
 		cmd.Flags().StringP("param", "p", "DEFAULT_VAL", "Test parameter")
 		result, err := GetFlagStringVal(cmd, "param")
 		if err != nil {
@@ -115,8 +112,7 @@ func testGetFlagStringValSuccessFunc() func(t *testing.T) {
 
 func testGetFlagStringValFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		cmd := &cobra.Command{
-		}
+		cmd := &cobra.Command{}
 		_, err := GetFlagStringVal(cmd, "param")
 		if err == nil {
 			t.Error("Expecting an error")
@@ -131,8 +127,7 @@ func TestGetFlagStringArrayVal(t *testing.T) {
 
 func testGetFlagStringArrayValSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		cmd := &cobra.Command{
-		}
+		cmd := &cobra.Command{}
 		cmd.Flags().StringArrayP("param", "p", []string{"a", "b"}, "Test parameter")
 		result, err := GetFlagStringArrayVal(cmd, "param")
 		if err != nil {
@@ -145,8 +140,7 @@ func testGetFlagStringArrayValSuccessFunc() func(t *testing.T) {
 
 func testGetFlagStringArrayValFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		cmd := &cobra.Command{
-		}
+		cmd := &cobra.Command{}
 		_, err := GetFlagStringArrayVal(cmd, "param")
 		if err == nil {
 			t.Error("Expecting an error")
@@ -201,3 +195,19 @@ func testIsArgValidFailedFunc() func(t *testing.T) {
 	}
 }
 
+func TestStringSliceContains(t *testing.T) {
+	t.Run("SuccessTest", testStringSliceContainsSuccessFunc())
+	t.Run("FailedTest", testStringSliceContainsFailedFunc())
+}
+
+func testStringSliceContainsSuccessFunc() func(t *testing.T) {
+	return func(t *testing.T) {
+		assert.Equal(t, true, StringSliceContains("test", []string{"test"}))
+	}
+}
+
+func testStringSliceContainsFailedFunc() func(t *testing.T) {
+	return func(t *testing.T) {
+		assert.Equal(t, false, StringSliceContains("invalid-key", []string{"test"}))
+	}
+}

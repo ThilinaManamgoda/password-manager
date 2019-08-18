@@ -15,8 +15,8 @@
 package cmd
 
 import (
-	"github.com/password-manager/pkg/passwords"
-	"github.com/password-manager/pkg/utils"
+	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
+	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"strings"
@@ -29,13 +29,13 @@ const (
 	Password = "password"
 	// Labels flag
 	Labels = "labels"
-	// mPassword flag
+	// MasterPassword flag
 	MasterPassword = "masterPassword"
 	// ID flag
 	ID = "id"
-	// cannot prompt for
+	// ErrMSGCannotPrompt contains error msg
 	ErrMSGCannotPrompt = "cannot prompt for %s"
-	// cannot get inputs
+	// ErrMsgCannotGetInput contains error msg
 	ErrMsgCannotGetInput = "cannot get input"
 )
 
@@ -45,10 +45,10 @@ var addCmd = &cobra.Command{
 	Short: "Add a new password",
 	Long:  `Add a new password`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if ! utils.IsArgSValid(args) {
+		if !utils.IsArgSValid(args) {
 			return errors.New("invalid argument")
 		}
-		if ! utils.IsArgValid(args[0]) {
+		if !utils.IsArgValid(args[0]) {
 			return errors.New("invalid ID")
 		}
 		id := args[0]
@@ -151,9 +151,8 @@ func promptForLabels() ([]string, error) {
 	l := strings.Split(lInput, ",")
 	if len(l) == 0 {
 		return nil, nil
-	} else {
-		return l, nil
 	}
+	return l, nil
 }
 
 func promptForMPassword() (string, error) {

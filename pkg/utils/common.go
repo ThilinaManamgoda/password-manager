@@ -132,7 +132,7 @@ func PromptForSelect(l string, items []string) (string, error) {
 	return result, err
 }
 
-//
+// StringSliceContains check whether the specified key is in the String slice
 func StringSliceContains(key string, s []string) bool {
 	for _, v := range s {
 		if key == v {
