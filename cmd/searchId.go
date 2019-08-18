@@ -16,8 +16,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
-	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 
 	"github.com/spf13/cobra"
@@ -28,15 +28,16 @@ var searchIDCmd = &cobra.Command{
 	Use:   "searchId [ID]",
 	Short: "Search Password with ID",
 	Long:  `You can use either complete or part of ID for searching`,
+	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if !utils.IsArgSValid(args) {
+		if !inputs.IsValidSingleArg(args) {
 			return errors.New("Please give a ID")
 		}
 		searchID := args[0]
-		if !utils.IsArgValid(searchID) {
+		if !inputs.IsArgValid(searchID) {
 			return errors.New(fmt.Sprintf("Invalid argument: %s", searchID))
 		}
-		mPassword, err := utils.GetFlagStringVal(cmd, MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, MasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, mPassword)
 		}
@@ -46,12 +47,12 @@ var searchIDCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		showPass, err := utils.GetFlagBoolVal(cmd, ShowPassword)
+		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
 		if err != nil {
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
 		}
 
-		if !utils.IsArgSValid(args) {
+		if !inputs.IsValidSingleArg(args) {
 			return errors.New("Please give a ID")
 		}
 
@@ -70,7 +71,7 @@ var searchIDCmd = &cobra.Command{
 			for _, val := range passwordEntries {
 				idList = append(idList, val.ID)
 			}
-			sID, _ := utils.PromptForSelect("Choose", idList)
+			sID, _ := inputs.PromptForSelect("Choose", idList)
 			err := passwordRepo.GetPassword(sID, showPass)
 			if err != nil {
 				return errors.Wrapf(err, "cannot get password for ID: %s", sID)

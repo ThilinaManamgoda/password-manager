@@ -15,9 +15,8 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
-	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -35,13 +34,10 @@ var getCmd = &cobra.Command{
 	Use:   "get [ID]",
 	Short: "Get a password",
 	Long:  `Get a password`,
-	Args:  cobra.ExactArgs(1),
+	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		id := args[0]
-		if !utils.IsArgValid(id) {
-			return errors.New(fmt.Sprintf("invalid argument: %s", id))
-		}
-		mPassword, err := utils.GetFlagStringVal(cmd, MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, MasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, mPassword)
 		}
@@ -51,7 +47,7 @@ var getCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		showPass, err := utils.GetFlagBoolVal(cmd, ShowPassword)
+		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
 		if err != nil {
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
 		}

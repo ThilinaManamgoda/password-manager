@@ -15,8 +15,8 @@
 package cmd
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
-	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"strings"
@@ -45,15 +45,15 @@ var addCmd = &cobra.Command{
 	Short: "Add a new password",
 	Long:  `Add a new password`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if !utils.IsArgSValid(args) {
+		if !inputs.IsValidSingleArg(args) {
 			return errors.New("invalid argument")
 		}
-		if !utils.IsArgValid(args[0]) {
+		if !inputs.IsArgValid(args[0]) {
 			return errors.New("invalid ID")
 		}
 		id := args[0]
 
-		isInteractiveMode, err := utils.GetFlagBoolVal(cmd, InteractiveMode)
+		isInteractiveMode, err := inputs.GetFlagBoolVal(cmd, InteractiveMode)
 		if err != nil {
 			return err
 		}
@@ -83,22 +83,22 @@ var addCmd = &cobra.Command{
 }
 
 func inputFromFlags(cmd *cobra.Command, uN, password, mPassword *string, labels *[]string) error {
-	uNVal, err := utils.GetFlagStringVal(cmd, Username)
+	uNVal, err := inputs.GetFlagStringVal(cmd, Username)
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotGetFlag, Username)
 	}
 	*uN = uNVal
-	passwordVal, err := utils.GetFlagStringVal(cmd, Password)
+	passwordVal, err := inputs.GetFlagStringVal(cmd, Password)
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
 	}
 	*password = passwordVal
-	labelsVal, err := utils.GetFlagStringArrayVal(cmd, Labels)
+	labelsVal, err := inputs.GetFlagStringArrayVal(cmd, Labels)
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotGetFlag, Labels)
 	}
 	*labels = labelsVal
-	mPasswordVal, err := utils.GetFlagStringVal(cmd, MasterPassword)
+	mPasswordVal, err := inputs.GetFlagStringVal(cmd, MasterPassword)
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotGetFlag, MasterPassword)
 	}
@@ -137,14 +137,14 @@ func promptForUsername() (string, error) {
 		}
 		return nil
 	}
-	return utils.PromptForString("Username: ", validate)
+	return inputs.PromptForString("Username: ", validate)
 }
 
 func promptForLabels() ([]string, error) {
 	validate := func(input string) error {
 		return nil
 	}
-	lInput, err := utils.PromptForString("Labels", validate)
+	lInput, err := inputs.PromptForString("Labels", validate)
 	if err != nil {
 		return nil, nil
 	}
@@ -162,7 +162,7 @@ func promptForMPassword() (string, error) {
 		}
 		return nil
 	}
-	return utils.PromptForPassword("Master password: ", validate)
+	return inputs.PromptForPassword("Master password: ", validate)
 }
 
 func promptForPassword() (string, error) {
@@ -172,7 +172,7 @@ func promptForPassword() (string, error) {
 		}
 		return nil
 	}
-	return utils.PromptForPassword("Password: ", validate)
+	return inputs.PromptForPassword("Password: ", validate)
 }
 
 func init() {

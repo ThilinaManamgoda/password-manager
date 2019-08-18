@@ -16,8 +16,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
-	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/pkg/errors"
 
 	"github.com/spf13/cobra"
@@ -29,14 +29,14 @@ var searchLabelCmd = &cobra.Command{
 	Short: "Search Password with Label",
 	Long:  `You can use either complete or part of Label for searching`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if !utils.IsArgSValid(args) {
+		if !inputs.IsValidSingleArg(args) {
 			return errors.New("Please give label")
 		}
 		label := args[0]
-		if !utils.IsArgValid(label) {
+		if !inputs.IsArgValid(label) {
 			return errors.New(fmt.Sprintf("Invalid argument: %s", label))
 		}
-		mPassword, err := utils.GetFlagStringVal(cmd, MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, MasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, mPassword)
 		}
@@ -46,7 +46,7 @@ var searchLabelCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		showPass, err := utils.GetFlagBoolVal(cmd, ShowPassword)
+		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
 		if err != nil {
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
 		}
@@ -62,7 +62,7 @@ var searchLabelCmd = &cobra.Command{
 			for _, val := range passwordEntries {
 				idList = append(idList, val.ID)
 			}
-			sID, _ := utils.PromptForSelect("Choose", idList)
+			sID, _ := inputs.PromptForSelect("Choose", idList)
 			err := passwordRepo.GetPassword(sID, showPass)
 			if err != nil {
 				return errors.Wrapf(err, "cannot get password for ID: %s", sID)

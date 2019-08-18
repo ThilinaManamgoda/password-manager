@@ -18,7 +18,7 @@ LDFLAGS=-X github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSI
 all: clean deps lint unit-test build
 
 build:
-	$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_NAME) -v
+		$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_NAME) -v
 
 unit-test:
 		$(GOTEST) -v $(TEST_PKGS)
@@ -32,7 +32,7 @@ clean:
 		rm -f $(BINARY_NAME)
 
 fmt:
-	$(GOFMT) $(FMT_PKGS)
+		$(GOFMT) $(FMT_PKGS)
 
 run:
 		$(GOBUILD) -o $(BINARY_NAME) -v ./...

@@ -5,7 +5,7 @@
 package encrypt
 
 import (
-	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
+	"github.com/ThilinaManamgoda/password-manager/pkg/file"
 	"gotest.tools/assert"
 	"os"
 	"path/filepath"
@@ -54,7 +54,7 @@ func testDecryptSuccessFunc() func(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		p := &utils.File{
+		p := &file.Spec{
 			Path: filepath.Join(wDir, "../../test/test_decrypt_success"),
 		}
 		a := &AESEncryptor{}

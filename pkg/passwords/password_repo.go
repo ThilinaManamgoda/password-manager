@@ -18,7 +18,9 @@ package passwords
 import (
 	"encoding/json"
 	"fmt"
+	config2 "github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/encrypt"
+	"github.com/ThilinaManamgoda/password-manager/pkg/file"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
 	"github.com/pkg/errors"
@@ -44,10 +46,10 @@ type PasswordRepository struct {
 	mPassword     string
 	rawPasswordDB []byte
 	db            *PasswordDB
-	file          *utils.File
+	file          *file.Spec
 }
 
-func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *utils.File) ([]byte, error) {
+func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *file.Spec) ([]byte, error) {
 	encryptedData, err := f.Read()
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot read password db file")
@@ -183,14 +185,14 @@ func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]Pas
 
 // InitPasswordRepo initializes the Password repository
 func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
-	config, err := utils.Configuration()
+	config, err := config2.Configuration()
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get configuration")
 	}
 	eFac := &encrypt.Factory{
 		ID: config.EncryptorID,
 	}
-	file := &utils.File{
+	file := &file.Spec{
 		Path: config.PasswordFilePath,
 	}
 	rawDb, err := loadPasswordDBFile(mPassword, eFac.GetEncryptor(), file)

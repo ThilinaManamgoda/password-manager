@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package utils
+// Package file handles the interaction with files
+package file
 
 import (
 	"io/ioutil"
 	"os"
 )
 
-// File struct represent a file
-type File struct {
+// Spec struct represent a file
+type Spec struct {
 	Path string
 }
 
 // Read method reads the file
-func (p *File) Read() ([]byte, error) {
+func (p *Spec) Read() ([]byte, error) {
 	f, err := os.OpenFile(p.Path, os.O_CREATE|os.O_RDONLY, 0640)
 	if err != nil {
 		return nil, err
@@ -38,7 +39,7 @@ func (p *File) Read() ([]byte, error) {
 }
 
 // Write method writes data to the file
-func (p *File) Write(data []byte) error {
+func (p *Spec) Write(data []byte) error {
 	err := ioutil.WriteFile(p.Path, data, 0640)
 	if err != nil {
 		return err

@@ -2,7 +2,7 @@
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  */
 
-package utils
+package file
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ func testReadFileSuccessFunc() func(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		p := &File{
+		p := &Spec{
 			Path: filepath.Join(wDir, "../../test/test_read_file_success"),
 		}
 		result, err := p.Read()
@@ -35,7 +35,7 @@ func testReadFileSuccessFunc() func(t *testing.T) {
 
 func testReadFileFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		p := &File{
+		p := &Spec{
 			Path: "",
 		}
 		_, err := p.Read()
