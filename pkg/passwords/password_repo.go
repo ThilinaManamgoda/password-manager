@@ -20,7 +20,7 @@ import (
 	"fmt"
 	config2 "github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/encrypt"
-	"github.com/ThilinaManamgoda/password-manager/pkg/file"
+	"github.com/ThilinaManamgoda/password-manager/pkg/fileio"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
 	"github.com/pkg/errors"
@@ -46,10 +46,10 @@ type PasswordRepository struct {
 	mPassword     string
 	rawPasswordDB []byte
 	db            *PasswordDB
-	file          *file.Spec
+	file          *fileio.File
 }
 
-func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *file.Spec) ([]byte, error) {
+func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) ([]byte, error) {
 	encryptedData, err := f.Read()
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot read password db file")
@@ -192,10 +192,10 @@ func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
 	eFac := &encrypt.Factory{
 		ID: config.EncryptorID,
 	}
-	file := &file.Spec{
+	fSpec := &fileio.File{
 		Path: config.PasswordFilePath,
 	}
-	rawDb, err := loadPasswordDBFile(mPassword, eFac.GetEncryptor(), file)
+	rawDb, err := loadPasswordDBFile(mPassword, eFac.GetEncryptor(), fSpec)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get Raw PasswordDB")
 	}
@@ -208,7 +208,7 @@ func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
 		encryptor:     eFac.GetEncryptor(),
 		rawPasswordDB: rawDb,
 		db:            db,
-		file:          file,
+		file:          fSpec,
 	}
 	return passwordRepo, nil
 }

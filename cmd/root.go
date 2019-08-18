@@ -1,7 +1,7 @@
 // Copyright © 2019 NAME HERE <EMAIL ADDRESS>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use this fileio except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -57,7 +57,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "c", "config file (default is $HOME/.password-manager.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "c", "config fileio (default is $HOME/.password-manager.yaml)")
 	rootCmd.PersistentFlags().StringP(MasterPassword, "m", "", "Master password")
 	rootCmd.PersistentFlags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
 	//addCmd.Flags().StringP(mPassword, "m", "", "Master password")
@@ -67,10 +67,10 @@ func init() {
 	//rootCmd.SetVersionTemplate("0.9.0")
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig reads in config fileio and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
-		// Use config file from the flag.
+		// Use config fileio from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
@@ -87,8 +87,8 @@ func initConfig() {
 	viper.SetEnvPrefix("PASSWORD_MANAGER")
 	viper.AutomaticEnv() // read in environment variables that match
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	// If a config file is found, read it in.
+	// If a config fileio is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		fmt.Println("Using config fileio:", viper.ConfigFileUsed())
 	}
 }

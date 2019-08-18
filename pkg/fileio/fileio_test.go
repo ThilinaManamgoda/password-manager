@@ -2,7 +2,7 @@
  *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  */
 
-package file
+package fileio
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ func testReadFileSuccessFunc() func(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		p := &Spec{
+		p := &File{
 			Path: filepath.Join(wDir, "../../test/test_read_file_success"),
 		}
 		result, err := p.Read()
@@ -35,12 +35,12 @@ func testReadFileSuccessFunc() func(t *testing.T) {
 
 func testReadFileFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		p := &Spec{
+		p := &File{
 			Path: "",
 		}
 		_, err := p.Read()
 		if pathErr, ok := err.(*os.PathError); ok {
-			assert.Equal(t, "open : no such file or directory", pathErr.Error())
+			assert.Equal(t, "open : no such fileio or directory", pathErr.Error())
 		} else {
 			t.Error(err)
 		}

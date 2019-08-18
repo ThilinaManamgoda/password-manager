@@ -1,7 +1,7 @@
 // Copyright © 2019 NAME HERE <EMAIL ADDRESS>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use this fileio except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package file handles the interaction with files
-package file
+// Package fileio handles the interaction with files
+package fileio
 
 import (
 	"io/ioutil"
 	"os"
 )
 
-// Spec struct represent a file
-type Spec struct {
+// File struct represent a file
+type File struct {
 	Path string
 }
 
 // Read method reads the file
-func (p *Spec) Read() ([]byte, error) {
+func (p *File) Read() ([]byte, error) {
 	f, err := os.OpenFile(p.Path, os.O_CREATE|os.O_RDONLY, 0640)
 	if err != nil {
 		return nil, err
@@ -38,8 +38,8 @@ func (p *Spec) Read() ([]byte, error) {
 	return data, nil
 }
 
-// Write method writes data to the file
-func (p *Spec) Write(data []byte) error {
+// Write method writes data to the fileio
+func (p *File) Write(data []byte) error {
 	err := ioutil.WriteFile(p.Path, data, 0640)
 	if err != nil {
 		return err
