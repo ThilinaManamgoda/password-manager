@@ -44,15 +44,8 @@ var addCmd = &cobra.Command{
 	Use:   "add [ID]",
 	Short: "Add a new password",
 	Long:  `Add a new password`,
+	Args: inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if !inputs.IsValidSingleArg(args) {
-			return errors.New("invalid argument")
-		}
-		if !inputs.IsArgValid(args[0]) {
-			return errors.New("invalid ID")
-		}
-		id := args[0]
-
 		isInteractiveMode, err := inputs.GetFlagBoolVal(cmd, InteractiveMode)
 		if err != nil {
 			return err
@@ -74,6 +67,8 @@ var addCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
+
+		id := args[0]
 		err = passwordRepo.Add(id, uN, password, labels)
 		if err != nil {
 			return err

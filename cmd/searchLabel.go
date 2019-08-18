@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -28,14 +27,8 @@ var searchLabelCmd = &cobra.Command{
 	Use:   "search-label [ID]",
 	Short: "Search Password with Label",
 	Long:  `You can use either complete or part of Label for searching`,
+	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if !inputs.IsValidSingleArg(args) {
-			return errors.New("Please give label")
-		}
-		label := args[0]
-		if !inputs.IsArgValid(label) {
-			return errors.New(fmt.Sprintf("Invalid argument: %s", label))
-		}
 		mPassword, err := inputs.GetFlagStringVal(cmd, MasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, mPassword)
@@ -56,6 +49,7 @@ var searchLabelCmd = &cobra.Command{
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 
+		label := args[0]
 		passwordEntries, err := passwordRepo.SearchLabel(label, showPass)
 		if len(passwordEntries) != 0 {
 			var idList []string

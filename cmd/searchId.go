@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -30,13 +29,6 @@ var searchIDCmd = &cobra.Command{
 	Long:  `You can use either complete or part of ID for searching`,
 	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if !inputs.IsValidSingleArg(args) {
-			return errors.New("Please give a ID")
-		}
-		searchID := args[0]
-		if !inputs.IsArgValid(searchID) {
-			return errors.New(fmt.Sprintf("Invalid argument: %s", searchID))
-		}
 		mPassword, err := inputs.GetFlagStringVal(cmd, MasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, ErrMSGCannotGetFlag, mPassword)
@@ -61,6 +53,7 @@ var searchIDCmd = &cobra.Command{
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 
+		searchID := args[0]
 		passwordEntries, err := passwordRepo.SearchID(searchID, showPass)
 		if err != nil {
 			return errors.Wrapf(err, "cannot search ID")

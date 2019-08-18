@@ -16,7 +16,6 @@
 package inputs
 
 import (
-	"fmt"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -100,7 +99,7 @@ func HasProvidedValidID() func(cmd *cobra.Command, args []string) error {
 			return errors.New("Please give a valid ID")
 		}
 		if !IsArgValid(args[0]) {
-			return errors.New(fmt.Sprintf("invalid ID: %s", args[0]))
+			return errors.New("id cannot be empty")
 		}
 		return nil
 	}
