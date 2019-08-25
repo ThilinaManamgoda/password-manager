@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-// Package file handles the interaction with files
+// Package fileio handles the interaction with files
 package fileio
 
 import (

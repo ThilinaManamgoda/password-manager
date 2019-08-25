@@ -166,7 +166,7 @@ func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]string, e
 		return nil, errors.New("no passwords are available")
 	}
 	var result []string
-	for key, _ := range p.db.Entries {
+	for key := range p.db.Entries {
 		if strings.Contains(key, id) {
 			result = append(result, key)
 		}

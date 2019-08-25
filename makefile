@@ -1,7 +1,6 @@
 # Go parameters
 
-TOOL_VERSION=0.9.0
-GENERATE_DOC=false
+TOOL_VERSION=0.1.0
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
@@ -14,9 +13,12 @@ GOFMT=$(GOCMD) fmt
 
 TEST_PKGS=./pkg/...
 FMT_PKGS=./cmd/... ./pkg/...
-LDFLAGS=-X github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSION) -X github.com/ThilinaManamgoda/password-manager/cmd.IsGenerateDoc=$(GENERATE_DOC)
+LDFLAGS=-X github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSION)
 
 all: clean deps lint unit-test build-linux build-darwin build-windows
+
+build-doc:
+		$(GOBUILD) -tags doc  -o gen_doc -v
 
 build:
 		$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_NAME) -v
@@ -26,7 +28,7 @@ unit-test:
 
 lint:
 		$(GOGET) -u golang.org/x/lint/golint
-		$(GOLINT) $(PKGS)
+		$(GOLINT) $(FMT_PKGS)
 
 clean:
 		$(GOCLEAN)

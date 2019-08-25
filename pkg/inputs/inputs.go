@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-// Package input handles the user interactions
+// Package inputs handles the user interactions
 package inputs
 
 import (

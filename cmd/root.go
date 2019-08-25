@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra/doc"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
@@ -29,14 +26,13 @@ import (
 
 var cfgFile string
 
-// tool version. Should be initialized at build time
+// Version of the password manager. Should be initialized at build time
 var Version string
-var IsGenerateDoc string
 
 // InteractiveMode flag
 const InteractiveMode = "interactive"
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd represents the base command when called without any sub-commands
 var rootCmd = &cobra.Command{
 	Use:   "password-manager",
 	Short: "A local Password Manager",
@@ -46,18 +42,6 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if IsGenerateDoc == "true" {
-		wd, err:= os.Getwd()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		err = doc.GenMarkdownTree(rootCmd,path.Join(wd))
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	}
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -104,4 +88,9 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+// GetRootCMD returns the Root CMD struct
+func GetRootCMD() *cobra.Command {
+	return rootCmd
 }
