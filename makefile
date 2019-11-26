@@ -1,6 +1,6 @@
 # Go parameters
 
-TOOL_VERSION=0.2.0
+TOOL_VERSION=0.3.0
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean

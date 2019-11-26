@@ -1,4 +1,4 @@
-## password-manager searchId
+## password-manager search-id
 
 Search Password with ID
 
@@ -13,7 +13,7 @@ password-manager searchId [ID] [flags]
 ### Options
 
 ```
-  -h, --help        help for searchId
+  -h, --help        help for search-id
   -s, --show-pass   Print password to STDOUT
 ```
 

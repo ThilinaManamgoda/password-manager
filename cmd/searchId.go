@@ -25,7 +25,7 @@ import (
 
 // searchIDCmd represents the searchId command
 var searchIDCmd = &cobra.Command{
-	Use:   "searchId [ID]",
+	Use:   "search-id [ID]",
 	Short: "Search Password with ID",
 	Long:  `You can use either complete or part of ID for searching`,
 	Args:  inputs.HasProvidedValidID(),
