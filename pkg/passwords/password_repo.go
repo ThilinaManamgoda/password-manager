@@ -16,14 +16,17 @@
 package passwords
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	config "github.com/ThilinaManamgoda/password-manager/pkg/config"
+	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/encrypt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/fileio"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
 	"github.com/pkg/errors"
+	"io"
+	"os"
 	"strings"
 )
 
@@ -71,7 +74,7 @@ func loadPasswordDB(passwordDB []byte) (*PasswordDB, error) {
 	if isFirstDBInitialize(passwordDB) {
 		return &PasswordDB{
 			Entries: map[string]PasswordEntry{},
-			Labels: map[string][]string{},
+			Labels:  map[string][]string{},
 		}, nil
 	}
 	var db PasswordDB
@@ -101,25 +104,70 @@ func (p *PasswordRepository) savePasswordDB() error {
 	return nil
 }
 
-// Add method add new password entry to Password db
-func (p *PasswordRepository) Add(id, uN, password string, labels []string) error {
-	if id == "" {
-		return errors.New("invalid the ID")
+func (p *PasswordRepository) ImportFromCSV(csvFilePath string) error {
+	csvfile, err := os.Open(csvFilePath)
+	if err != nil {
+		return errors.Wrap(err, "Couldn't open the csv file")
 	}
-	passwordDBEntries := p.db.Entries
+	r := csv.NewReader(csvfile)
 
+	first := true
+	// Iterate through the records
+	for {
+		// Read each record from csv
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if first {
+			first = false
+			continue
+		}
+		id := record[0]
+		uN := record[1]
+		password := record[2]
+		labels := strings.Split(record[3], ",")
+
+		err = p.addPasswordToRepo(id, uN, password, labels)
+		if err != nil {
+			return err
+		}
+	}
+	err = p.savePasswordDB()
+	if err != nil {
+		return errors.Wrap(err, "cannot save passoword")
+	}
+	return nil
+}
+
+func (p *PasswordRepository) addPasswordToRepo(id, uN, password string, labels []string) error {
 	if p.isIDExists(id) {
 		return errors.New(fmt.Sprintf("ID: %s is already there !", id))
 	}
-
+	passwordDBEntries := p.db.Entries
 	passwordDBEntries[id] = PasswordEntry{
 		ID:       id,
 		Username: uN,
 		Password: password,
 	}
-
 	p.assignLabels(id, labels)
-	err := p.savePasswordDB()
+	return nil
+}
+
+// Add method add new password entry to Password db
+func (p *PasswordRepository) Add(id, uN, password string, labels []string) error {
+	if id == "" {
+		return errors.New("invalid the ID")
+	}
+	err := p.addPasswordToRepo(id, uN, password, labels)
+	if err != nil {
+		return err
+	}
+
+	err = p.savePasswordDB()
 	if err != nil {
 		return errors.Wrap(err, "cannot save passoword")
 	}
@@ -197,9 +245,9 @@ func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]str
 }
 
 func (p *PasswordRepository) assignLabels(id string, labels []string) {
-	for _,val := range labels {
+	for _, val := range labels {
 		if p.isLabelExists(val) {
-			p.db.Labels[val]= append(p.db.Labels[val], id)
+			p.db.Labels[val] = append(p.db.Labels[val], id)
 		} else {
 			p.db.Labels[val] = []string{id}
 		}
