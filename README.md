@@ -1,9 +1,5 @@
 # password-manager
 
-
-# build
-[![Build Status](https://jenkins.maanadev.xyz/buildStatus/icon?job=Password-Manager)](https://jenkins.maanadev.xyz/job/Password-Manager/)
-
 A local Password Manager
 
 ### Synopsis
@@ -25,4 +21,7 @@ A local password manager
 * [password-manager get](password-manager_get.md)	 - Get a password
 * [password-manager search-label](password-manager_search-label.md)	 - Search Password with Label
 * [password-manager searchId](password-manager_searchId.md)	 - Search Password with ID
+* [password-manager import](password-manager_import.md)	 - Import passwords
+
+
 
