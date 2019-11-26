@@ -22,6 +22,7 @@ A local password manager
 * [password-manager search-label](password-manager_search-label.md)	 - Search Password with Label
 * [password-manager searchId](password-manager_searchId.md)	 - Search Password with ID
 * [password-manager import](password-manager_import.md)	 - Import passwords
+* [password-manager remove](password-manager_remove.md)	 - Remove a password
 
 
 

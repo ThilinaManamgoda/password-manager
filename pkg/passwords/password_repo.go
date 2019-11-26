@@ -37,6 +37,15 @@ type PasswordEntry struct {
 	Password string `json:"password"`
 }
 
+var (
+	ErrorInvalidID = func(id string) error {
+		return errors.New(fmt.Sprintf("Invalid ID:  %s", id))
+	}
+	ErrorCannotSavePasswordDB =func(err error) error {
+		return errors.Wrap(err, "cannot save password")
+	}
+)
+
 // PasswordDB struct represents password db
 type PasswordDB struct {
 	Entries map[string]PasswordEntry `json:"entries"`
@@ -138,7 +147,7 @@ func (p *PasswordRepository) ImportFromCSV(csvFilePath string) error {
 	}
 	err = p.savePasswordDB()
 	if err != nil {
-		return errors.Wrap(err, "cannot save passoword")
+		return ErrorCannotSavePasswordDB(err)
 	}
 	return nil
 }
@@ -193,7 +202,7 @@ func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
 	var result PasswordEntry
 	result, ok := passwordDB[id]
 	if !ok {
-		return errors.New(fmt.Sprintf("Invalid ID:  %s", id))
+		return ErrorInvalidID(id)
 	}
 	fmt.Println(fmt.Sprintf("Username: %s", result.Username))
 	if showPassword {
@@ -252,6 +261,21 @@ func (p *PasswordRepository) assignLabels(id string, labels []string) {
 			p.db.Labels[val] = []string{id}
 		}
 	}
+}
+
+func (p *PasswordRepository) Remove(id string) error {
+	if p.isDBEmpty() {
+		return errors.New("no passwords are available")
+	}
+	if ! p.isIDExists(id) {
+		return ErrorInvalidID(id)
+	}
+	delete(p.db.Entries, id)
+	err := p.savePasswordDB()
+	if err != nil {
+		return ErrorCannotSavePasswordDB(err)
+	}
+	return nil
 }
 
 func uniqueStringSlice(input []string) []string {
