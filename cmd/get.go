@@ -22,12 +22,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ShowPassword flag
 const (
 	// ShowPassword flag
 	ShowPassword = "show-pass"
-	// ErrMSGCannotGetFlag message
-
 )
 
 // getCmd represents the get command

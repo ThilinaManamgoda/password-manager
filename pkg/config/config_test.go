@@ -28,7 +28,7 @@ func TestConfiguration(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, defaultConf.PasswordFilePath, result.PasswordFilePath)
+	assert.Equal(t, defaultConf.PasswordFilePath, result.PasswordDBFilePath)
 	assert.Equal(t, defaultConf.EncryptorID, result.EncryptorID)
 }
 

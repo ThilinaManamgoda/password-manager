@@ -9,9 +9,7 @@ A local password manager
 ### Options
 
 ```
-      --config string           config file (default is $HOME/.password-manager.yaml) (default "c")
   -h, --help                    help for password-manager
-  -i, --interactive             Enable interactive mode
   -m, --masterPassword string   Master password
 ```
 

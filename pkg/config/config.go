@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // Package config holds the functionality for configuration
 package config
 
@@ -21,21 +20,44 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"os"
 	"path/filepath"
+	"strings"
+)
+
+const (
+	FileType               = "yaml"
+	EnvPrefix              = "PM"
+	ErrMsgUnableToReadConf = "Unable to load configuration file %s"
+	FilePathEnv            = "PM_CONF_PATH"
 )
 
 // Config struct represent the configuration for the tool
 type Config struct {
-	PasswordFilePath string `mapstructure:"passwordFilePath"`
-	EncryptorID      string `mapstructure:"encryptorID"`
+	PasswordDBFilePath string `mapstructure:"passwordDBFilePath"`
+	EncryptorID        string `mapstructure:"encryptorID"`
+}
+
+func Init(){
+	viper.SetConfigType(FileType)
+	viper.SetEnvPrefix(EnvPrefix)
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }
 
 // Configuration method loads the configuration
 func Configuration() (*Config, error) {
-	var config, err = defaultConf()
+	err := defaultConf()
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot load default config")
+		return nil, errors.Wrap(err, "cannot set default config")
 	}
+
+	err = loadConfigFile()
+	if err != nil {
+		return nil, err
+	}
+
+	config := &Config{}
 	err = viper.Unmarshal(config)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot unmarshal the configuration")
@@ -43,14 +65,23 @@ func Configuration() (*Config, error) {
 	return config, nil
 }
 
-func defaultConf() (*Config, error) {
-	home, err := homedir.Dir()
-	if err != nil {
-		return nil, errors.Wrap(err, "cannot retrieve Home directory path")
+func loadConfigFile() error {
+	confFile, exists := os.LookupEnv(FilePathEnv)
+	if exists {
+		viper.SetConfigFile(confFile)
+		if err := viper.ReadInConfig(); err != nil {
+			return errors.Wrapf(err, ErrMsgUnableToReadConf, confFile)
+		}
 	}
-	return &Config{
-		PasswordFilePath: filepath.Join(home, "/passwordDB"),
-		EncryptorID:      utils.AESEncryptID,
-	}, nil
+	return nil
 }
 
+func defaultConf() error {
+	home, err := homedir.Dir()
+	if err != nil {
+		return errors.Wrap(err, "cannot retrieve Home directory path")
+	}
+	viper.SetDefault("passwordDBFilePath", filepath.Join(home, "/passwordDB"))
+	viper.SetDefault("encryptorID", utils.AESEncryptID)
+	return nil
+}

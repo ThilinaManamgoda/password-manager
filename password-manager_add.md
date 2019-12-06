@@ -23,7 +23,6 @@ password-manager add [ID] [flags]
 ### Options inherited from parent commands
 
 ```
-      --config string           config file (default is $HOME/.password-manager.yaml) (default "c")
   -m, --masterPassword string   Master password
 ```
 

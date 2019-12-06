@@ -62,9 +62,13 @@ type PasswordRepository struct {
 }
 
 func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) ([]byte, error) {
+	if _, err := os.Stat(f.Path); err != nil {
+		return nil, errors.Wrap(err, "invalid password DB file path")
+	}
+
 	encryptedData, err := f.Read()
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot read password db file")
+		return nil, errors.Wrap(err, "cannot read password DB file")
 	}
 	// initialize the Password db for the first time
 	if !utils.IsValidByteSlice(encryptedData) {
@@ -324,7 +328,7 @@ func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
 		ID: conf.EncryptorID,
 	}
 	fSpec := &fileio.File{
-		Path: conf.PasswordFilePath,
+		Path: conf.PasswordDBFilePath,
 	}
 	rawDb, err := loadPasswordDBFile(mPassword, eFac.GetEncryptor(), fSpec)
 	if err != nil {
