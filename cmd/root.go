@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"os"
 	"strings"
 
@@ -55,8 +56,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "c", "config file (default is $HOME/.password-manager.yaml)")
-	rootCmd.PersistentFlags().StringP(MasterPassword, "m", "", "Master password")
-	rootCmd.PersistentFlags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
+	rootCmd.PersistentFlags().StringP(inputs.MasterPassword, "m", "", "Master password")
 	//addCmd.Flags().StringP(mPassword, "m", "", "Master password")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

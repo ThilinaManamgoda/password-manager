@@ -30,19 +30,19 @@ var searchIDCmd = &cobra.Command{
 	Long:  `You can use either complete or part of ID for searching`,
 	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		mPassword, err := inputs.GetFlagStringVal(cmd, MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, ErrMSGCannotGetFlag, mPassword)
+			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, mPassword)
 		}
 		if mPassword == "" {
-			mPassword, err = promptForMPassword()
+			mPassword, err = inputs.PromptForMPassword()
 			if err != nil {
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
 		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
 		if err != nil {
-			return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
+			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, inputs.Password)
 		}
 
 		if !inputs.IsValidSingleArg(args) {

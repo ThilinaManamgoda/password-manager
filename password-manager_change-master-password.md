@@ -1,20 +1,19 @@
-## password-manager import
+## password-manager change-master-password
 
-Import passwords
+Change Master password
 
 ### Synopsis
 
-Import passwords
+Change Master password
 
 ```
-password-manager import  [flags]
+password-manager change-master-password [flags]
 ```
 
 ### Options
 
 ```
-  -f, --csv-file string   Import passwords
-  -h, --help              help for import
+  -h, --help   help for change-master-password
 ```
 
 ### Options inherited from parent commands

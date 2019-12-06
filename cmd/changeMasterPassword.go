@@ -1,4 +1,4 @@
-// Copyright © 2019 Thilina Manamgoda
+// Copyright © 2019 NAME HERE <EMAIL ADDRESS>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package cmd
 
 import (
@@ -22,17 +21,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ShowPassword flag
-const (
-	// ShowPassword flag
-	CSVFile = "csv-file"
-)
-
-// getCmd represents the get command
-var importCmd = &cobra.Command{
-	Use:   "import ",
-	Short: "Import passwords",
-	Long:  `Import passwords`,
+// changeMasterPasswordCmd represents the changeMasterPassword command
+var changeMasterPasswordCmd = &cobra.Command{
+	Use:   "change-master-password",
+	Short: "Change Master password",
+	Long:  `Change Master password`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
 		if err != nil {
@@ -44,25 +37,24 @@ var importCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		csvFile, err := inputs.GetFlagStringVal(cmd, CSVFile)
+
+		newPassword, err := inputs.PromptForNewMPassword()
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, CSVFile)
+			return errors.Wrap(err, "cannot prompt for new password")
 		}
 
 		passwordRepo, err := passwords.InitPasswordRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
-
-		err = passwordRepo.ImportFromCSV(csvFile)
+		err = passwordRepo.ChangeMasterPassword(newPassword)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "cannot change Master Password")
 		}
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(importCmd)
-	importCmd.Flags().StringP(CSVFile, "f", "", "Import passwords")
+	rootCmd.AddCommand(changeMasterPasswordCmd)
 }

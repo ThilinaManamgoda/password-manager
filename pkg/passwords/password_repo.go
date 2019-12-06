@@ -41,7 +41,7 @@ var (
 	ErrorInvalidID = func(id string) error {
 		return errors.New(fmt.Sprintf("Invalid ID:  %s", id))
 	}
-	ErrorCannotSavePasswordDB =func(err error) error {
+	ErrorCannotSavePasswordDB = func(err error) error {
 		return errors.Wrap(err, "cannot save password")
 	}
 )
@@ -97,10 +97,34 @@ func isFirstDBInitialize(db []byte) bool {
 	return len(db) == 0
 }
 
-func (p *PasswordRepository) savePasswordDB() error {
+func (p *PasswordRepository) marshalPasswordDB() ([]byte, error) {
 	passwordDBJSON, err := json.Marshal(p.db)
 	if err != nil {
-		return errors.Wrap(err, "cannot marshal the password db")
+		return nil, errors.Wrap(err, "cannot marshal the password db")
+	}
+	return passwordDBJSON, nil
+}
+
+func (p *PasswordRepository) ChangeMasterPassword(newPassword string) error {
+	passwordDBJSON, err := p.marshalPasswordDB()
+	if err != nil {
+		return err
+	}
+	encryptedData, err := p.encryptor.Encrypt(passwordDBJSON, newPassword)
+	if err != nil {
+		return errors.Wrap(err, "cannot encrypt password db")
+	}
+	err = p.file.Write(encryptedData)
+	if err != nil {
+		return errors.Wrap(err, "cannot write to password db file")
+	}
+	return nil
+}
+
+func (p *PasswordRepository) savePasswordDB() error {
+	passwordDBJSON, err := p.marshalPasswordDB()
+	if err != nil {
+		return err
 	}
 	encryptedData, err := p.encryptor.Encrypt(passwordDBJSON, p.mPassword)
 	if err != nil {
