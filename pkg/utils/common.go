@@ -14,6 +14,8 @@
 
 package utils
 
+import "github.com/sethvargo/go-password/password"
+
 // AESEncryptID is the unique identifier for this encryptor
 const AESEncryptID = "AES"
 
@@ -30,4 +32,12 @@ func StringSliceContains(key string, s []string) bool {
 		}
 	}
 	return false
+}
+
+func GeneratePassword(len int) (string, error) {
+	password, err := password.Generate(len, len/2, len/2, false, false)
+	if err != nil {
+		return "", err
+	}
+	return password, nil
 }

@@ -52,6 +52,16 @@ func GetFlagStringVal(cmd *cobra.Command, flag string) (string, error) {
 	return val, nil
 }
 
+// GetFlagIntVal method returns the int flag value
+func GetFlagIntVal(cmd *cobra.Command, flag string) (int, error) {
+	val, err := cmd.Flags().GetInt(flag)
+	if err != nil {
+		return 0, err
+	}
+	return val, nil
+}
+
+
 // GetFlagBoolVal method returns the Boolean flag value
 func GetFlagBoolVal(cmd *cobra.Command, flag string) (bool, error) {
 	val, err := cmd.Flags().GetBool(flag)

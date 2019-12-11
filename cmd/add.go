@@ -22,8 +22,6 @@ import (
 )
 
 const (
-	// MasterPassword flag
-
 	// ID flag
 	ID = "id"
 )

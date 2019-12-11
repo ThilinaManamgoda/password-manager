@@ -252,6 +252,14 @@
   version = "v1.5.2"
 
 [[projects]]
+  digest = "1:044c51736e2688a3e4f28f72537f8a7b3f9c188fab4477d5334d92dfe2c07ed5"
+  name = "github.com/sethvargo/go-password"
+  packages = ["password"]
+  pruneopts = "UT"
+  revision = "07c3d521e892540e71469bb0312866130714c038"
+  version = "v0.1.3"
+
+[[projects]]
   digest = "1:bb495ec276ab82d3dd08504bbc0594a65de8c3b22c6f2aaa92d05b73fbf3a82e"
   name = "github.com/spf13/afero"
   packages = [
@@ -395,6 +403,7 @@
     "github.com/manifoldco/promptui",
     "github.com/mitchellh/go-homedir",
     "github.com/pkg/errors",
+    "github.com/sethvargo/go-password/password",
     "github.com/spf13/cobra",
     "github.com/spf13/cobra/doc",
     "github.com/spf13/viper",

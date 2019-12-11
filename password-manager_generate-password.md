@@ -1,19 +1,20 @@
-## password-manager change-master-password
+## password-manager generate-password
 
-Change Master password
+Generate a secure password
 
 ### Synopsis
 
-Change Master password
+Generate a secure password of 12(default) characters in length
 
 ```
-password-manager change-master-password [flags]
+password-manager generate-password [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for change-master-password
+  -h, --help         help for generate-password
+  -l, --length int   Length of the password (default 12)
 ```
 
 ### Options inherited from parent commands
