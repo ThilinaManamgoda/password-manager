@@ -15,12 +15,15 @@
 package config
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
+	"github.com/mitchellh/go-homedir"
 	"gotest.tools/assert"
+	"path/filepath"
 	"testing"
 )
 
 func TestConfiguration(t *testing.T) {
-	defaultConf, err := defaultConf()
+	err := defaultConf()
 	if err != nil {
 		t.Error(err)
 	}
@@ -28,7 +31,10 @@ func TestConfiguration(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, defaultConf.PasswordFilePath, result.PasswordDBFilePath)
-	assert.Equal(t, defaultConf.EncryptorID, result.EncryptorID)
+	home, err := homedir.Dir()
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, filepath.Join(home, "/passwordDB"), result.PasswordDBFilePath)
+	assert.Equal(t, utils.AESEncryptID, result.EncryptorID)
 }
-
