@@ -1,5 +1,5 @@
 on: push
-name: My cool Action
+name: Build
 jobs:
   checks:
     name: run
@@ -7,10 +7,12 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: run
-        uses: cedrickring/golang-action@1.4.1
-
-      - name: Run custom command
+      - name: Run test
         uses: cedrickring/golang-action@1.4.1
         with:
-          args: make build
+          args: make unit-test
+
+      - name: Bulid linux binary
+        uses: cedrickring/golang-action@1.4.1
+        with:
+          args: make build-linux
