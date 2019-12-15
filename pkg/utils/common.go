@@ -35,9 +35,9 @@ func StringSliceContains(key string, s []string) bool {
 }
 
 func GeneratePassword(len int) (string, error) {
-	password, err := password.Generate(len, len/2, len/2, false, false)
+	pass, err := password.Generate(len, len/4, len/4, false, false)
 	if err != nil {
 		return "", err
 	}
-	return password, nil
+	return pass, nil
 }
