@@ -1,20 +1,22 @@
-## password-manager get
+## password-manager change
 
-Get a password
+Change a password entry
 
 ### Synopsis
 
-Get a password
+Change a password entry
 
 ```
-password-manager get [ID] [flags]
+password-manager change [ID] [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help        help for get
-  -s, --show-pass   Print password to STDOUT
+  -h, --help              help for change
+  -i, --interactive       Enable interactive mode
+  -p, --password string   Password
+  -u, --username string   User Name
 ```
 
 ### Options inherited from parent commands

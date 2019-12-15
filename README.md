@@ -16,6 +16,7 @@ A local password manager
 ### SEE ALSO
 
 * [password-manager add](password-manager_add.md)	 - Add a new password
+* [password-manager change](password-manager_change.md)	 - Change a password entry
 * [password-manager change-master-password](password-manager_change-master-password.md)	 - Change Master password
 * [password-manager generate-password](password-manager_generate-password.md)	 - Generate a secure password
 * [password-manager get](password-manager_get.md)	 - Get a password

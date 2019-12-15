@@ -16,6 +16,7 @@
 package inputs
 
 import (
+	"fmt"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -36,8 +37,30 @@ const (
 	ErrMSGCannotGetFlag = "cannot get value of %s flag"
 
 	MasterPassword = "masterPassword"
+
+	MaxPasswordCharacters = 6
 )
 
+var (
+	userNameValidator = func(input string) error {
+		if len(input) < MaxPasswordCharacters {
+			return errors.New(fmt.Sprintf("username must have more than %d characters", MaxPasswordCharacters))
+		}
+		return nil
+	}
+
+	passwordValidator = func(errorMsg string) func(input string) error {
+		return func(input string) error {
+			if len(input) < MaxPasswordCharacters {
+				return errors.New(errorMsg)
+			}
+			return nil
+		}
+	}
+	masterPasswordValidator    = passwordValidator(fmt.Sprintf("master password must have more than %d characters", MaxPasswordCharacters))
+	userPasswordValidator      = passwordValidator(fmt.Sprintf("password must have more than %d characters", MaxPasswordCharacters))
+	newMasterPasswordValidator = passwordValidator(fmt.Sprintf("new master password must have more than %d characters", MaxPasswordCharacters))
+)
 // IsPasswordValid method check whether the Password is valid or not
 func IsPasswordValid(passphrase string) bool {
 	return passphrase != ""
@@ -60,7 +83,6 @@ func GetFlagIntVal(cmd *cobra.Command, flag string) (int, error) {
 	}
 	return val, nil
 }
-
 
 // GetFlagBoolVal method returns the Boolean flag value
 func GetFlagBoolVal(cmd *cobra.Command, flag string) (bool, error) {
@@ -99,6 +121,29 @@ func PromptForString(label string, validate promptui.ValidateFunc) (string, erro
 	return prompt.Run()
 }
 
+func PromptForStringWithDefault(label, defaultVal string, validate promptui.ValidateFunc) (string, error) {
+	prompt := promptui.Prompt{
+		Label:    label,
+		Validate: validate,
+		Default:  defaultVal,
+	}
+	return prompt.Run()
+}
+
+func PromptForUserPasswordWithDefault(defaultVal string)(string, error){
+	return PromptForPasswordWithDefault("Password ", defaultVal, userPasswordValidator)
+}
+
+func PromptForPasswordWithDefault(label, defaultVal string, validate promptui.ValidateFunc) (string, error) {
+	prompt := promptui.Prompt{
+		Label:    label,
+		Validate: validate,
+		Default:  defaultVal,
+		Mask:     '*',
+	}
+	return prompt.Run()
+}
+
 func promptForPassword(label string, validate promptui.ValidateFunc) (string, error) {
 	prompt := promptui.Prompt{
 		Label:    label,
@@ -132,26 +177,37 @@ func HasProvidedValidID() func(cmd *cobra.Command, args []string) error {
 }
 
 func FromFlags(cmd *cobra.Command, uN, password, mPassword *string, labels *[]string) error {
-	uNVal, err := GetFlagStringVal(cmd, Username)
-	if err != nil {
-		return errors.Wrapf(err, ErrMSGCannotGetFlag, Username)
+	if uN !=nil {
+		uNVal, err := GetFlagStringVal(cmd, Username)
+		if err != nil {
+			return errors.Wrapf(err, ErrMSGCannotGetFlag, Username)
+		}
+		*uN = uNVal
 	}
-	*uN = uNVal
-	passwordVal, err := GetFlagStringVal(cmd, Password)
-	if err != nil {
-		return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
+
+	if password != nil {
+		passwordVal, err := GetFlagStringVal(cmd, Password)
+		if err != nil {
+			return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
+		}
+		*password = passwordVal
 	}
-	*password = passwordVal
-	labelsVal, err := GetFlagStringArrayVal(cmd, Labels)
-	if err != nil {
-		return errors.Wrapf(err, ErrMSGCannotGetFlag, Labels)
+
+	if labels !=nil {
+		labelsVal, err := GetFlagStringArrayVal(cmd, Labels)
+		if err != nil {
+			return errors.Wrapf(err, ErrMSGCannotGetFlag, Labels)
+		}
+		*labels = labelsVal
 	}
-	*labels = labelsVal
-	mPasswordVal, err := GetFlagStringVal(cmd, MasterPassword)
-	if err != nil {
-		return errors.Wrapf(err, ErrMSGCannotGetFlag, MasterPassword)
+
+	if mPassword !=nil {
+		mPasswordVal, err := GetFlagStringVal(cmd, MasterPassword)
+		if err != nil {
+			return errors.Wrapf(err, ErrMSGCannotGetFlag, MasterPassword)
+		}
+		*mPassword = mPasswordVal
 	}
-	*mPassword = mPasswordVal
 	return nil
 }
 
@@ -180,13 +236,11 @@ func FromPrompt(uN, password, mPassword *string, labels *[]string) error {
 }
 
 func PromptForUsername() (string, error) {
-	validate := func(input string) error {
-		if len(input) < 3 {
-			return errors.New("username must have more than 3 characters")
-		}
-		return nil
-	}
-	return PromptForString("Username ", validate)
+	return PromptForString("Username ", userNameValidator)
+}
+
+func PromptForUsernameWithDefault(defaultVal string) (string, error) {
+	return PromptForStringWithDefault("Username ", defaultVal, userNameValidator)
 }
 
 func PromptForLabels() ([]string, error) {
@@ -204,34 +258,15 @@ func PromptForLabels() ([]string, error) {
 	return l, nil
 }
 
-
 func PromptForNewMPassword() (string, error) {
-	validate := func(input string) error {
-		if len(input) < 6 {
-			return errors.New("new master password must have more than 6 characters")
-		}
-		return nil
-	}
-	return promptForPassword("New Master password ", validate)
+	return promptForPassword("New Master password ", newMasterPasswordValidator)
 }
 
 func PromptForMPassword() (string, error) {
-	validate := func(input string) error {
-		if len(input) < 6 {
-			return errors.New("master password must have more than 6 characters")
-		}
-		return nil
-	}
-	return promptForPassword("Master password ", validate)
+	return promptForPassword("Master password ", masterPasswordValidator)
 }
 
 // PromptForPassword function prompt for password and returns the input
 func PromptForPassword() (string, error) {
-	validate := func(input string) error {
-		if len(input) < 6 {
-			return errors.New("password must have more than 6 characters")
-		}
-		return nil
-	}
-	return promptForPassword("Password ", validate)
+	return promptForPassword("Password ", userPasswordValidator)
 }

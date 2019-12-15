@@ -44,6 +44,7 @@ var (
 	ErrorCannotSavePasswordDB = func(err error) error {
 		return errors.Wrap(err, "cannot save password")
 	}
+	ErrorNoPasswords = errors.New("no passwords are available")
 )
 
 // PasswordDB struct represents password db
@@ -206,7 +207,7 @@ func (p *PasswordRepository) Add(id, uN, password string, labels []string) error
 
 	err = p.savePasswordDB()
 	if err != nil {
-		return errors.Wrap(err, "cannot save passoword")
+		return ErrorCannotSavePasswordDB(err)
 	}
 	return nil
 }
@@ -223,21 +224,16 @@ func (p *PasswordRepository) isLabelExists(l string) bool {
 
 // GetPassword method retrieve password entry from Password db
 func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
-	passwordDB := p.db.Entries
-	if len(passwordDB) == 0 {
-		return errors.New("no passwords are available")
+	passwordEntry, err := p.GetPasswordEntry(id)
+	if err != nil {
+		return err
 	}
-	var result PasswordEntry
-	result, ok := passwordDB[id]
-	if !ok {
-		return ErrorInvalidID(id)
-	}
-	fmt.Println(fmt.Sprintf("Username: %s", result.Username))
+	fmt.Println(fmt.Sprintf("Username: %s", passwordEntry.Username))
 	if showPassword {
-		fmt.Println(fmt.Sprintf("Password: %s", result.Password))
+		fmt.Println(fmt.Sprintf("Password: %s", passwordEntry.Password))
 	} else {
 		fmt.Println("Password is copied to the clip board")
-		err := clipboard.WriteAll(result.Password)
+		err := clipboard.WriteAll(passwordEntry.Password)
 		if err != nil {
 			return errors.Wrapf(err, "cannot write to clip board")
 		}
@@ -245,10 +241,36 @@ func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
 	return nil
 }
 
+func (p *PasswordRepository) GetPasswordEntry(id string) (PasswordEntry, error) {
+	passwordDB := p.db.Entries
+	if len(passwordDB) == 0 {
+		return PasswordEntry{}, ErrorNoPasswords
+	}
+	var result PasswordEntry
+	result, ok := passwordDB[id]
+	if !ok {
+		return PasswordEntry{}, ErrorInvalidID(id)
+	}
+	return result, nil
+}
+
+func (p *PasswordRepository) ChangePasswordEntry(id string, entry PasswordEntry) error {
+	passwordDB := p.db.Entries
+	if len(passwordDB) == 0 {
+		return ErrorNoPasswords
+	}
+	passwordDB[id] = entry
+	err := p.savePasswordDB()
+	if err != nil {
+		return ErrorCannotSavePasswordDB(err)
+	}
+	return nil
+}
+
 // SearchID will return the password entries if the password ID contains the provide key
 func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]string, error) {
 	if p.isDBEmpty() {
-		return nil, errors.New("no passwords are available")
+		return nil, ErrorNoPasswords
 	}
 	var result []string
 	for key := range p.db.Entries {
@@ -269,7 +291,7 @@ func (p *PasswordRepository) isDBEmpty() bool {
 // SearchLabel will return the password ids if the password labels contains the provide label
 func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]string, error) {
 	if p.isDBEmpty() {
-		return nil, errors.New("no passwords are available")
+		return nil, ErrorNoPasswords
 	}
 	var ids []string
 	for key, val := range p.db.Labels {
@@ -293,7 +315,7 @@ func (p *PasswordRepository) assignLabels(id string, labels []string) {
 
 func (p *PasswordRepository) Remove(id string) error {
 	if p.isDBEmpty() {
-		return errors.New("no passwords are available")
+		return ErrorNoPasswords
 	}
 	if ! p.isIDExists(id) {
 		return ErrorInvalidID(id)
