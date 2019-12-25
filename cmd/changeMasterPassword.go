@@ -29,7 +29,7 @@ var changeMasterPasswordCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, mPassword)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
 		if mPassword == "" {
 			mPassword, err = inputs.PromptForMPassword()
@@ -42,8 +42,12 @@ var changeMasterPasswordCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrap(err, "cannot prompt for new password")
 		}
+		newPassword, err = inputs.PromptForMPasswordSecondTime(newPassword)
+		if err != nil {
+			return errors.Wrap(err, "cannot prompt for new password again")
+		}
 
-		passwordRepo, err := passwords.InitPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

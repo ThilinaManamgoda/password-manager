@@ -12,7 +12,7 @@ jobs:
         with:
           args: make unit-test
 
-      - name: Bulid linux binary
+      - name: Bulid binary
         uses: cedrickring/golang-action@1.4.1
         with:
-          args: make build-linux
+          args: make build

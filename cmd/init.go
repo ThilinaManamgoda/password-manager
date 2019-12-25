@@ -15,35 +15,41 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
-	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
+	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
-const LengthFlag = "length"
-
-// generatePasswordCmd represents the generatePassword command
-var generatePasswordCmd = &cobra.Command{
-	Use:   "generate-password",
-	Short: "Generate a secure password",
-	Long:  `Generate a secure password of 12(default) characters in length`,
+// initCmd represents the init command
+var initCmd = &cobra.Command{
+	Use:   "init",
+	Short: "Initialize the Password Manager",
+	Long:  `Initialize the Password Manager for the first time`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		l, err := inputs.GetFlagIntVal(cmd, LengthFlag)
+		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, LengthFlag)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
-		password, err := utils.GeneratePassword(l)
+		if mPassword == "" {
+			mPassword, err = inputs.PromptForMPassword()
+			if err != nil {
+				return errors.Wrap(err, "cannot prompt for Master password")
+			}
+			mPassword, err = inputs.PromptForMPasswordSecondTime(mPassword)
+			if err != nil {
+				return errors.Wrap(err, "cannot prompt for Master password again")
+			}
+		}
+
+		err = passwords.InitPasswordRepo(mPassword)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "unable to initialize the password repository")
 		}
-		fmt.Println(password)
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(generatePasswordCmd)
-	generatePasswordCmd.Flags().IntP(LengthFlag, "l", 12, "Length of the password")
+	rootCmd.AddCommand(initCmd)
 }

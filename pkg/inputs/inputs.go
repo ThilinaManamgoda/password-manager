@@ -24,21 +24,16 @@ import (
 )
 
 const (
-	Username = "username"
-
-	Password = "password"
-
-	Labels = "labels"
-
-	ErrMSGCannotPrompt = "cannot prompt for %s"
-
-	ErrMsgCannotGetInput = "cannot get input"
-
-	ErrMSGCannotGetFlag = "cannot get value of %s flag"
-
-	MasterPassword = "masterPassword"
-
-	MaxPasswordCharacters = 6
+	Username                      = "username"
+	Password                      = "password"
+	Labels                        = "labels"
+	ErrMSGCannotPrompt            = "cannot prompt for %s"
+	ErrMsgCannotGetInput          = "cannot get input"
+	ErrMsgCannotGetFlag           = "cannot get value of %s flag"
+	ErrMsgMasterPasswordMissMatch = "master password doesn't match"
+	ErrMsgPasswordMissMatch       = "password doesn't match"
+	MasterPassword                = "masterPassword"
+	MaxPasswordCharacters         = 6
 )
 
 var (
@@ -57,10 +52,21 @@ var (
 			return nil
 		}
 	}
+
+	passwordEqualityValidator = func(currentPassword, errorMsg string) func(input string) error {
+		return func(input string) error {
+			if currentPassword != input {
+				return errors.New(errorMsg)
+			}
+			return nil
+		}
+	}
+
 	masterPasswordValidator    = passwordValidator(fmt.Sprintf("master password must have more than %d characters", MaxPasswordCharacters))
 	userPasswordValidator      = passwordValidator(fmt.Sprintf("password must have more than %d characters", MaxPasswordCharacters))
 	newMasterPasswordValidator = passwordValidator(fmt.Sprintf("new master password must have more than %d characters", MaxPasswordCharacters))
 )
+
 // IsPasswordValid method check whether the Password is valid or not
 func IsPasswordValid(passphrase string) bool {
 	return passphrase != ""
@@ -130,7 +136,7 @@ func PromptForStringWithDefault(label, defaultVal string, validate promptui.Vali
 	return prompt.Run()
 }
 
-func PromptForUserPasswordWithDefault(defaultVal string)(string, error){
+func PromptForUserPasswordWithDefault(defaultVal string) (string, error) {
 	return PromptForPasswordWithDefault("Password ", defaultVal, userPasswordValidator)
 }
 
@@ -177,10 +183,10 @@ func HasProvidedValidID() func(cmd *cobra.Command, args []string) error {
 }
 
 func FromFlags(cmd *cobra.Command, uN, password, mPassword *string, labels *[]string) error {
-	if uN !=nil {
+	if uN != nil {
 		uNVal, err := GetFlagStringVal(cmd, Username)
 		if err != nil {
-			return errors.Wrapf(err, ErrMSGCannotGetFlag, Username)
+			return errors.Wrapf(err, ErrMsgCannotGetFlag, Username)
 		}
 		*uN = uNVal
 	}
@@ -188,30 +194,30 @@ func FromFlags(cmd *cobra.Command, uN, password, mPassword *string, labels *[]st
 	if password != nil {
 		passwordVal, err := GetFlagStringVal(cmd, Password)
 		if err != nil {
-			return errors.Wrapf(err, ErrMSGCannotGetFlag, Password)
+			return errors.Wrapf(err, ErrMsgCannotGetFlag, Password)
 		}
 		*password = passwordVal
 	}
 
-	if labels !=nil {
+	if labels != nil {
 		labelsVal, err := GetFlagStringArrayVal(cmd, Labels)
 		if err != nil {
-			return errors.Wrapf(err, ErrMSGCannotGetFlag, Labels)
+			return errors.Wrapf(err, ErrMsgCannotGetFlag, Labels)
 		}
 		*labels = labelsVal
 	}
 
-	if mPassword !=nil {
+	if mPassword != nil {
 		mPasswordVal, err := GetFlagStringVal(cmd, MasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, ErrMSGCannotGetFlag, MasterPassword)
+			return errors.Wrapf(err, ErrMsgCannotGetFlag, MasterPassword)
 		}
 		*mPassword = mPasswordVal
 	}
 	return nil
 }
 
-func FromPrompt(uN, password, mPassword *string, labels *[]string) error {
+func FromPromptForAdd(uN, password, mPassword *string, labels *[]string) error {
 	uNVal, err := PromptForUsername()
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, "Username")
@@ -222,6 +228,12 @@ func FromPrompt(uN, password, mPassword *string, labels *[]string) error {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, "Password")
 	}
 	*password = passwordVal
+
+	passwordVal, err = PromptForPasswordSecondTime(passwordVal)
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotPrompt, "Again password")
+	}
+
 	labelsVal, err := PromptForLabels()
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, "Labels")
@@ -269,4 +281,14 @@ func PromptForMPassword() (string, error) {
 // PromptForPassword function prompt for password and returns the input
 func PromptForPassword() (string, error) {
 	return promptForPassword("Password ", userPasswordValidator)
+}
+
+// PromptForPasswordSecondTime function prompt for password for second time to validate and returns the input
+func PromptForPasswordSecondTime(currentPassword string) (string, error) {
+	return promptForPassword("Again password ", passwordEqualityValidator(currentPassword, ErrMsgPasswordMissMatch))
+}
+
+// PromptForMPasswordSecondTime function prompt for master password for second time to validate and returns the input
+func PromptForMPasswordSecondTime(currentPassword string) (string, error) {
+	return promptForPassword("Again Master password ", passwordEqualityValidator(currentPassword, ErrMsgMasterPasswordMissMatch))
 }

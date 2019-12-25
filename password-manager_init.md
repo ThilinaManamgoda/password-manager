@@ -1,20 +1,19 @@
-## password-manager search-id
+## password-manager init
 
-Search Password with ID
+Initialize the Password Manager
 
 ### Synopsis
 
-You can use either complete or part of ID for searching
+Initialize the Password Manager for the first time
 
 ```
-password-manager search-id [ID] [flags]
+password-manager init [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help        help for search-id
-  -s, --show-pass   Print password to STDOUT
+  -h, --help   help for init
 ```
 
 ### Options inherited from parent commands

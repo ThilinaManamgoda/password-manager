@@ -55,27 +55,33 @@ type PasswordDB struct {
 
 // PasswordRepository struct handles Password db
 type PasswordRepository struct {
-	encryptor     encrypt.Encryptor
-	mPassword     string
-	rawPasswordDB []byte
-	db            *PasswordDB
-	file          *fileio.File
+	encryptor encrypt.Encryptor
+	mPassword string
+	db        *PasswordDB
+	file      *fileio.File
+}
+
+func isPasswordRepoAlreadyInitialized(repoData []byte) bool {
+	return utils.IsValidByteSlice(repoData)
 }
 
 func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) ([]byte, error) {
-	if _, err := os.Stat(f.Path); err != nil {
-		return nil, errors.Wrap(err, "invalid password DB file path")
+	if exists, err := utils.IsFileExists(f.Path); err != nil {
+		return nil, errors.Wrap(err, "cannot load the password DB file")
+	} else {
+		if !exists {
+			return nil, errors.Wrap(err, "cannot find the password DB file")
+		}
 	}
-
 	encryptedData, err := f.Read()
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot read password DB file")
 	}
-	// initialize the Password db for the first time
-	if !utils.IsValidByteSlice(encryptedData) {
-		emptyArray := encryptedData
-		return emptyArray, nil
+
+	if !isPasswordRepoAlreadyInitialized(encryptedData) {
+		return nil, errors.New("password repository is not initialized")
 	}
+
 	decryptedData, err := e.Decrypt(encryptedData, mPassword)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot decrypt password db")
@@ -84,13 +90,6 @@ func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) (
 }
 
 func loadPasswordDB(passwordDB []byte) (*PasswordDB, error) {
-
-	if isFirstDBInitialize(passwordDB) {
-		return &PasswordDB{
-			Entries: map[string]PasswordEntry{},
-			Labels:  map[string][]string{},
-		}, nil
-	}
 	var db PasswordDB
 	if err := json.Unmarshal(passwordDB, &db); err != nil {
 		return &PasswordDB{}, errors.Wrapf(err, "cannot unmarshal password db")
@@ -103,7 +102,7 @@ func isFirstDBInitialize(db []byte) bool {
 }
 
 func (p *PasswordRepository) marshalPasswordDB() ([]byte, error) {
-	passwordDBJSON, err := json.Marshal(p.db)
+	passwordDBJSON, err := utils.MarshalData(p.db)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot marshal the password db")
 	}
@@ -340,8 +339,62 @@ func uniqueStringSlice(input []string) []string {
 	return u
 }
 
-// InitPasswordRepo initializes the Password repository
-func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
+// InitPasswordRepo initialize the Password repository.
+func InitPasswordRepo(mPassword string) error {
+	conf, err := config.Configuration()
+	if err != nil {
+		return errors.Wrapf(err, "cannot get configuration")
+	}
+	exists, err := utils.IsFileExists(conf.PasswordDBFilePath)
+	if err != nil {
+		return errors.Wrapf(err, "cannot initiate Password DB")
+	}
+
+	if !exists {
+		_, err = os.Create(conf.PasswordDBFilePath)
+		if err != nil {
+			return errors.Wrapf(err, "unable to create Password DB file")
+		}
+	}
+	f := &fileio.File{Path: conf.PasswordDBFilePath}
+	data, err := f.Read()
+	if err != nil {
+		return errors.New("cannot read password DB file")
+	}
+
+	if isPasswordRepoAlreadyInitialized(data) {
+		return errors.New("password repository is already initialized")
+	}
+
+	db := &PasswordDB{
+		Entries: map[string]PasswordEntry{},
+		Labels:  map[string][]string{},
+	}
+	passwordRepo := newPasswordRepository(db, mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
+	err = passwordRepo.savePasswordDB()
+	if err != nil {
+		return errors.Wrapf(err, "unable save password repository")
+	}
+	return nil
+}
+
+func newPasswordRepository(db *PasswordDB, mPassword, encryptorID, dbFilePath string) *PasswordRepository {
+	eFac := &encrypt.Factory{
+		ID: encryptorID,
+	}
+	fSpec := &fileio.File{
+		Path: dbFilePath,
+	}
+	return &PasswordRepository{
+		mPassword: mPassword,
+		encryptor: eFac.GetEncryptor(),
+		db:        db,
+		file:      fSpec,
+	}
+}
+
+// LoadPasswordRepo initializes the Password repository.
+func LoadPasswordRepo(mPassword string) (*PasswordRepository, error) {
 	conf, err := config.Configuration()
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get configuration")
@@ -361,11 +414,10 @@ func InitPasswordRepo(mPassword string) (*PasswordRepository, error) {
 		return nil, errors.Wrapf(err, "cannot get PasswordDB")
 	}
 	passwordRepo := &PasswordRepository{
-		mPassword:     mPassword,
-		encryptor:     eFac.GetEncryptor(),
-		rawPasswordDB: rawDb,
-		db:            db,
-		file:          fSpec,
+		mPassword: mPassword,
+		encryptor: eFac.GetEncryptor(),
+		db:        db,
+		file:      fSpec,
 	}
 	return passwordRepo, nil
 }
