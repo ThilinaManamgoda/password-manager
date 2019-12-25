@@ -17,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 	rootCmd := cmd.GetRootCMD()
-	err = doc.GenMarkdownTree(rootCmd,path.Join(wd))
+	err = doc.GenMarkdownTree(rootCmd,path.Join(path.Join(wd), "doc"))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
