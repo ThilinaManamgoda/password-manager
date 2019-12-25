@@ -31,7 +31,7 @@ var searchLabelCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, mPassword)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
 		if mPassword == "" {
 			mPassword, err = inputs.PromptForMPassword()
@@ -41,10 +41,10 @@ var searchLabelCmd = &cobra.Command{
 		}
 		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, inputs.Password)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.Password)
 		}
 
-		passwordRepo, err := passwords.InitPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

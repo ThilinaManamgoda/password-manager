@@ -14,10 +14,17 @@
 
 package utils
 
-import "github.com/sethvargo/go-password/password"
+import (
+	"encoding/json"
+	"errors"
+	"github.com/sethvargo/go-password/password"
+	"os"
+)
 
 // AESEncryptID is the unique identifier for this encryptor
 const AESEncryptID = "AES"
+
+var ErrPathIsADir = errors.New("path is a directory")
 
 // IsValidByteSlice method check whether the Slice is valid or not
 func IsValidByteSlice(data []byte) bool {
@@ -40,4 +47,26 @@ func GeneratePassword(len int) (string, error) {
 		return "", err
 	}
 	return pass, nil
+}
+
+func IsFileExists(filename string)(bool,error) {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	if info.IsDir() {
+		return false, ErrPathIsADir
+	}
+	return true, nil
+}
+
+func MarshalData(data interface{})([]byte, error){
+	marshaledData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	return marshaledData, nil
 }

@@ -37,7 +37,7 @@ var getCmd = &cobra.Command{
 		id := args[0]
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, mPassword)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
 		if mPassword == "" {
 			mPassword, err = inputs.PromptForMPassword()
@@ -47,10 +47,10 @@ var getCmd = &cobra.Command{
 		}
 		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, inputs.Password)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.Password)
 		}
 
-		passwordRepo, err := passwords.InitPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

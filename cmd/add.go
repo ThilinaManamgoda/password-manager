@@ -40,7 +40,7 @@ var addCmd = &cobra.Command{
 		var uN, password, mPassword string
 		var labels []string
 		if isInteractiveMode {
-			err := inputs.FromPrompt(&uN, &password, &mPassword, &labels)
+			err := inputs.FromPromptForAdd(&uN, &password, &mPassword, &labels)
 			if err != nil {
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
@@ -50,7 +50,7 @@ var addCmd = &cobra.Command{
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
 		}
-		passwordRepo, err := passwords.InitPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

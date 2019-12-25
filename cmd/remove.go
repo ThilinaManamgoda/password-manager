@@ -36,7 +36,7 @@ var removeCmd = &cobra.Command{
 		id := args[0]
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMSGCannotGetFlag, mPassword)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
 		if mPassword == "" {
 			mPassword, err = inputs.PromptForMPassword()
@@ -44,7 +44,7 @@ var removeCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		passwordRepo, err := passwords.InitPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
