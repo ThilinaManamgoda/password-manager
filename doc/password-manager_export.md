@@ -1,20 +1,20 @@
-## password-manager search-label
+## password-manager export
 
-Search Password with Label
+Export password repository to a file
 
 ### Synopsis
 
-You can use either complete or part of Label for searching
+This command can be used to export password repository to file
 
 ```
-password-manager search-label [ID] [flags]
+password-manager export [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help        help for search-label
-  -s, --show-pass   Print password to STDOUT
+  -f, --csv-file string   export passwords to a csv file
+  -h, --help              help for export
 ```
 
 ### Options inherited from parent commands

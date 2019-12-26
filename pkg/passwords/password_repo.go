@@ -16,7 +16,6 @@
 package passwords
 
 import (
-	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/config"
@@ -25,7 +24,6 @@ import (
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
 	"github.com/pkg/errors"
-	"io"
 	"os"
 	"strings"
 )
@@ -137,45 +135,6 @@ func (p *PasswordRepository) savePasswordDB() error {
 	err = p.file.Write(encryptedData)
 	if err != nil {
 		return errors.Wrap(err, "cannot write to password db file")
-	}
-	return nil
-}
-
-func (p *PasswordRepository) ImportFromCSV(csvFilePath string) error {
-	csvfile, err := os.Open(csvFilePath)
-	if err != nil {
-		return errors.Wrap(err, "Couldn't open the csv file")
-	}
-	r := csv.NewReader(csvfile)
-
-	first := true
-	// Iterate through the records
-	for {
-		// Read each record from csv
-		record, err := r.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
-		if first {
-			first = false
-			continue
-		}
-		id := record[0]
-		uN := record[1]
-		password := record[2]
-		labels := strings.Split(record[3], ",")
-
-		err = p.addPasswordToRepo(id, uN, password, labels)
-		if err != nil {
-			return err
-		}
-	}
-	err = p.savePasswordDB()
-	if err != nil {
-		return ErrorCannotSavePasswordDB(err)
 	}
 	return nil
 }
@@ -300,6 +259,20 @@ func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]str
 	}
 	uniqueIDs := uniqueStringSlice(ids)
 	return uniqueIDs, nil
+}
+
+// searchLabelsForID will return the list of labels for given ID
+func (p *PasswordRepository) searchLabelsForID(id string) ([]string, error) {
+	if p.isDBEmpty() {
+		return nil, ErrorNoPasswords
+	}
+	var labels []string
+	for key, val := range p.db.Labels {
+		if utils.StringSliceContains(id, val) {
+			labels = append(labels, key)
+		}
+	}
+	return labels, nil
 }
 
 func (p *PasswordRepository) assignLabels(id string, labels []string) {

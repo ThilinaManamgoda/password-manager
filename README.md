@@ -92,6 +92,7 @@ A local password manager
 * [password-manager search-label](doc/password-manager_search-label.md)	 - Search Password with Label
 * [password-manager search-id](doc/password-manager_search-id.md)	 - Search Password with ID
 * [password-manager import](doc/password-manager_import.md)	 - Import passwords
+* [password-manager export](doc/password-manager_export.md)	 - Export password repository to a file
 * [password-manager remove](doc/password-manager_remove.md)	 - Remove a password
 
 
