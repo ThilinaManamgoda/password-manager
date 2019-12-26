@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package cmd
 
 import (
@@ -27,7 +26,7 @@ import (
 // searchIDCmd represents the searchId command
 var searchIDCmd = &cobra.Command{
 	Use:   "search-id [ID]",
-	Short: "Search FlagPassword with ID",
+	Short: "Search Password with ID",
 	Long:  `You can use either complete or part of ID for searching`,
 	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -66,8 +65,11 @@ var searchIDCmd = &cobra.Command{
 		}
 
 		if len(passwordIDs) != 0 {
-			sID, _ := inputs.PromptForSelect("Choose", passwordIDs)
-			err := passwordRepo.GetPassword(sID, showPass)
+			sID, err := inputs.PromptForSelect("Choose", conf.SelectListSize, passwordIDs)
+			if err != nil {
+				return errors.Wrap(err, "cannot get prompt for select")
+			}
+			err = passwordRepo.GetPassword(sID, showPass)
 			if err != nil {
 				return errors.Wrapf(err, "cannot get password for ID: %s", sID)
 			}

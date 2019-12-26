@@ -58,7 +58,7 @@ var changeMasterPasswordCmd = &cobra.Command{
 		}
 		err = passwordRepo.ChangeMasterPassword(newPassword)
 		if err != nil {
-			return errors.Wrapf(err, "cannot change Master FlagPassword")
+			return errors.Wrapf(err, "cannot change Master Password")
 		}
 		return nil
 	},
