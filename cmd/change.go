@@ -42,7 +42,7 @@ var changeCmd = &cobra.Command{
 			}
 		}
 
-		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
@@ -72,7 +72,7 @@ var changeCmd = &cobra.Command{
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
 		}
-		newEntry := passwords.PasswordEntry{
+		newEntry := passwords.Entry{
 			ID:       id,
 			Username: uN,
 			Password: password,

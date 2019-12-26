@@ -28,34 +28,37 @@ import (
 	"strings"
 )
 
-// PasswordEntry struct represents entry in the password db
-type PasswordEntry struct {
+// Entry struct represents entry in the password db
+type Entry struct {
 	ID       string `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 var (
-	ErrorInvalidID = func(id string) error {
+	ErrInvalidID = func(id string) error {
 		return errors.New(fmt.Sprintf("Invalid ID:  %s", id))
 	}
-	ErrorCannotSavePasswordDB = func(err error) error {
+	ErrCannotSavePasswordDB = func(err error) error {
 		return errors.Wrap(err, "cannot save password")
 	}
-	ErrorNoPasswords = errors.New("no passwords are available")
+	ErrNoPasswords          = errors.New("no passwords are available")
+	ErrCannotFindMatchForID = func(id string) error {
+		return errors.New(fmt.Sprintf("cannot find any match for id %s", id))
+	}
 )
 
-// PasswordDB struct represents password db
-type PasswordDB struct {
-	Entries map[string]PasswordEntry `json:"entries"`
-	Labels  map[string][]string      `json:"labels"`
+// DB struct represents password db
+type DB struct {
+	Entries map[string]Entry    `json:"entries"`
+	Labels  map[string][]string `json:"labels"`
 }
 
-// PasswordRepository struct handles Password db
-type PasswordRepository struct {
+// Repository struct handles Password db
+type Repository struct {
 	encryptor encrypt.Encryptor
 	mPassword string
-	db        *PasswordDB
+	db        *DB
 	file      *fileio.File
 }
 
@@ -63,7 +66,7 @@ func isPasswordRepoAlreadyInitialized(repoData []byte) bool {
 	return utils.IsValidByteSlice(repoData)
 }
 
-func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) ([]byte, error) {
+func loadDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) ([]byte, error) {
 	if exists, err := utils.IsFileExists(f.Path); err != nil {
 		return nil, errors.Wrap(err, "cannot load the password DB file")
 	} else {
@@ -87,19 +90,15 @@ func loadPasswordDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) (
 	return decryptedData, nil
 }
 
-func loadPasswordDB(passwordDB []byte) (*PasswordDB, error) {
-	var db PasswordDB
+func loadDB(passwordDB []byte) (*DB, error) {
+	var db DB
 	if err := json.Unmarshal(passwordDB, &db); err != nil {
-		return &PasswordDB{}, errors.Wrapf(err, "cannot unmarshal password db")
+		return &DB{}, errors.Wrapf(err, "cannot unmarshal password db")
 	}
 	return &db, nil
 }
 
-func isFirstDBInitialize(db []byte) bool {
-	return len(db) == 0
-}
-
-func (p *PasswordRepository) marshalPasswordDB() ([]byte, error) {
+func (p *Repository) marshalDB() ([]byte, error) {
 	passwordDBJSON, err := utils.MarshalData(p.db)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot marshal the password db")
@@ -107,8 +106,8 @@ func (p *PasswordRepository) marshalPasswordDB() ([]byte, error) {
 	return passwordDBJSON, nil
 }
 
-func (p *PasswordRepository) ChangeMasterPassword(newPassword string) error {
-	passwordDBJSON, err := p.marshalPasswordDB()
+func (p *Repository) ChangeMasterPassword(newPassword string) error {
+	passwordDBJSON, err := p.marshalDB()
 	if err != nil {
 		return err
 	}
@@ -123,8 +122,8 @@ func (p *PasswordRepository) ChangeMasterPassword(newPassword string) error {
 	return nil
 }
 
-func (p *PasswordRepository) savePasswordDB() error {
-	passwordDBJSON, err := p.marshalPasswordDB()
+func (p *Repository) saveDB() error {
+	passwordDBJSON, err := p.marshalDB()
 	if err != nil {
 		return err
 	}
@@ -139,12 +138,12 @@ func (p *PasswordRepository) savePasswordDB() error {
 	return nil
 }
 
-func (p *PasswordRepository) addPasswordToRepo(id, uN, password string, labels []string) error {
+func (p *Repository) addPasswordEntryToRepo(id, uN, password string, labels []string) error {
 	if p.isIDExists(id) {
 		return errors.New(fmt.Sprintf("ID: %s is already there !", id))
 	}
-	passwordDBEntries := p.db.Entries
-	passwordDBEntries[id] = PasswordEntry{
+	entries := p.db.Entries
+	entries[id] = Entry{
 		ID:       id,
 		Username: uN,
 		Password: password,
@@ -154,34 +153,34 @@ func (p *PasswordRepository) addPasswordToRepo(id, uN, password string, labels [
 }
 
 // Add method add new password entry to Password db
-func (p *PasswordRepository) Add(id, uN, password string, labels []string) error {
+func (p *Repository) Add(id, uN, password string, labels []string) error {
 	if id == "" {
 		return errors.New("invalid the ID")
 	}
-	err := p.addPasswordToRepo(id, uN, password, labels)
+	err := p.addPasswordEntryToRepo(id, uN, password, labels)
 	if err != nil {
 		return err
 	}
 
-	err = p.savePasswordDB()
+	err = p.saveDB()
 	if err != nil {
-		return ErrorCannotSavePasswordDB(err)
+		return ErrCannotSavePasswordDB(err)
 	}
 	return nil
 }
 
-func (p *PasswordRepository) isIDExists(id string) bool {
+func (p *Repository) isIDExists(id string) bool {
 	_, ok := p.db.Entries[id]
 	return ok
 }
 
-func (p *PasswordRepository) isLabelExists(l string) bool {
+func (p *Repository) isLabelExists(l string) bool {
 	_, ok := p.db.Labels[l]
 	return ok
 }
 
 // GetPassword method retrieve password entry from Password db
-func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
+func (p *Repository) GetPassword(id string, showPassword bool) error {
 	passwordEntry, err := p.GetPasswordEntry(id)
 	if err != nil {
 		return err
@@ -199,36 +198,36 @@ func (p *PasswordRepository) GetPassword(id string, showPassword bool) error {
 	return nil
 }
 
-func (p *PasswordRepository) GetPasswordEntry(id string) (PasswordEntry, error) {
+func (p *Repository) GetPasswordEntry(id string) (Entry, error) {
 	passwordDB := p.db.Entries
 	if len(passwordDB) == 0 {
-		return PasswordEntry{}, ErrorNoPasswords
+		return Entry{}, ErrNoPasswords
 	}
-	var result PasswordEntry
+	var result Entry
 	result, ok := passwordDB[id]
 	if !ok {
-		return PasswordEntry{}, ErrorInvalidID(id)
+		return Entry{}, ErrInvalidID(id)
 	}
 	return result, nil
 }
 
-func (p *PasswordRepository) ChangePasswordEntry(id string, entry PasswordEntry) error {
+func (p *Repository) ChangePasswordEntry(id string, entry Entry) error {
 	passwordDB := p.db.Entries
 	if len(passwordDB) == 0 {
-		return ErrorNoPasswords
+		return ErrNoPasswords
 	}
 	passwordDB[id] = entry
-	err := p.savePasswordDB()
+	err := p.saveDB()
 	if err != nil {
-		return ErrorCannotSavePasswordDB(err)
+		return ErrCannotSavePasswordDB(err)
 	}
 	return nil
 }
 
 // SearchID will return the password entries if the password ID contains the provide key
-func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]string, error) {
+func (p *Repository) SearchID(id string, showPassword bool) ([]string, error) {
 	if p.isDBEmpty() {
-		return nil, ErrorNoPasswords
+		return nil, ErrNoPasswords
 	}
 	var result []string
 	for key := range p.db.Entries {
@@ -237,19 +236,19 @@ func (p *PasswordRepository) SearchID(id string, showPassword bool) ([]string, e
 		}
 	}
 	if len(result) == 0 {
-		return nil, errors.New("cannot find any match")
+		return nil, ErrCannotFindMatchForID(id)
 	}
 	return result, nil
 }
 
-func (p *PasswordRepository) isDBEmpty() bool {
+func (p *Repository) isDBEmpty() bool {
 	return len(p.db.Entries) == 0
 }
 
 // SearchLabel will return the password ids if the password labels contains the provide label
-func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]string, error) {
+func (p *Repository) SearchLabel(label string, showPassword bool) ([]string, error) {
 	if p.isDBEmpty() {
-		return nil, ErrorNoPasswords
+		return nil, ErrNoPasswords
 	}
 	var ids []string
 	for key, val := range p.db.Labels {
@@ -262,9 +261,9 @@ func (p *PasswordRepository) SearchLabel(label string, showPassword bool) ([]str
 }
 
 // searchLabelsForID will return the list of labels for given ID
-func (p *PasswordRepository) searchLabelsForID(id string) ([]string, error) {
+func (p *Repository) searchLabelsForID(id string) ([]string, error) {
 	if p.isDBEmpty() {
-		return nil, ErrorNoPasswords
+		return nil, ErrNoPasswords
 	}
 	var labels []string
 	for key, val := range p.db.Labels {
@@ -275,7 +274,7 @@ func (p *PasswordRepository) searchLabelsForID(id string) ([]string, error) {
 	return labels, nil
 }
 
-func (p *PasswordRepository) assignLabels(id string, labels []string) {
+func (p *Repository) assignLabels(id string, labels []string) {
 	for _, val := range labels {
 		if p.isLabelExists(val) {
 			p.db.Labels[val] = append(p.db.Labels[val], id)
@@ -285,17 +284,17 @@ func (p *PasswordRepository) assignLabels(id string, labels []string) {
 	}
 }
 
-func (p *PasswordRepository) Remove(id string) error {
+func (p *Repository) Remove(id string) error {
 	if p.isDBEmpty() {
-		return ErrorNoPasswords
+		return ErrNoPasswords
 	}
 	if ! p.isIDExists(id) {
-		return ErrorInvalidID(id)
+		return ErrInvalidID(id)
 	}
 	delete(p.db.Entries, id)
-	err := p.savePasswordDB()
+	err := p.saveDB()
 	if err != nil {
-		return ErrorCannotSavePasswordDB(err)
+		return ErrCannotSavePasswordDB(err)
 	}
 	return nil
 }
@@ -312,8 +311,8 @@ func uniqueStringSlice(input []string) []string {
 	return u
 }
 
-// InitPasswordRepo initialize the Password repository.
-func InitPasswordRepo(mPassword string) error {
+// InitRepo initialize the Password repository.
+func InitRepo(mPassword string) error {
 	conf, err := config.Configuration()
 	if err != nil {
 		return errors.Wrapf(err, "cannot get configuration")
@@ -339,26 +338,26 @@ func InitPasswordRepo(mPassword string) error {
 		return errors.New("password repository is already initialized")
 	}
 
-	db := &PasswordDB{
-		Entries: map[string]PasswordEntry{},
+	db := &DB{
+		Entries: map[string]Entry{},
 		Labels:  map[string][]string{},
 	}
-	passwordRepo := newPasswordRepository(db, mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
-	err = passwordRepo.savePasswordDB()
+	passwordRepo := newRepository(db, mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
+	err = passwordRepo.saveDB()
 	if err != nil {
 		return errors.Wrapf(err, "unable save password repository")
 	}
 	return nil
 }
 
-func newPasswordRepository(db *PasswordDB, mPassword, encryptorID, dbFilePath string) *PasswordRepository {
+func newRepository(db *DB, mPassword, encryptorID, dbFilePath string) *Repository {
 	eFac := &encrypt.Factory{
 		ID: encryptorID,
 	}
 	fSpec := &fileio.File{
 		Path: dbFilePath,
 	}
-	return &PasswordRepository{
+	return &Repository{
 		mPassword: mPassword,
 		encryptor: eFac.GetEncryptor(),
 		db:        db,
@@ -366,8 +365,8 @@ func newPasswordRepository(db *PasswordDB, mPassword, encryptorID, dbFilePath st
 	}
 }
 
-// LoadPasswordRepo initializes the Password repository.
-func LoadPasswordRepo(mPassword string) (*PasswordRepository, error) {
+// LoadRepo initializes the Password repository.
+func LoadRepo(mPassword string) (*Repository, error) {
 	conf, err := config.Configuration()
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get configuration")
@@ -378,15 +377,15 @@ func LoadPasswordRepo(mPassword string) (*PasswordRepository, error) {
 	fSpec := &fileio.File{
 		Path: conf.PasswordDBFilePath,
 	}
-	rawDb, err := loadPasswordDBFile(mPassword, eFac.GetEncryptor(), fSpec)
+	rawDb, err := loadDBFile(mPassword, eFac.GetEncryptor(), fSpec)
 	if err != nil {
-		return nil, errors.Wrapf(err, "cannot get Raw PasswordDB")
+		return nil, errors.Wrapf(err, "cannot get Raw DB")
 	}
-	db, err := loadPasswordDB(rawDb)
+	db, err := loadDB(rawDb)
 	if err != nil {
-		return nil, errors.Wrapf(err, "cannot get PasswordDB")
+		return nil, errors.Wrapf(err, "cannot get DB")
 	}
-	passwordRepo := &PasswordRepository{
+	passwordRepo := &Repository{
 		mPassword: mPassword,
 		encryptor: eFac.GetEncryptor(),
 		db:        db,

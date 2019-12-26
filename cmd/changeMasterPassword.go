@@ -47,7 +47,7 @@ var changeMasterPasswordCmd = &cobra.Command{
 			return errors.Wrap(err, "cannot prompt for new password again")
 		}
 
-		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
