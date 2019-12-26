@@ -42,7 +42,7 @@ var initCmd = &cobra.Command{
 			}
 		}
 
-		err = passwords.InitPasswordRepo(mPassword)
+		err = passwords.InitRepo(mPassword)
 		if err != nil {
 			return errors.Wrap(err, "unable to initialize the password repository")
 		}

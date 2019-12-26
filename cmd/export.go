@@ -41,7 +41,7 @@ var exportCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, CSVFile)
 		}
-		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}

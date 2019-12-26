@@ -29,7 +29,7 @@ import (
 
 const CSVSeparator = ","
 
-func (p *PasswordRepository) ImportFromCSV(csvFilePath string) error {
+func (p *Repository) ImportFromCSV(csvFilePath string) error {
 	csvFile, err := os.Open(csvFilePath)
 	if err != nil {
 		return errors.Wrap(err, "Couldn't open the csv file")
@@ -56,19 +56,19 @@ func (p *PasswordRepository) ImportFromCSV(csvFilePath string) error {
 		password := record[2]
 		labels := strings.Split(record[3], CSVSeparator)
 
-		err = p.addPasswordToRepo(id, uN, password, labels)
+		err = p.addPasswordEntryToRepo(id, uN, password, labels)
 		if err != nil {
 			return err
 		}
 	}
-	err = p.savePasswordDB()
+	err = p.saveDB()
 	if err != nil {
-		return ErrorCannotSavePasswordDB(err)
+		return ErrCannotSavePasswordDB(err)
 	}
 	return nil
 }
 
-func (p *PasswordRepository) ExportToCSV(csvFilePath string) error {
+func (p *Repository) ExportToCSV(csvFilePath string) error {
 	exists, err := utils.IsFileExists(csvFilePath)
 	if err != nil {
 		return errors.Wrapf(err, "cannot inspect the given CSV file path")

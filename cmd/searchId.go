@@ -49,7 +49,7 @@ var searchIDCmd = &cobra.Command{
 			return errors.New("Please give a ID")
 		}
 
-		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
+		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
