@@ -102,7 +102,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// changeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	changeCmd.Flags().StringP(inputs.FlagPassword, "p", "", "FlagPassword")
+	changeCmd.Flags().StringP(inputs.FlagPassword, "p", "", "Password")
 	changeCmd.Flags().StringP(inputs.FlagUsername, "u", "", "User Name")
 	changeCmd.Flags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
 

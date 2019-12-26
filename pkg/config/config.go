@@ -40,6 +40,7 @@ const (
 type Config struct {
 	PasswordDBFilePath string `mapstructure:"passwordDBFilePath"`
 	EncryptorID        string `mapstructure:"encryptorID"`
+	SelectListSize     int    `mapstructure:"selectListSize"`
 }
 
 // Init function configures the viper.
@@ -88,5 +89,6 @@ func defaultConf() error {
 	}
 	viper.SetDefault("passwordDBFilePath", filepath.Join(home, "/passwordDB"))
 	viper.SetDefault("encryptorID", utils.AESEncryptID)
+	viper.SetDefault("selectListSize", 5)
 	return nil
 }

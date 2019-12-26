@@ -181,10 +181,11 @@ func promptForPassword(label string, validate promptui.ValidateFunc) (string, er
 }
 
 // PromptForSelect start selection and return the selected value.
-func PromptForSelect(l string, items []string) (string, error) {
+func PromptForSelect(l string, size int, items []string) (string, error) {
 	prompt := promptui.Select{
 		Label: l,
 		Items: items,
+		Size:  size,
 	}
 	_, result, err := prompt.Run()
 	return result, err

@@ -71,8 +71,8 @@ var addCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addCmd)
-	addCmd.Flags().StringP(inputs.FlagPassword, "p", "", "FlagPassword")
+	addCmd.Flags().StringP(inputs.FlagPassword, "p", "", "Password")
 	addCmd.Flags().StringP(inputs.FlagUsername, "u", "", "User Name")
-	addCmd.Flags().StringArrayP(inputs.FlagLabels, "l", nil, "FlagLabels for the password entry")
+	addCmd.Flags().StringArrayP(inputs.FlagLabels, "l", nil, "Labels for the password entry")
 	addCmd.Flags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
 }
