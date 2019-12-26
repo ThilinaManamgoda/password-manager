@@ -285,10 +285,10 @@ func PromptForPassword() (string, error) {
 
 // PromptForPasswordSecondTime function prompt for password for second time to validate and returns the input
 func PromptForPasswordSecondTime(currentPassword string) (string, error) {
-	return promptForPassword("Again password ", passwordEqualityValidator(currentPassword, ErrMsgPasswordMissMatch))
+	return promptForPassword("Enter the Password again ", passwordEqualityValidator(currentPassword, ErrMsgPasswordMissMatch))
 }
 
 // PromptForMPasswordSecondTime function prompt for master password for second time to validate and returns the input
 func PromptForMPasswordSecondTime(currentPassword string) (string, error) {
-	return promptForPassword("Again Master password ", passwordEqualityValidator(currentPassword, ErrMsgMasterPasswordMissMatch))
+	return promptForPassword("Enter the Master Password again ", passwordEqualityValidator(currentPassword, ErrMsgMasterPasswordMissMatch))
 }
