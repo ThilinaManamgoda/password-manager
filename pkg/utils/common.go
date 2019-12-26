@@ -21,17 +21,18 @@ import (
 	"os"
 )
 
-// AESEncryptID is the unique identifier for this encryptor
+// AESEncryptID is the unique identifier for this encryptor.
 const AESEncryptID = "AES"
 
+// ErrPathIsADir represents an error.
 var ErrPathIsADir = errors.New("path is a directory")
 
-// IsValidByteSlice method check whether the Slice is valid or not
+// IsValidByteSlice method check whether the Slice is valid or not.
 func IsValidByteSlice(data []byte) bool {
 	return (data != nil) && (len(data) != 0)
 }
 
-// StringSliceContains check whether the specified key is in the String slice
+// StringSliceContains check whether the specified key is in the String slice.
 func StringSliceContains(key string, s []string) bool {
 	for _, v := range s {
 		if key == v {
@@ -41,6 +42,7 @@ func StringSliceContains(key string, s []string) bool {
 	return false
 }
 
+// GeneratePassword generates a password of given length.
 func GeneratePassword(len int) (string, error) {
 	pass, err := password.Generate(len, len/4, len/4, false, false)
 	if err != nil {
@@ -49,6 +51,7 @@ func GeneratePassword(len int) (string, error) {
 	return pass, nil
 }
 
+// IsFileExists checks whether the given file exists.
 func IsFileExists(filename string)(bool,error) {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -63,6 +66,7 @@ func IsFileExists(filename string)(bool,error) {
 	return true, nil
 }
 
+// MarshalData marshals the given struct to a byte array.
 func MarshalData(data interface{})([]byte, error){
 	marshaledData, err := json.Marshal(data)
 	if err != nil {

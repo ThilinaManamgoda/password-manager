@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -34,7 +35,7 @@ var importCmd = &cobra.Command{
 	Short: "Import passwords",
 	Long:  `Import passwords`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
@@ -49,7 +50,11 @@ var importCmd = &cobra.Command{
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, CSVFile)
 		}
 
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		conf, err := config.Configuration()
+		if err != nil {
+			return errors.Wrapf(err, "cannot get configuration")
+		}
+		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
 		if err != nil {
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}

@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -40,17 +41,21 @@ var addCmd = &cobra.Command{
 		var uN, password, mPassword string
 		var labels []string
 		if isInteractiveMode {
-			err := inputs.FromPromptForAdd(&uN, &password, &mPassword, &labels)
+			err := inputs.FromPromptForPasswordEntry(&uN, &password, &mPassword, &labels)
 			if err != nil {
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
 		} else {
-			err := inputs.FromFlags(cmd, &uN, &password, &mPassword, &labels)
+			err := inputs.FromFlagsForPasswordEntry(cmd, &uN, &password, &mPassword, &labels)
 			if err != nil {
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
 		}
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		conf, err := config.Configuration()
+		if err != nil {
+			return errors.Wrapf(err, "cannot get configuration")
+		}
+		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
@@ -66,8 +71,8 @@ var addCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addCmd)
-	addCmd.Flags().StringP(inputs.Password, "p", "", "Password")
-	addCmd.Flags().StringP(inputs.Username, "u", "", "User Name")
-	addCmd.Flags().StringArrayP(inputs.Labels, "l", nil, "Labels for the password entry")
+	addCmd.Flags().StringP(inputs.FlagPassword, "p", "", "FlagPassword")
+	addCmd.Flags().StringP(inputs.FlagUsername, "u", "", "User Name")
+	addCmd.Flags().StringArrayP(inputs.FlagLabels, "l", nil, "FlagLabels for the password entry")
 	addCmd.Flags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
 }

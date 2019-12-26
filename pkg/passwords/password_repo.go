@@ -366,16 +366,12 @@ func newRepository(db *DB, mPassword, encryptorID, dbFilePath string) *Repositor
 }
 
 // LoadRepo initializes the Password repository.
-func LoadRepo(mPassword string) (*Repository, error) {
-	conf, err := config.Configuration()
-	if err != nil {
-		return nil, errors.Wrapf(err, "cannot get configuration")
-	}
+func LoadRepo(mPassword, encryptorID, passwordDBFilePath string) (*Repository, error) {
 	eFac := &encrypt.Factory{
-		ID: conf.EncryptorID,
+		ID: encryptorID,
 	}
 	fSpec := &fileio.File{
-		Path: conf.PasswordDBFilePath,
+		Path: passwordDBFilePath,
 	}
 	rawDb, err := loadDBFile(mPassword, eFac.GetEncryptor(), fSpec)
 	if err != nil {
