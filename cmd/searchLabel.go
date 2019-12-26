@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -25,11 +26,11 @@ import (
 // searchLabelCmd represents the searchLabel command
 var searchLabelCmd = &cobra.Command{
 	Use:   "search-label [ID]",
-	Short: "Search Password with Label",
+	Short: "Search FlagPassword with Label",
 	Long:  `You can use either complete or part of Label for searching`,
 	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
@@ -41,10 +42,14 @@ var searchLabelCmd = &cobra.Command{
 		}
 		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.Password)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.FlagPassword)
 		}
 
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		conf, err := config.Configuration()
+		if err != nil {
+			return errors.Wrapf(err, "cannot get configuration")
+		}
+		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

@@ -31,7 +31,7 @@ const InteractiveMode = "interactive"
 // rootCmd represents the base command when called without any sub-commands
 var rootCmd = &cobra.Command{
 	Use:   "password-manager",
-	Short: "A local Password Manager",
+	Short: "A local FlagPassword Manager",
 	Long:  `A local password manager`,
 }
 
@@ -50,7 +50,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringP(inputs.MasterPassword, "m", "", "Master password")
+	rootCmd.PersistentFlags().StringP(inputs.FlagMasterPassword, "m", "", "Master password")
 	//addCmd.Flags().StringP(mPassword, "m", "", "Master password")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

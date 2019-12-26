@@ -22,9 +22,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// LengthFlag is the flag name of the password length.
 const LengthFlag = "length"
 
-// generatePasswordCmd represents the generatePassword command
+// generatePasswordCmd represents the generatePassword command.
 var generatePasswordCmd = &cobra.Command{
 	Use:   "generate-password",
 	Short: "Generate a secure password",

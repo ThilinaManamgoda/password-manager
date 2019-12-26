@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -34,7 +35,7 @@ var removeCmd = &cobra.Command{
 	Args: inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		id := args[0]
-		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
@@ -44,7 +45,11 @@ var removeCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		conf, err := config.Configuration()
+		if err != nil {
+			return errors.Wrapf(err, "cannot get configuration")
+		}
+		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

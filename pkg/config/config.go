@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package config holds the functionality for configuration
+// Package config holds the functionality for configuration.
 package config
 
 import (
@@ -26,26 +26,31 @@ import (
 )
 
 const (
-	FileType               = "yaml"
-	EnvPrefix              = "PM"
+	// YAMLFileType is the file type YAML.
+	YAMLFileType = "yaml"
+	// EnvPrefix is the environment variable prefix
+	EnvPrefix = "PM"
+	// ErrMsgUnableToReadConf is an error message
 	ErrMsgUnableToReadConf = "Unable to load configuration file %s"
-	FilePathEnv            = "PM_CONF_PATH"
+	// FilePathEnv is env that represents the main configuration path
+	FilePathEnv = "PM_CONF_PATH"
 )
 
-// Config struct represent the configuration for the tool
+// Config struct represent the configuration for the tool.
 type Config struct {
 	PasswordDBFilePath string `mapstructure:"passwordDBFilePath"`
 	EncryptorID        string `mapstructure:"encryptorID"`
 }
 
-func Init(){
-	viper.SetConfigType(FileType)
+// Init function configures the viper.
+func Init() {
+	viper.SetConfigType(YAMLFileType)
 	viper.SetEnvPrefix(EnvPrefix)
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }
 
-// Configuration method loads the configuration
+// Configuration method loads the configuration.
 func Configuration() (*Config, error) {
 	err := defaultConf()
 	if err != nil {

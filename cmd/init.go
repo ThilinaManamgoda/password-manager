@@ -24,10 +24,10 @@ import (
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize the Password Manager",
-	Long:  `Initialize the Password Manager for the first time`,
+	Short: "Initialize the FlagPassword Manager",
+	Long:  `Initialize the FlagPassword Manager for the first time`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}

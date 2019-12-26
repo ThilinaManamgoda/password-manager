@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -27,7 +28,7 @@ var changeMasterPasswordCmd = &cobra.Command{
 	Short: "Change Master password",
 	Long:  `Change Master password`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
@@ -47,13 +48,17 @@ var changeMasterPasswordCmd = &cobra.Command{
 			return errors.Wrap(err, "cannot prompt for new password again")
 		}
 
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		conf, err := config.Configuration()
+		if err != nil {
+			return errors.Wrapf(err, "cannot get configuration")
+		}
+		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 		err = passwordRepo.ChangeMasterPassword(newPassword)
 		if err != nil {
-			return errors.Wrapf(err, "cannot change Master Password")
+			return errors.Wrapf(err, "cannot change Master FlagPassword")
 		}
 		return nil
 	},

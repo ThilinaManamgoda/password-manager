@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -31,7 +32,7 @@ var changeCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		id := args[0]
 
-		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
+		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
@@ -42,7 +43,11 @@ var changeCmd = &cobra.Command{
 			}
 		}
 
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		conf, err := config.Configuration()
+		if err != nil {
+			return errors.Wrapf(err, "cannot get configuration")
+		}
+		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
@@ -67,7 +72,7 @@ var changeCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for password")
 			}
 		} else {
-			err = inputs.FromFlags(cmd, &uN, &password, nil, nil)
+			err = inputs.FromFlagsForPasswordEntry(cmd, &uN, &password, nil, nil)
 			if err != nil {
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
@@ -97,8 +102,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// changeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	changeCmd.Flags().StringP(inputs.Password, "p", "", "Password")
-	changeCmd.Flags().StringP(inputs.Username, "u", "", "User Name")
+	changeCmd.Flags().StringP(inputs.FlagPassword, "p", "", "FlagPassword")
+	changeCmd.Flags().StringP(inputs.FlagUsername, "u", "", "User Name")
 	changeCmd.Flags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
 
 }
