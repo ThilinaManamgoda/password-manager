@@ -1,4 +1,4 @@
-// Copyright © 2019 Thilina Manamgoda
+// Copyright © 2019 NAME HERE <EMAIL ADDRESS>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package cmd
 
 import (
@@ -22,17 +21,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ShowPassword flag
-const (
-	// ShowPassword flag
-	CSVFile = "csv-file"
-)
-
-// getCmd represents the get command
-var importCmd = &cobra.Command{
-	Use:   "import ",
-	Short: "Import passwords",
-	Long:  `Import passwords`,
+// exportCmd represents the export command
+var exportCmd = &cobra.Command{
+	Use:   "export",
+	Short: "Export password repository to a file",
+	Long:  `This command can be used to export password repository to file`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.MasterPassword)
 		if err != nil {
@@ -48,21 +41,28 @@ var importCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, CSVFile)
 		}
-
 		passwordRepo, err := passwords.LoadPasswordRepo(mPassword)
 		if err != nil {
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}
-
-		err = passwordRepo.ImportFromCSV(csvFile)
+		err = passwordRepo.ExportToCSV(csvFile)
 		if err != nil {
-			return errors.Wrap(err, "couldn't import the CSV file")
+			return errors.Wrap(err, "couldn't export password repository to the CSV file")
 		}
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(importCmd)
-	importCmd.Flags().StringP(CSVFile, "f", "", "Import passwords")
+	rootCmd.AddCommand(exportCmd)
+	exportCmd.Flags().StringP(CSVFile, "f", "", "export passwords to a csv file")
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// exportCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// exportCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
