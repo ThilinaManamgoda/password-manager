@@ -20,7 +20,7 @@ package passwords
 
 import (
 	"encoding/csv"
-	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
+	"github.com/ThilinaManamgoda/password-manager/pkg/fileio"
 	"github.com/pkg/errors"
 	"io"
 	"os"
@@ -72,7 +72,7 @@ func (p *Repository) ImportFromCSV(csvFilePath string) error {
 
 // ExportToCSV exports the password database to the given CSV file.
 func (p *Repository) ExportToCSV(csvFilePath string) error {
-	exists, err := utils.IsFileExists(csvFilePath)
+	exists, err := fileio.IsFileExists(csvFilePath)
 	if err != nil {
 		return errors.Wrapf(err, "cannot inspect the given CSV file path")
 	}

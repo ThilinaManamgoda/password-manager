@@ -57,3 +57,26 @@ func testReadFileFailedFunc() func(t *testing.T) {
 		}
 	}
 }
+
+func TestIsFileExists(t *testing.T) {
+	wDir, err := os.Getwd()
+	if err != nil {
+		t.Error(err)
+	}
+	exists, err := IsFileExists(filepath.Join(wDir, "../../test/test_read_file_success"))
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t,true, exists)
+
+	exists, err = IsFileExists("invalid/path")
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t,false,exists)
+
+	exists, err = IsFileExists(filepath.Join(wDir, "../../test"))
+	if assert.Error(t, err) {
+		assert.Error(t, ErrPathIsADir, err)
+	}
+}
