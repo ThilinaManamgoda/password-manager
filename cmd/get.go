@@ -60,7 +60,7 @@ var getCmd = &cobra.Command{
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 
-		err = passwordRepo.GetPassword(id, showPass)
+		err = passwordRepo.GetUsernamePassword(id, showPass)
 		if err != nil {
 			return err
 		}

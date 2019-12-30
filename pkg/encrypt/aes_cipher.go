@@ -28,6 +28,11 @@ import (
 	"io"
 )
 
+
+var (
+	errInvalidPassword = errors.New("invalid password")
+	errInvalidContent = errors.New("invalid content")
+)
 // AESEncryptor struct represent the data needed for AES encryption and decryption.
 type AESEncryptor struct {
 }
@@ -41,10 +46,10 @@ func createHash(key string) string {
 // Encrypt method encrypts the given data
 func (a *AESEncryptor) Encrypt(data []byte, passphrase string) ([]byte, error) {
 	if !inputs.IsPasswordValid(passphrase) {
-		return nil, errors.New("invalid password")
+		return nil, errInvalidPassword
 	}
 	if !utils.IsValidByteSlice(data) {
-		return nil, errors.New("invalid content")
+		return nil, errInvalidContent
 	}
 	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
 	gcm, err := cipher.NewGCM(block)
@@ -62,10 +67,10 @@ func (a *AESEncryptor) Encrypt(data []byte, passphrase string) ([]byte, error) {
 // Decrypt method decrypts the given data
 func (a *AESEncryptor) Decrypt(data []byte, passphrase string) ([]byte, error) {
 	if !inputs.IsPasswordValid(passphrase) {
-		return nil, errors.New("invalid password")
+		return nil, errInvalidPassword
 	}
 	if !utils.IsValidByteSlice(data) {
-		return nil, errors.New("invalid content")
+		return nil, errInvalidContent
 	}
 	key := []byte(createHash(passphrase))
 	block, err := aes.NewCipher(key)

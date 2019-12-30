@@ -27,8 +27,10 @@ import (
 	"strings"
 )
 
+// CSVSeparator represents the separator for CSV file.
 const CSVSeparator = ","
 
+// ImportFromCSV imports the passwords entries from the given CSV file.
 func (p *Repository) ImportFromCSV(csvFilePath string) error {
 	csvFile, err := os.Open(csvFilePath)
 	if err != nil {
@@ -68,6 +70,7 @@ func (p *Repository) ImportFromCSV(csvFilePath string) error {
 	return nil
 }
 
+// ExportToCSV exports the password database to the given CSV file.
 func (p *Repository) ExportToCSV(csvFilePath string) error {
 	exists, err := utils.IsFileExists(csvFilePath)
 	if err != nil {

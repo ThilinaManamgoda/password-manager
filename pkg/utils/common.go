@@ -54,10 +54,10 @@ func GeneratePassword(len int) (string, error) {
 // IsFileExists checks whether the given file exists.
 func IsFileExists(filename string)(bool,error) {
 	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false, nil
-	}
 	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
 		return false, err
 	}
 	if info.IsDir() {

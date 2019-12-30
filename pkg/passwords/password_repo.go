@@ -36,13 +36,17 @@ type Entry struct {
 }
 
 var (
+	// ErrInvalidID represents the invalid ID error.
 	ErrInvalidID = func(id string) error {
 		return errors.New(fmt.Sprintf("Invalid ID:  %s", id))
 	}
+	// ErrCannotSavePasswordDB represents the error when it is unable to save password entry.
 	ErrCannotSavePasswordDB = func(err error) error {
 		return errors.Wrap(err, "cannot save password")
 	}
+	// ErrNoPasswords represents the error when no passwords are available.
 	ErrNoPasswords          = errors.New("no passwords are available")
+	// ErrCannotFindMatchForID represents the error when it is unable to find a password entry for the given ID.
 	ErrCannotFindMatchForID = func(id string) error {
 		return errors.New(fmt.Sprintf("cannot find any match for id %s", id))
 	}
@@ -67,12 +71,12 @@ func isPasswordRepoAlreadyInitialized(repoData []byte) bool {
 }
 
 func loadDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) ([]byte, error) {
-	if exists, err := utils.IsFileExists(f.Path); err != nil {
+	exists, err := utils.IsFileExists(f.Path)
+	if err != nil {
 		return nil, errors.Wrap(err, "cannot load the password DB file")
-	} else {
-		if !exists {
-			return nil, errors.Wrap(err, "cannot find the password DB file")
-		}
+	}
+	if !exists {
+		return nil, errors.New("cannot find the password DB file")
 	}
 	encryptedData, err := f.Read()
 	if err != nil {
@@ -106,6 +110,7 @@ func (p *Repository) marshalDB() ([]byte, error) {
 	return passwordDBJSON, nil
 }
 
+// ChangeMasterPassword changes the master password.
 func (p *Repository) ChangeMasterPassword(newPassword string) error {
 	passwordDBJSON, err := p.marshalDB()
 	if err != nil {
@@ -179,8 +184,8 @@ func (p *Repository) isLabelExists(l string) bool {
 	return ok
 }
 
-// GetPassword method retrieve password entry from Password db
-func (p *Repository) GetPassword(id string, showPassword bool) error {
+// GetUsernamePassword method retrieves username and password from Password db.
+func (p *Repository) GetUsernamePassword(id string, showPassword bool) error {
 	passwordEntry, err := p.GetPasswordEntry(id)
 	if err != nil {
 		return err
@@ -198,6 +203,7 @@ func (p *Repository) GetPassword(id string, showPassword bool) error {
 	return nil
 }
 
+// GetPasswordEntry gets the password entry from password db.
 func (p *Repository) GetPasswordEntry(id string) (Entry, error) {
 	passwordDB := p.db.Entries
 	if len(passwordDB) == 0 {
@@ -211,6 +217,7 @@ func (p *Repository) GetPasswordEntry(id string) (Entry, error) {
 	return result, nil
 }
 
+// ChangePasswordEntry changes the password entry.
 func (p *Repository) ChangePasswordEntry(id string, entry Entry) error {
 	passwordDB := p.db.Entries
 	if len(passwordDB) == 0 {
@@ -224,7 +231,7 @@ func (p *Repository) ChangePasswordEntry(id string, entry Entry) error {
 	return nil
 }
 
-// SearchID will return the password entries if the password ID contains the provide key
+// SearchID will return the password entries if the password ID contains the provide key.
 func (p *Repository) SearchID(id string, showPassword bool) ([]string, error) {
 	if p.isDBEmpty() {
 		return nil, ErrNoPasswords
@@ -245,7 +252,7 @@ func (p *Repository) isDBEmpty() bool {
 	return len(p.db.Entries) == 0
 }
 
-// SearchLabel will return the password ids if the password labels contains the provide label
+// SearchLabel will return the password ids if the password labels contains the provide label.
 func (p *Repository) SearchLabel(label string, showPassword bool) ([]string, error) {
 	if p.isDBEmpty() {
 		return nil, ErrNoPasswords
@@ -260,7 +267,7 @@ func (p *Repository) SearchLabel(label string, showPassword bool) ([]string, err
 	return uniqueIDs, nil
 }
 
-// searchLabelsForID will return the list of labels for given ID
+// searchLabelsForID will return the list of labels for given ID.
 func (p *Repository) searchLabelsForID(id string) ([]string, error) {
 	if p.isDBEmpty() {
 		return nil, ErrNoPasswords
@@ -284,6 +291,7 @@ func (p *Repository) assignLabels(id string, labels []string) {
 	}
 }
 
+// Remove removes the password entry of the given id.
 func (p *Repository) Remove(id string) error {
 	if p.isDBEmpty() {
 		return ErrNoPasswords
