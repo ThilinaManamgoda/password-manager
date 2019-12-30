@@ -16,16 +16,11 @@ package utils
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/sethvargo/go-password/password"
-	"os"
 )
 
 // AESEncryptID is the unique identifier for this encryptor.
 const AESEncryptID = "AES"
-
-// ErrPathIsADir represents an error.
-var ErrPathIsADir = errors.New("path is a directory")
 
 // IsValidByteSlice method check whether the Slice is valid or not.
 func IsValidByteSlice(data []byte) bool {
@@ -49,21 +44,6 @@ func GeneratePassword(len int) (string, error) {
 		return "", err
 	}
 	return pass, nil
-}
-
-// IsFileExists checks whether the given file exists.
-func IsFileExists(filename string)(bool,error) {
-	info, err := os.Stat(filename)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-		return false, err
-	}
-	if info.IsDir() {
-		return false, ErrPathIsADir
-	}
-	return true, nil
 }
 
 // MarshalData marshals the given struct to a byte array.

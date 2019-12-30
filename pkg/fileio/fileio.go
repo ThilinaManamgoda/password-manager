@@ -17,9 +17,14 @@
 package fileio
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 )
+
+
+// ErrPathIsADir represents an error.
+var ErrPathIsADir = errors.New("path is a directory")
 
 // File struct represent a file
 type File struct {
@@ -46,4 +51,19 @@ func (p *File) Write(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+// IsFileExists checks whether the given file exists.
+func IsFileExists(filename string) (bool, error) {
+	info, err := os.Stat(filename)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	if info.IsDir() {
+		return false, ErrPathIsADir
+	}
+	return true, nil
 }

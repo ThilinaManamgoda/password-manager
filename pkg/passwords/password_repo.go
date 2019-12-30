@@ -71,7 +71,7 @@ func isPasswordRepoAlreadyInitialized(repoData []byte) bool {
 }
 
 func loadDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) ([]byte, error) {
-	exists, err := utils.IsFileExists(f.Path)
+	exists, err := fileio.IsFileExists(f.Path)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot load the password DB file")
 	}
@@ -325,7 +325,7 @@ func InitRepo(mPassword string) error {
 	if err != nil {
 		return errors.Wrapf(err, "cannot get configuration")
 	}
-	exists, err := utils.IsFileExists(conf.PasswordDBFilePath)
+	exists, err := fileio.IsFileExists(conf.PasswordDBFilePath)
 	if err != nil {
 		return errors.Wrapf(err, "cannot initiate Password DB")
 	}
