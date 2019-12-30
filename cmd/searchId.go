@@ -69,7 +69,7 @@ var searchIDCmd = &cobra.Command{
 			if err != nil {
 				return errors.Wrap(err, "cannot get prompt for select")
 			}
-			err = passwordRepo.GetPassword(sID, showPass)
+			err = passwordRepo.GetUsernamePassword(sID, showPass)
 			if err != nil {
 				return errors.Wrapf(err, "cannot get password for ID: %s", sID)
 			}

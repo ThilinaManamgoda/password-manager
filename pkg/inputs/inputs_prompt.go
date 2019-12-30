@@ -24,14 +24,6 @@ import (
 )
 
 const (
-	// FlagUsername is the flag name for username.
-	FlagUsername = "username"
-	// FlagPassword is the flag name for password.
-	FlagPassword = "password"
-	// FlagLabels is the flag name for labels.
-	FlagLabels = "labels"
-	// FlagMasterPassword is the flag name for masterPassword.
-	FlagMasterPassword = "masterPassword"
 	// PromptUsername is the prompt name for username
 	PromptUsername = "Username"
 	// PromptPassword is the prompt name for password
@@ -52,12 +44,14 @@ const (
 	ErrMsgPasswordMissMatch = "password doesn't match"
 	// MinPasswordCharacters is the allowed minimum number of characters for a password.
 	MinPasswordCharacters = 6
+	// MinUsernameCharacters is the allowed minimum number of characters for a username.
+	MinUsernameCharacters = 6
 )
 
 var (
 	userNameValidator = func(input string) error {
-		if len(input) < MinPasswordCharacters {
-			return errors.New(fmt.Sprintf("username must have more than %d characters", MinPasswordCharacters))
+		if len(input) < MinUsernameCharacters {
+			return errors.New(fmt.Sprintf("username must have more than %d characters", MinUsernameCharacters))
 		}
 		return nil
 	}
@@ -84,47 +78,6 @@ var (
 	userPasswordValidator      = passwordValidator(fmt.Sprintf("password must have more than %d characters", MinPasswordCharacters))
 	newMasterPasswordValidator = passwordValidator(fmt.Sprintf("new master password must have more than %d characters", MinPasswordCharacters))
 )
-
-// IsPasswordValid method check whether the FlagPassword is valid or not.
-func IsPasswordValid(passphrase string) bool {
-	return passphrase != ""
-}
-
-// GetFlagStringVal method returns the String flag value.
-func GetFlagStringVal(cmd *cobra.Command, flag string) (string, error) {
-	val, err := cmd.Flags().GetString(flag)
-	if err != nil {
-		return "", err
-	}
-	return val, nil
-}
-
-// GetFlagIntVal method returns the int flag value.
-func GetFlagIntVal(cmd *cobra.Command, flag string) (int, error) {
-	val, err := cmd.Flags().GetInt(flag)
-	if err != nil {
-		return 0, err
-	}
-	return val, nil
-}
-
-// GetFlagBoolVal method returns the Boolean flag value.
-func GetFlagBoolVal(cmd *cobra.Command, flag string) (bool, error) {
-	val, err := cmd.Flags().GetBool(flag)
-	if err != nil {
-		return false, err
-	}
-	return val, nil
-}
-
-// GetFlagStringArrayVal method returns the String array flag value.
-func GetFlagStringArrayVal(cmd *cobra.Command, flag string) ([]string, error) {
-	val, err := cmd.Flags().GetStringArray(flag)
-	if err != nil {
-		return nil, err
-	}
-	return val, nil
-}
 
 // IsValidSingleArg method check whether the CMD args are valid or not.
 func IsValidSingleArg(args []string) bool {
@@ -204,42 +157,6 @@ func HasProvidedValidID() func(cmd *cobra.Command, args []string) error {
 	}
 }
 
-// FromFlagsForPasswordEntry functions gets the input values required for Password entry from flags.
-func FromFlagsForPasswordEntry(cmd *cobra.Command, uN, password, mPassword *string, labels *[]string) error {
-	if uN != nil {
-		uNVal, err := GetFlagStringVal(cmd, FlagUsername)
-		if err != nil {
-			return errors.Wrapf(err, ErrMsgCannotGetFlag, FlagUsername)
-		}
-		*uN = uNVal
-	}
-
-	if password != nil {
-		passwordVal, err := GetFlagStringVal(cmd, FlagPassword)
-		if err != nil {
-			return errors.Wrapf(err, ErrMsgCannotGetFlag, FlagPassword)
-		}
-		*password = passwordVal
-	}
-
-	if labels != nil {
-		labelsVal, err := GetFlagStringArrayVal(cmd, FlagLabels)
-		if err != nil {
-			return errors.Wrapf(err, ErrMsgCannotGetFlag, FlagLabels)
-		}
-		*labels = labelsVal
-	}
-
-	if mPassword != nil {
-		mPasswordVal, err := GetFlagStringVal(cmd, FlagMasterPassword)
-		if err != nil {
-			return errors.Wrapf(err, ErrMsgCannotGetFlag, FlagMasterPassword)
-		}
-		*mPassword = mPasswordVal
-	}
-	return nil
-}
-
 // FromPromptForPasswordEntry functions gets the input values required for Password entry by prompting.
 func FromPromptForPasswordEntry(uN, password, mPassword *string, labels *[]string) error {
 	uNVal, err := PromptForUsername()
@@ -276,7 +193,7 @@ func PromptForUsername() (string, error) {
 	return PromptForString(PromptUsername, userNameValidator)
 }
 
-// PromptForUsernameWithDefault prompt for username with a deault value and returns the chosen value.
+// PromptForUsernameWithDefault prompt for username with a default value and returns the chosen value.
 func PromptForUsernameWithDefault(defaultVal string) (string, error) {
 	return PromptForStringWithDefault(PromptUsername, defaultVal, userNameValidator)
 }
