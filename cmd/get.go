@@ -31,8 +31,8 @@ const (
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get [ID]",
-	Short: "Get a password",
-	Long:  `Get a password`,
+	Short: "Get a password with the ID",
+	Long:  `Get a password with the ID`,
 	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		id := args[0]

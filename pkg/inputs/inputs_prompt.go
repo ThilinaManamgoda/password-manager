@@ -146,12 +146,21 @@ func PromptForSelect(l string, size int, items []string) (string, error) {
 
 // HasProvidedValidID returns a function which validates the ID input.
 func HasProvidedValidID() func(cmd *cobra.Command, args []string) error {
+	return hasProvidedValidSingleInput("ID")
+}
+
+// HasProvidedValidLabel returns a function which validates the Label input.
+func HasProvidedValidIDLabel() func(cmd *cobra.Command, args []string) error {
+	return hasProvidedValidSingleInput("ID/Label")
+}
+
+func hasProvidedValidSingleInput(inputType string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		if !IsValidSingleArg(args) {
-			return errors.New("please give a valid ID")
+			return errors.New(fmt.Sprintf("please give a valid %s", inputType))
 		}
 		if !IsArgValid(args[0]) {
-			return errors.New("id cannot be empty")
+			return errors.New(fmt.Sprintf("%s cannot be empty", inputType))
 		}
 		return nil
 	}

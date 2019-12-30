@@ -23,12 +23,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// searchIDCmd represents the searchId command
-var searchIDCmd = &cobra.Command{
-	Use:   "search-id [ID]",
+const FlagSearchLabel = "label"
+
+// searchCmd represents the searchId command
+var searchCmd = &cobra.Command{
+	Use:   "search [ID]",
 	Short: "Search Password with ID",
-	Long:  `You can use either complete or part of ID for searching`,
-	Args:  inputs.HasProvidedValidID(),
+	Long:  `You can use either complete or part of ID/Label for searching`,
+	Args:  inputs.HasProvidedValidIDLabel(),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
@@ -45,8 +47,9 @@ var searchIDCmd = &cobra.Command{
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.FlagPassword)
 		}
 
-		if !inputs.IsValidSingleArg(args) {
-			return errors.New("Please give a ID")
+		isSearchLabel, err := inputs.GetFlagBoolVal(cmd, FlagSearchLabel)
+		if err != nil {
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, FlagSearchLabel)
 		}
 
 		conf, err := config.Configuration()
@@ -58,10 +61,19 @@ var searchIDCmd = &cobra.Command{
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 
-		searchID := args[0]
-		passwordIDs, err := passwordRepo.SearchID(searchID, showPass)
-		if err != nil {
-			return errors.Wrapf(err, "cannot search ID")
+		var passwordIDs []string
+		if !isSearchLabel {
+			searchID := args[0]
+			passwordIDs, err = passwordRepo.SearchID(searchID, showPass)
+			if err != nil {
+				return errors.Wrapf(err, "cannot search ID %s", searchID)
+			}
+		} else {
+			label := args[0]
+			passwordIDs, err = passwordRepo.SearchLabel(label, showPass)
+			if err != nil {
+				return errors.Wrapf(err, "cannot search Label %s", label)
+			}
 		}
 
 		if len(passwordIDs) != 0 {
@@ -81,6 +93,7 @@ var searchIDCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(searchIDCmd)
-	searchIDCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
+	rootCmd.AddCommand(searchCmd)
+	searchCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
+	searchCmd.Flags().BoolP(FlagSearchLabel, "l", false, "Search with the Label")
 }
