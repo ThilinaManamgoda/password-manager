@@ -36,38 +36,22 @@ const (
 
 // GetFlagStringVal method returns the String flag value.
 func GetFlagStringVal(cmd *cobra.Command, flag string) (string, error) {
-	val, err := cmd.Flags().GetString(flag)
-	if err != nil {
-		return "", err
-	}
-	return val, nil
+	return cmd.Flags().GetString(flag)
 }
 
 // GetFlagIntVal method returns the int flag value.
 func GetFlagIntVal(cmd *cobra.Command, flag string) (int, error) {
-	val, err := cmd.Flags().GetInt(flag)
-	if err != nil {
-		return 0, err
-	}
-	return val, nil
+	return cmd.Flags().GetInt(flag)
 }
 
 // GetFlagBoolVal method returns the Boolean flag value.
 func GetFlagBoolVal(cmd *cobra.Command, flag string) (bool, error) {
-	val, err := cmd.Flags().GetBool(flag)
-	if err != nil {
-		return false, err
-	}
-	return val, nil
+	return cmd.Flags().GetBool(flag)
 }
 
 // GetFlagStringArrayVal method returns the String array flag value.
 func GetFlagStringArrayVal(cmd *cobra.Command, flag string) ([]string, error) {
-	val, err := cmd.Flags().GetStringArray(flag)
-	if err != nil {
-		return nil, err
-	}
-	return val, nil
+	return cmd.Flags().GetStringArray(flag)
 }
 
 // FromFlagsForPasswordEntry functions gets the input values required for Password entry from flags.
