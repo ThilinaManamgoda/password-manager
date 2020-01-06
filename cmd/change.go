@@ -71,6 +71,10 @@ var changeCmd = &cobra.Command{
 			if err != nil {
 				return errors.Wrap(err, "cannot prompt for password")
 			}
+			password,err = inputs.PromptForPasswordSecondTime(password)
+			if err != nil {
+				return errors.Wrap(err, "cannot prompt for password for the second time")
+			}
 		} else {
 			err = inputs.FromFlagsForPasswordEntry(cmd, &uN, &password, nil, nil)
 			if err != nil {
