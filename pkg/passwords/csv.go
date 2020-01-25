@@ -65,7 +65,7 @@ func (p *Repository) ImportFromCSV(csvFilePath string) error {
 	}
 	err = p.saveDB()
 	if err != nil {
-		return ErrCannotSavePasswordDB(err)
+		return err
 	}
 	return nil
 }
