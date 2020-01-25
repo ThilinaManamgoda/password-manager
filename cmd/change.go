@@ -33,7 +33,7 @@ var changeCmd = &cobra.Command{
 
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.FlagMasterPassword)
 		}
 		if mPassword == "" {
 			mPassword, err = inputs.PromptForMPassword()

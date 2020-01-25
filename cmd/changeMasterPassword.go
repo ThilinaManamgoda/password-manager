@@ -29,7 +29,7 @@ var changeMasterPasswordCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.FlagMasterPassword)
 		}
 		if mPassword == "" {
 			mPassword, err = inputs.PromptForMPassword()
@@ -39,7 +39,7 @@ var changeMasterPasswordCmd = &cobra.Command{
 		}
 		newMasterPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagNewMasterPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.FlagNewMasterPassword)
 		}
 		if newMasterPassword == "" {
 			newMasterPassword, err = inputs.PromptForNewMPassword()
