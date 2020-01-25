@@ -98,8 +98,8 @@ func Configuration() (*TransformedConfig, error) {
 
 	if config.Storage.File.Path != "" {
 		storageConf := make(map[string]string)
-		storageConf[storage.ConfKeyPath] = config.Storage.File.Path
-		storageConf[storage.ConfKeyPermission] = config.Storage.File.Permission
+		storageConf[storage.ConfKeyFilePath] = config.Storage.File.Path
+		storageConf[storage.ConfKeyFilePermission] = config.Storage.File.Permission
 		parsedConfig.Storage = storageConf
 	}
 	return parsedConfig, nil

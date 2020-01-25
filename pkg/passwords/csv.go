@@ -34,8 +34,8 @@ const (
 	CSVImporterID = "CSV_IMPORTER"
 	// CSVSeparator represents the separator for CSV file.
 	CSVSeparator = ","
-	//ConfKeyCSVPath represents the CSV path key in the conf map.
-	ConfKeyCSVPath = "CONF_KEY_CSV_PATH"
+	//ConfKeyCSVFilePath represents the CSV path key in the conf map.
+	ConfKeyCSVFilePath = "CONF_KEY_CSV_PATH"
 )
 
 // CSVExporter struct is used to export password entries.
@@ -50,12 +50,12 @@ type CSVImporter struct {
 
 // Init initialize the CSV Importer.
 func (i *CSVImporter) Init(conf map[string]string) {
-	i.path = conf[ConfKeyCSVPath]
+	i.path = conf[ConfKeyCSVFilePath]
 }
 
 // Init initialize the CSV Exporter.
 func (e *CSVExporter) Init(conf map[string]string) {
-	e.path = conf[ConfKeyCSVPath]
+	e.path = conf[ConfKeyCSVFilePath]
 }
 
 // Import imports password entries from a CSV file.

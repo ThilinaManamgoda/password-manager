@@ -47,7 +47,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	err = repo.Import(CSVImporterID, map[string]string{ConfKeyCSVPath: path.Join(wd, "../../test/mock-data/data.csv")})
+	err = repo.Import(CSVImporterID, map[string]string{ConfKeyCSVFilePath: path.Join(wd, "../../test/mock-data/data.csv")})
 	if err != nil {
 		panic(err)
 	}

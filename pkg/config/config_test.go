@@ -36,6 +36,6 @@ func TestConfiguration(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, filepath.Join(home, "/passwordDB"), result.Storage[storage.ConfKeyPath])
+	assert.Equal(t, filepath.Join(home, "/passwordDB"), result.Storage[storage.ConfKeyFilePath])
 	assert.Equal(t, utils.AESEncryptID, result.EncryptorID)
 }
