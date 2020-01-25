@@ -22,11 +22,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	// ShowPassword flag
-	ShowPassword = "show-pass"
-)
-
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get [ID]",
@@ -45,7 +40,7 @@ var getCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
+		showPass, err := inputs.GetFlagBoolVal(cmd, inputs.FlagShowPassword)
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.FlagPassword)
 		}
@@ -65,5 +60,5 @@ var getCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-	getCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
+	getCmd.Flags().BoolP(inputs.FlagShowPassword, "s", false, "Print password to STDOUT")
 }
