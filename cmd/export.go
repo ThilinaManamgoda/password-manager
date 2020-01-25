@@ -38,9 +38,9 @@ var exportCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		csvFile, err := inputs.GetFlagStringVal(cmd, config.CSVFileFlag)
+		csvFile, err := inputs.GetFlagStringVal(cmd, config.FlagCSVFile)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.CSVFileFlag)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.FlagCSVFile)
 		}
 
 		if csvFile == "" {
@@ -60,5 +60,5 @@ var exportCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(exportCmd)
-	exportCmd.Flags().StringP(config.CSVFileFlag, "f", "", "export passwords to a csv file")
+	exportCmd.Flags().StringP(config.FlagCSVFile, "f", "", "export passwords to a csv file")
 }

@@ -25,8 +25,8 @@ import (
 // Version of the password manager. Should be initialized at build time
 var Version string
 
-// InteractiveMode flag
-const InteractiveMode = "interactive"
+// FlagInteractiveMode flag
+const FlagInteractiveMode = "interactive"
 
 // rootCmd represents the base command when called without any sub-commands
 var rootCmd = &cobra.Command{

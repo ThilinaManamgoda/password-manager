@@ -52,7 +52,7 @@ var changeCmd = &cobra.Command{
 			return errors.Wrapf(err, "cannot get password entry")
 		}
 
-		isInteractiveMode, err := inputs.GetFlagBoolVal(cmd, InteractiveMode)
+		isInteractiveMode, err := inputs.GetFlagBoolVal(cmd, FlagInteractiveMode)
 		if err != nil {
 			return err
 		}
@@ -103,6 +103,6 @@ func init() {
 	// changeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	changeCmd.Flags().StringP(inputs.FlagPassword, "p", "", "Password")
 	changeCmd.Flags().StringP(inputs.FlagUsername, "u", "", "User Name")
-	changeCmd.Flags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
+	changeCmd.Flags().BoolP(FlagInteractiveMode, "i", false, "Enable interactive mode")
 
 }

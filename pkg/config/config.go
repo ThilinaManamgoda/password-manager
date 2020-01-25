@@ -35,8 +35,8 @@ const (
 	ErrMsgUnableToReadConf = "Unable to load configuration file %s"
 	// FilePathEnv is env that represents the main configuration path
 	FilePathEnv = "PM_CONF_PATH"
-	// CSVFileFlag is the CSV file flag.
-	CSVFileFlag = "csv-file"
+	// FlagCSVFile is the CSV file flag.
+	FlagCSVFile = "csv-file"
 )
 
 // Config struct represent the configuration for the tool.

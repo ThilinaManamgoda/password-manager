@@ -38,9 +38,9 @@ var importCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		csvFile, err := inputs.GetFlagStringVal(cmd, config.CSVFileFlag)
+		csvFile, err := inputs.GetFlagStringVal(cmd, config.FlagCSVFile)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.CSVFileFlag)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.FlagCSVFile)
 		}
 		if csvFile == "" {
 			return errors.New("must provide a medium to import")
@@ -60,5 +60,5 @@ var importCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(importCmd)
-	importCmd.Flags().StringP(config.CSVFileFlag, "f", "", "Import passwords")
+	importCmd.Flags().StringP(config.FlagCSVFile, "f", "", "Import passwords")
 }
