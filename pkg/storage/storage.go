@@ -19,16 +19,33 @@
 // Package storage is used to handle persistence.
 package storage
 
+// Storage interface is used to store data.
 type Storage interface {
 	// InitForFirstTime initialises the storage for the first time.
 	InitForFirstTime(data []byte, conf map[string]string) error
 
 	// Init initialises the storage.
+	// After "InitForFirstTime" method, this function can be called to initialize the storage in the consequent uses.
 	Init(conf map[string]string) error
 
-	// Load loads the storage as a byte array
+	// Load loads the storage as a byte array.
 	Load() ([]byte, error)
 
-	// Store store the storage.
+	// Store store data the storage.
 	Store(data []byte) error
+}
+
+// Factory struct holds Storages.
+type Factory struct {
+	ID string
+}
+
+// Storage method returns Storage.
+func (f *Factory) Storage() Storage {
+	switch f.ID {
+	case FileStorageID:
+		return &File{}
+	default:
+		return &File{}
+	}
 }

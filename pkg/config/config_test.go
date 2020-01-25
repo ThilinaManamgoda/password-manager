@@ -15,6 +15,7 @@
 package config
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/storage"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/mitchellh/go-homedir"
 	"gotest.tools/assert"
@@ -35,6 +36,6 @@ func TestConfiguration(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, filepath.Join(home, "/passwordDB"), result.PasswordDBFilePath)
+	assert.Equal(t, filepath.Join(home, "/passwordDB"), result.Storage[storage.ConfKeyPath])
 	assert.Equal(t, utils.AESEncryptID, result.EncryptorID)
 }

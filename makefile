@@ -1,6 +1,6 @@
 # Go parameters
 
-TOOL_VERSION=0.7.0
+TOOL_VERSION=0.8.0
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
@@ -25,7 +25,7 @@ build:
 
 unit-test:
 		$(GOTEST) -v $(TEST_PKGS)
-		rm pkg/passwords/testDB
+		rm pkg/passwords/testPasswordDB
 
 lint:
 		$(GOGET) -u golang.org/x/lint/golint

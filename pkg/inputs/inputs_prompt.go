@@ -149,7 +149,7 @@ func HasProvidedValidID() func(cmd *cobra.Command, args []string) error {
 	return hasProvidedValidSingleInput("ID")
 }
 
-// HasProvidedValidLabel returns a function which validates the Label input.
+// HasProvidedValidIDLabel returns a function which validates the Label input.
 func HasProvidedValidIDLabel() func(cmd *cobra.Command, args []string) error {
 	return hasProvidedValidSingleInput("ID/Label")
 }

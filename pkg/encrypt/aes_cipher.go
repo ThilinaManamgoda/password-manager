@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // Package encrypt holds required functionality for encryption and decryption
 package encrypt
 
@@ -23,15 +22,15 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"io"
 )
 
-
 var (
 	errInvalidPassword = errors.New("invalid password")
-	errInvalidContent = errors.New("invalid content")
+	errInvalidContent  = errors.New("invalid content")
 )
 // AESEncryptor struct represent the data needed for AES encryption and decryption.
 type AESEncryptor struct {
@@ -82,6 +81,9 @@ func (a *AESEncryptor) Decrypt(data []byte, passphrase string) ([]byte, error) {
 		return nil, err
 	}
 	nonceSize := gcm.NonceSize()
+	if nonceSize > len(data) {
+		return nil, fmt.Errorf("data length must be larger than Nonce: %d", nonceSize)
+	}
 	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
