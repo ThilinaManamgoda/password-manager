@@ -33,7 +33,7 @@ var addCmd = &cobra.Command{
 	Long:  `Add a new password`,
 	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		isInteractiveMode, err := inputs.GetFlagBoolVal(cmd, InteractiveMode)
+		isInteractiveMode, err := inputs.GetFlagBoolVal(cmd, FlagInteractiveMode)
 		if err != nil {
 			return err
 		}
@@ -69,5 +69,5 @@ func init() {
 	addCmd.Flags().StringP(inputs.FlagPassword, "p", "", "Password")
 	addCmd.Flags().StringP(inputs.FlagUsername, "u", "", "User Name")
 	addCmd.Flags().StringArrayP(inputs.FlagLabels, "l", nil, "Labels for the password entry")
-	addCmd.Flags().BoolP(InteractiveMode, "i", false, "Enable interactive mode")
+	addCmd.Flags().BoolP(FlagInteractiveMode, "i", false, "Enable interactive mode")
 }
