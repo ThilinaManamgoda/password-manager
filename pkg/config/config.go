@@ -37,6 +37,8 @@ const (
 	FilePathEnv = "PM_CONF_PATH"
 	// FlagCSVFile is the CSV file flag.
 	FlagCSVFile = "csv-file"
+	//DefaultFilePermission represents the password db file default permission.
+	DefaultFilePermission = "0640"
 )
 
 // Config struct represent the configuration for the tool.
@@ -122,6 +124,7 @@ func defaultConf() error {
 		return errors.Wrap(err, "cannot retrieve Home directory path")
 	}
 	viper.SetDefault("storage.file.path", filepath.Join(home, "/passwordDB"))
+	viper.SetDefault("storage.file.permission", DefaultFilePermission)
 	viper.SetDefault("encryptorID", utils.AESEncryptID)
 	viper.SetDefault("selectListSize", 5)
 	return nil

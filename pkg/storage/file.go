@@ -32,12 +32,10 @@ const (
 	ConfKeyFilePath = "CONF_KEY_FILE_PATH"
 	//ConfKeyFilePermission represents the password db file permission key in the conf map.
 	ConfKeyFilePermission = "CONF_KEY_FILE_PERMISSION"
-	//DefaultFilePermission represents the password db file default permission.
-	DefaultFilePermission = 0640
 	//FilePermissionPattern represents the password db file permission regex.
 	FilePermissionPattern = "[0,2,4,6][0-7][0-7][0-7]"
 	//FileStorageID is the File storage type ID.
-	FileStorageID         = "File"
+	FileStorageID = "File"
 )
 
 var (
@@ -117,23 +115,16 @@ func (f *File) setValues(conf map[string]string) error {
 	f.path = path
 
 	permission := conf[ConfKeyFilePermission]
-	if	!isPermissionConfigured(permission) {
-			f.permission = DefaultFilePermission
-	} else {
-		p, err := getPermission(permission)
-		if err != nil {
-			return err
-		}
-		f.permission = p
+
+	p, err := getPermission(permission)
+	if err != nil {
+		return err
 	}
+	f.permission = p
 	return nil
 }
 
 func isValidPath(p string) bool {
-	return p != ""
-}
-
-func isPermissionConfigured(p string) bool {
 	return p != ""
 }
 
@@ -148,7 +139,7 @@ func getPermission(p string) (os.FileMode, error) {
 	if !match {
 		return 0, ErrInvalidPermission(p)
 	}
-	u, err := strconv.ParseUint("0645", 8, 32)
+	u, err := strconv.ParseUint(p, 10, 32)
 	if err != nil {
 		return 0, errors.Wrap(err, "unable to convert permission to uint type")
 	}
