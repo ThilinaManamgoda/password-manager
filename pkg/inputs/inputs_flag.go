@@ -32,6 +32,8 @@ const (
 	FlagLabels = "labels"
 	// FlagMasterPassword is the flag name for masterPassword.
 	FlagMasterPassword = "masterPassword"
+	// FlagNewMasterPassword is the flag name for new masterPassword.
+	FlagNewMasterPassword = "newMasterPassword"
 )
 
 // GetFlagStringVal method returns the String flag value.

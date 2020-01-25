@@ -13,7 +13,8 @@ password-manager change-master-password [flags]
 ### Options
 
 ```
-  -h, --help   help for change-master-password
+  -h, --help                       help for change-master-password
+  -n, --newMasterPassword string   New Master password
 ```
 
 ### Options inherited from parent commands
