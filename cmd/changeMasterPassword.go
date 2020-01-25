@@ -37,21 +37,27 @@ var changeMasterPasswordCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-
-		newPassword, err := inputs.PromptForNewMPassword()
+		newMasterPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagNewMasterPassword)
 		if err != nil {
-			return errors.Wrap(err, "cannot prompt for new password")
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, mPassword)
 		}
-		newPassword, err = inputs.PromptForMPasswordSecondTime(newPassword)
-		if err != nil {
-			return errors.Wrap(err, "cannot prompt for new password again")
+		if newMasterPassword == "" {
+			newMasterPassword, err = inputs.PromptForNewMPassword()
+			if err != nil {
+				return errors.Wrap(err, "cannot prompt for new password")
+			}
+			newMasterPassword, err = inputs.PromptForMPasswordSecondTime(newMasterPassword)
+			if err != nil {
+				return errors.Wrap(err, "cannot prompt for new password again")
+			}
+
 		}
 
 		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
-		err = passwordRepo.ChangeMasterPassword(newPassword)
+		err = passwordRepo.ChangeMasterPassword(newMasterPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot change Master Password")
 		}
@@ -61,4 +67,5 @@ var changeMasterPasswordCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(changeMasterPasswordCmd)
+	changeMasterPasswordCmd.Flags().StringP(inputs.FlagNewMasterPassword, "n", "", "New Master password")
 }
