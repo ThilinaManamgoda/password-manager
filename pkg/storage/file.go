@@ -28,10 +28,10 @@ import (
 )
 
 const (
-	//ConfKeyPath represents the password db path key in the conf map.
-	ConfKeyPath           = "CONF_KEY_PATH"
-	//ConfKeyPermission represents the password db file permission key in the conf map.
-	ConfKeyPermission     = "CONF_KEY_PERMISSION"
+	//ConfKeyFilePath represents the password db path key in the conf map.
+	ConfKeyFilePath = "CONF_KEY_FILE_PATH"
+	//ConfKeyFilePermission represents the password db file permission key in the conf map.
+	ConfKeyFilePermission = "CONF_KEY_FILE_PERMISSION"
 	//DefaultFilePermission represents the password db file default permission.
 	DefaultFilePermission = 0640
 	//FilePermissionPattern represents the password db file permission regex.
@@ -110,13 +110,13 @@ func (f *File) Store(data []byte) error {
 }
 
 func (f *File) setValues(conf map[string]string) error {
-	path := conf[ConfKeyPath]
+	path := conf[ConfKeyFilePath]
 	if !isValidPath(path) {
 		return errors.New("invalid path. Path cannot be empty")
 	}
 	f.path = path
 
-	permission := conf[ConfKeyPermission]
+	permission := conf[ConfKeyFilePermission]
 	if	!isPermissionConfigured(permission) {
 			f.permission = DefaultFilePermission
 	} else {

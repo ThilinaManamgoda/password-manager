@@ -50,7 +50,7 @@ var importCmd = &cobra.Command{
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}
 
-		err = passwordRepo.Import(passwords.CSVImporterID, map[string]string{passwords.ConfKeyCSVPath: csvFile})
+		err = passwordRepo.Import(passwords.CSVImporterID, map[string]string{passwords.ConfKeyCSVFilePath: csvFile})
 		if err != nil {
 			return errors.Wrap(err, "couldn't import the CSV file")
 		}

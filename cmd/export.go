@@ -50,7 +50,7 @@ var exportCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}
-		err = passwordRepo.Export(passwords.CSVExporterID, map[string]string{passwords.ConfKeyCSVPath: csvFile})
+		err = passwordRepo.Export(passwords.CSVExporterID, map[string]string{passwords.ConfKeyCSVFilePath: csvFile})
 		if err != nil {
 			return errors.Wrap(err, "couldn't export password repository to the CSV file")
 		}

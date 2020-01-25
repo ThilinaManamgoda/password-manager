@@ -82,7 +82,7 @@ func (p *Repository) Import(importerID string, conf map[string]string) error {
 			ID: CSVImporterID,
 		}
 		importer = imFac.Importer()
-		importer.Init(map[string]string{ConfKeyCSVPath: conf[ConfKeyCSVPath]})
+		importer.Init(map[string]string{ConfKeyCSVFilePath: conf[ConfKeyCSVFilePath]})
 	} else {
 		return errors.New("No supported import medium provided")
 	}
@@ -114,7 +114,7 @@ func (p *Repository) Export(exporterID string, conf map[string]string) error {
 			ID: CSVImporterID,
 		}
 		exporter = exFac.Exporter()
-		exporter.Init(map[string]string{ConfKeyCSVPath: conf[ConfKeyCSVPath]})
+		exporter.Init(map[string]string{ConfKeyCSVFilePath: conf[ConfKeyCSVFilePath]})
 	} else {
 		return errors.New("No export medium provided")
 	}
