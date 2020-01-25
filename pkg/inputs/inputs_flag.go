@@ -34,6 +34,8 @@ const (
 	FlagMasterPassword = "masterPassword"
 	// FlagNewMasterPassword is the flag name for new masterPassword.
 	FlagNewMasterPassword = "newMasterPassword"
+	// FlagShowPassword flag
+	FlagShowPassword = "show-pass"
 )
 
 // GetFlagStringVal method returns the String flag value.

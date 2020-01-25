@@ -43,9 +43,9 @@ var searchCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		showPass, err := inputs.GetFlagBoolVal(cmd, ShowPassword)
+		showPass, err := inputs.GetFlagBoolVal(cmd, inputs.FlagShowPassword)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.FlagPassword)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, inputs.FlagShowPassword)
 		}
 
 		isSearchLabel, err := inputs.GetFlagBoolVal(cmd, FlagSearchLabel)
@@ -95,6 +95,6 @@ var searchCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(searchCmd)
-	searchCmd.Flags().BoolP(ShowPassword, "s", false, "Print password to STDOUT")
+	searchCmd.Flags().BoolP(inputs.FlagShowPassword, "s", false, "Print password to STDOUT")
 	searchCmd.Flags().BoolP(FlagSearchLabel, "l", false, "Search with the Label")
 }
