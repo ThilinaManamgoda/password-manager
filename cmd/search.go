@@ -23,6 +23,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// FlagSearchLabel is the flag for searching with labels.
 const FlagSearchLabel = "label"
 
 // searchCmd represents the searchId command
@@ -56,7 +57,7 @@ var searchCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrapf(err, "cannot get configuration")
 		}
-		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
+		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

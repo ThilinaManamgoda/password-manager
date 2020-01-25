@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -51,11 +50,7 @@ var addCmd = &cobra.Command{
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
 		}
-		conf, err := config.Configuration()
-		if err != nil {
-			return errors.Wrapf(err, "cannot get configuration")
-		}
-		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
+		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

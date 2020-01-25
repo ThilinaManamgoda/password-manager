@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-// Package fileio handles the interaction with files
+// Package fileio handles the interaction with files.
 package fileio
 
 import (
@@ -29,11 +29,12 @@ var ErrPathIsADir = errors.New("path is a directory")
 // File struct represent a file
 type File struct {
 	Path string
+	Permission os.FileMode
 }
 
-// Read method reads the file
+// Read method reads the file.
 func (p *File) Read() ([]byte, error) {
-	f, err := os.OpenFile(p.Path, os.O_CREATE|os.O_RDONLY, 0640)
+	f, err := os.OpenFile(p.Path, os.O_CREATE|os.O_RDONLY, p.Permission)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +45,9 @@ func (p *File) Read() ([]byte, error) {
 	return data, nil
 }
 
-// Write method writes data to the file
+// Write method writes data to the file.
 func (p *File) Write(data []byte) error {
-	err := ioutil.WriteFile(p.Path, data, 0640)
+	err := ioutil.WriteFile(p.Path, data, p.Permission)
 	if err != nil {
 		return err
 	}

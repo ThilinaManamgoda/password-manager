@@ -38,19 +38,19 @@ var exportCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		csvFile, err := inputs.GetFlagStringVal(cmd, CSVFile)
+		csvFile, err := inputs.GetFlagStringVal(cmd, config.CSVFileFlag)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, CSVFile)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.CSVFileFlag)
 		}
-		conf, err := config.Configuration()
-		if err != nil {
-			return errors.Wrapf(err, "cannot get configuration")
+
+		if csvFile == "" {
+			return errors.New("must provide a medium to export")
 		}
-		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
+		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}
-		err = passwordRepo.ExportToCSV(csvFile)
+		err = passwordRepo.Export(passwords.CSVExporterID, map[string]string{passwords.ConfKeyCSVPath: csvFile})
 		if err != nil {
 			return errors.Wrap(err, "couldn't export password repository to the CSV file")
 		}
@@ -60,14 +60,5 @@ var exportCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(exportCmd)
-	exportCmd.Flags().StringP(CSVFile, "f", "", "export passwords to a csv file")
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// exportCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// exportCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	exportCmd.Flags().StringP(config.CSVFileFlag, "f", "", "export passwords to a csv file")
 }

@@ -19,6 +19,7 @@
 package passwords
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"gotest.tools/assert"
 	"os"
@@ -33,12 +34,27 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	db := &DB{
-		Entries: map[string]Entry{},
-		Labels:  map[string][]string{},
+	setupEnvs(wd)
+	// Init config package. In a command flow, this done with the "root" command.
+	config.Init()
+
+	err = InitRepo("mPassword")
+	if err != nil {
+		panic(err)
 	}
-	repo = newRepository(db, "mPassword", utils.AESEncryptID, path.Join(wd, "testDB"))
-	err = repo.ImportFromCSV(path.Join(wd, "../../test/mock-data/data.csv"))
+	config.Init()
+	repo, err = LoadRepo("mPassword")
+	if err != nil {
+		panic(err)
+	}
+	err = repo.Import(CSVImporterID, map[string]string{ConfKeyCSVPath: path.Join(wd, "../../test/mock-data/data.csv")})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func setupEnvs(wd string) {
+	err := os.Setenv("PM_STORAGE_FILE_PATH", path.Join(wd, "testPasswordDB"))
 	if err != nil {
 		panic(err)
 	}

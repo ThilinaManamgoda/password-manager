@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package cmd
 
 import (
@@ -21,12 +20,6 @@ import (
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-)
-
-// ShowPassword flag
-const (
-	// ShowPassword flag
-	CSVFile = "csv-file"
 )
 
 // getCmd represents the get command
@@ -45,21 +38,19 @@ var importCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		csvFile, err := inputs.GetFlagStringVal(cmd, CSVFile)
+		csvFile, err := inputs.GetFlagStringVal(cmd, config.CSVFileFlag)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, CSVFile)
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.CSVFileFlag)
 		}
-
-		conf, err := config.Configuration()
-		if err != nil {
-			return errors.Wrapf(err, "cannot get configuration")
+		if csvFile == "" {
+			return errors.New("must provide a medium to import")
 		}
-		passwordRepo, err := passwords.LoadRepo(mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
+		passwordRepo, err := passwords.LoadRepo(mPassword)
 		if err != nil {
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}
 
-		err = passwordRepo.ImportFromCSV(csvFile)
+		err = passwordRepo.Import(passwords.CSVImporterID, map[string]string{passwords.ConfKeyCSVPath: csvFile})
 		if err != nil {
 			return errors.Wrap(err, "couldn't import the CSV file")
 		}
@@ -69,5 +60,5 @@ var importCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(importCmd)
-	importCmd.Flags().StringP(CSVFile, "f", "", "Import passwords")
+	importCmd.Flags().StringP(config.CSVFileFlag, "f", "", "Import passwords")
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package passwords contains the in memory data manipulations for password repo
+// Package passwords contains the in memory data manipulations for password repo.
 package passwords
 
 import (
@@ -20,15 +20,14 @@ import (
 	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/encrypt"
-	"github.com/ThilinaManamgoda/password-manager/pkg/fileio"
+	storage2 "github.com/ThilinaManamgoda/password-manager/pkg/storage"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
 	"github.com/pkg/errors"
-	"os"
 	"strings"
 )
 
-// Entry struct represents entry in the password db
+// Entry struct represents entry in the password db.
 type Entry struct {
 	ID       string `json:"id"`
 	Username string `json:"username"`
@@ -42,64 +41,32 @@ var (
 	}
 	// ErrCannotSavePasswordDB represents the error when it is unable to save password entry.
 	ErrCannotSavePasswordDB = func(err error) error {
-		return errors.Wrap(err, "cannot save password")
+		return errors.Wrap(err, "cannot save password db")
 	}
 	// ErrNoPasswords represents the error when no passwords are available.
-	ErrNoPasswords          = errors.New("no passwords are available")
+	ErrNoPasswords = errors.New("no passwords are available")
 	// ErrCannotFindMatchForID represents the error when it is unable to find a password entry for the given ID.
 	ErrCannotFindMatchForID = func(id string) error {
 		return errors.New(fmt.Sprintf("cannot find any match for id %s", id))
 	}
 )
 
-// DB struct represents password db
+// DB struct represents password db.
 type DB struct {
 	Entries map[string]Entry    `json:"entries"`
 	Labels  map[string][]string `json:"labels"`
 }
 
-// Repository struct handles Password db
+// Repository struct handles Password db.
 type Repository struct {
 	encryptor encrypt.Encryptor
 	mPassword string
 	db        *DB
-	file      *fileio.File
+	storage   storage2.Storage
 }
 
 func isPasswordRepoAlreadyInitialized(repoData []byte) bool {
 	return utils.IsValidByteSlice(repoData)
-}
-
-func loadDBFile(mPassword string, e encrypt.Encryptor, f *fileio.File) ([]byte, error) {
-	exists, err := fileio.IsFileExists(f.Path)
-	if err != nil {
-		return nil, errors.Wrap(err, "cannot load the password DB file")
-	}
-	if !exists {
-		return nil, errors.New("cannot find the password DB file")
-	}
-	encryptedData, err := f.Read()
-	if err != nil {
-		return nil, errors.Wrap(err, "cannot read password DB file")
-	}
-
-	if !isPasswordRepoAlreadyInitialized(encryptedData) {
-		return nil, errors.New("password repository is not initialized")
-	}
-
-	decryptedData, err := e.Decrypt(encryptedData, mPassword)
-	if err != nil {
-		return nil, errors.Wrap(err, "cannot decrypt password db")
-	}
-	return decryptedData, nil
-}
-
-func loadDB(passwordDB []byte) (*DB, error) {
-	var db DB
-	if err := json.Unmarshal(passwordDB, &db); err != nil {
-		return &DB{}, errors.Wrapf(err, "cannot unmarshal password db")
-	}
-	return &db, nil
 }
 
 func (p *Repository) marshalDB() ([]byte, error) {
@@ -112,33 +79,34 @@ func (p *Repository) marshalDB() ([]byte, error) {
 
 // ChangeMasterPassword changes the master password.
 func (p *Repository) ChangeMasterPassword(newPassword string) error {
-	passwordDBJSON, err := p.marshalDB()
+	p.mPassword = newPassword
+	err := p.saveDB()
 	if err != nil {
-		return err
-	}
-	encryptedData, err := p.encryptor.Encrypt(passwordDBJSON, newPassword)
-	if err != nil {
-		return errors.Wrap(err, "cannot encrypt password db")
-	}
-	err = p.file.Write(encryptedData)
-	if err != nil {
-		return errors.Wrap(err, "cannot write to password db file")
+		return errors.Wrap(err, "cannot save password DB")
 	}
 	return nil
 }
 
-func (p *Repository) saveDB() error {
+func (p *Repository) getEncryptedDB() ([]byte, error) {
 	passwordDBJSON, err := p.marshalDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	encryptedData, err := p.encryptor.Encrypt(passwordDBJSON, p.mPassword)
 	if err != nil {
+		return nil, errors.Wrap(err, "cannot encrypt password db")
+	}
+	return encryptedData, nil
+}
+
+func (p *Repository) saveDB() error {
+	encryptedData, err := p.getEncryptedDB()
+	if err != nil {
 		return errors.Wrap(err, "cannot encrypt password db")
 	}
-	err = p.file.Write(encryptedData)
+	err = p.storage.Store(encryptedData)
 	if err != nil {
-		return errors.Wrap(err, "cannot write to password db file")
+		return ErrCannotSavePasswordDB(err)
 	}
 	return nil
 }
@@ -157,7 +125,7 @@ func (p *Repository) addPasswordEntryToRepo(id, uN, password string, labels []st
 	return nil
 }
 
-// Add method add new password entry to Password db
+// Add method add new password entry to Password db.
 func (p *Repository) Add(id, uN, password string, labels []string) error {
 	if id == "" {
 		return errors.New("invalid the ID")
@@ -169,7 +137,7 @@ func (p *Repository) Add(id, uN, password string, labels []string) error {
 
 	err = p.saveDB()
 	if err != nil {
-		return ErrCannotSavePasswordDB(err)
+		return err
 	}
 	return nil
 }
@@ -226,7 +194,7 @@ func (p *Repository) ChangePasswordEntry(id string, entry Entry) error {
 	passwordDB[id] = entry
 	err := p.saveDB()
 	if err != nil {
-		return ErrCannotSavePasswordDB(err)
+		return err
 	}
 	return nil
 }
@@ -302,8 +270,30 @@ func (p *Repository) Remove(id string) error {
 	delete(p.db.Entries, id)
 	err := p.saveDB()
 	if err != nil {
-		return ErrCannotSavePasswordDB(err)
+		return err
 	}
+	return nil
+}
+
+func (p *Repository) loadDB() error {
+	encryptedData, err := p.storage.Load()
+	if err != nil {
+		return errors.Wrap(err, "unable to password DB")
+	}
+	if !isPasswordRepoAlreadyInitialized(encryptedData) {
+		return errors.New("password repository is not initialized")
+	}
+
+	decryptedData, err := p.encryptor.Decrypt(encryptedData, p.mPassword)
+	if err != nil {
+		return errors.Wrap(err, "cannot decrypt password db")
+	}
+
+	var db DB
+	if err := json.Unmarshal(decryptedData, &db); err != nil {
+		return errors.Wrapf(err, "cannot unmarshal password repository")
+	}
+	p.db = &db
 	return nil
 }
 
@@ -325,75 +315,58 @@ func InitRepo(mPassword string) error {
 	if err != nil {
 		return errors.Wrapf(err, "cannot get configuration")
 	}
-	exists, err := fileio.IsFileExists(conf.PasswordDBFilePath)
-	if err != nil {
-		return errors.Wrapf(err, "cannot initiate Password DB")
-	}
-
-	if !exists {
-		_, err = os.Create(conf.PasswordDBFilePath)
-		if err != nil {
-			return errors.Wrapf(err, "unable to create Password DB file")
-		}
-	}
-	f := &fileio.File{Path: conf.PasswordDBFilePath}
-	data, err := f.Read()
-	if err != nil {
-		return errors.New("cannot read password DB file")
-	}
-
-	if isPasswordRepoAlreadyInitialized(data) {
-		return errors.New("password repository is already initialized")
-	}
 
 	db := &DB{
 		Entries: map[string]Entry{},
 		Labels:  map[string][]string{},
 	}
-	passwordRepo := newRepository(db, mPassword, conf.EncryptorID, conf.PasswordDBFilePath)
-	err = passwordRepo.saveDB()
+	eFac := &encrypt.Factory{
+		ID: conf.EncryptorID,
+	}
+	sFac := storage2.Factory{ID: conf.StorageID}
+	repo := &Repository{
+		mPassword: mPassword,
+		encryptor: eFac.Encryptor(),
+		db:        db,
+		storage:   sFac.Storage(),
+	}
+	encryptedData, err := repo.getEncryptedDB()
 	if err != nil {
-		return errors.Wrapf(err, "unable save password repository")
+		return errors.Wrap(err, "cannot encrypt password db")
+	}
+
+	err = repo.storage.InitForFirstTime(encryptedData, conf.Storage)
+	if err != nil {
+		return errors.Wrapf(err, "unable initiate password repository")
 	}
 	return nil
 }
 
-func newRepository(db *DB, mPassword, encryptorID, dbFilePath string) *Repository {
-	eFac := &encrypt.Factory{
-		ID: encryptorID,
-	}
-	fSpec := &fileio.File{
-		Path: dbFilePath,
-	}
-	return &Repository{
-		mPassword: mPassword,
-		encryptor: eFac.GetEncryptor(),
-		db:        db,
-		file:      fSpec,
-	}
-}
-
 // LoadRepo initializes the Password repository.
-func LoadRepo(mPassword, encryptorID, passwordDBFilePath string) (*Repository, error) {
+// This function initialises each component of the password repository.
+func LoadRepo(mPassword string) (*Repository, error) {
+	conf, err := config.Configuration()
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot get configuration")
+	}
+
 	eFac := &encrypt.Factory{
-		ID: encryptorID,
+		ID: conf.EncryptorID,
 	}
-	fSpec := &fileio.File{
-		Path: passwordDBFilePath,
-	}
-	rawDb, err := loadDBFile(mPassword, eFac.GetEncryptor(), fSpec)
-	if err != nil {
-		return nil, errors.Wrapf(err, "cannot get Raw DB")
-	}
-	db, err := loadDB(rawDb)
-	if err != nil {
-		return nil, errors.Wrapf(err, "cannot get DB")
-	}
-	passwordRepo := &Repository{
+	sFac := storage2.Factory{ID: conf.StorageID}
+	repo := &Repository{
+		encryptor: eFac.Encryptor(),
+		storage:   sFac.Storage(),
 		mPassword: mPassword,
-		encryptor: eFac.GetEncryptor(),
-		db:        db,
-		file:      fSpec,
 	}
-	return passwordRepo, nil
+
+	err = repo.storage.Init(conf.Storage)
+	if err != nil {
+		return nil, errors.Wrapf(err, "unable to init password storage")
+	}
+	err = repo.loadDB()
+	if err != nil {
+		return nil, errors.Wrapf(err, "unable to load password DB")
+	}
+	return repo, nil
 }

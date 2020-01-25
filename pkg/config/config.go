@@ -16,6 +16,7 @@
 package config
 
 import (
+	"github.com/ThilinaManamgoda/password-manager/pkg/storage"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
@@ -28,19 +29,41 @@ import (
 const (
 	// YAMLFileType is the file type YAML.
 	YAMLFileType = "yaml"
-	// EnvPrefix is the environment variable prefix
+	// EnvPrefix is the environment variable prefix.
 	EnvPrefix = "PM"
 	// ErrMsgUnableToReadConf is an error message
 	ErrMsgUnableToReadConf = "Unable to load configuration file %s"
 	// FilePathEnv is env that represents the main configuration path
 	FilePathEnv = "PM_CONF_PATH"
+	// CSVFileFlag is the CSV file flag.
+	CSVFileFlag = "csv-file"
 )
 
 // Config struct represent the configuration for the tool.
 type Config struct {
-	PasswordDBFilePath string `mapstructure:"passwordDBFilePath"`
-	EncryptorID        string `mapstructure:"encryptorID"`
-	SelectListSize     int    `mapstructure:"selectListSize"`
+	EncryptorID    string  `mapstructure:"encryptorID"`
+	SelectListSize int     `mapstructure:"selectListSize"`
+	Storage        Storage `mapstructure:"storage"`
+}
+
+// TransformedConfig is constructed from Config.
+// This configuration is formed to support different kind of components that is been used.
+type TransformedConfig struct {
+	StorageID      string
+	EncryptorID    string
+	SelectListSize int
+	Storage        map[string]string
+}
+
+// Storage represent storage configurations.
+type Storage struct {
+	File File `mapstructure:"file"`
+}
+
+// File represent file storage configurations.
+type File struct {
+	Path       string `mapstructure:"path"`
+	Permission string `mapstructure:"permission"`
 }
 
 // Init function configures the viper.
@@ -52,7 +75,7 @@ func Init() {
 }
 
 // Configuration method loads the configuration.
-func Configuration() (*Config, error) {
+func Configuration() (*TransformedConfig, error) {
 	err := defaultConf()
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot set default config")
@@ -68,7 +91,18 @@ func Configuration() (*Config, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot unmarshal the configuration")
 	}
-	return config, nil
+	parsedConfig := &TransformedConfig{
+		EncryptorID:    config.EncryptorID,
+		SelectListSize: config.SelectListSize,
+	}
+
+	if config.Storage.File.Path != "" {
+		storageConf := make(map[string]string)
+		storageConf[storage.ConfKeyPath] = config.Storage.File.Path
+		storageConf[storage.ConfKeyPermission] = config.Storage.File.Permission
+		parsedConfig.Storage = storageConf
+	}
+	return parsedConfig, nil
 }
 
 func loadConfigFile() error {
@@ -87,7 +121,7 @@ func defaultConf() error {
 	if err != nil {
 		return errors.Wrap(err, "cannot retrieve Home directory path")
 	}
-	viper.SetDefault("passwordDBFilePath", filepath.Join(home, "/passwordDB"))
+	viper.SetDefault("storage.file.path", filepath.Join(home, "/passwordDB"))
 	viper.SetDefault("encryptorID", utils.AESEncryptID)
 	viper.SetDefault("selectListSize", 5)
 	return nil

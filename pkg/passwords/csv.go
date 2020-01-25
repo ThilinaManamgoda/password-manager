@@ -27,17 +27,46 @@ import (
 	"strings"
 )
 
-// CSVSeparator represents the separator for CSV file.
-const CSVSeparator = ","
+const (
+	//CSVExporterID is the CSV exporter ID.
+	CSVExporterID = "CSV_EXPORTER"
+	//CSVImporterID is the CSV importer ID.
+	CSVImporterID = "CSV_IMPORTER"
+	// CSVSeparator represents the separator for CSV file.
+	CSVSeparator = ","
+	//ConfKeyCSVPath represents the CSV path key in the conf map.
+	ConfKeyCSVPath = "CONF_KEY_CSV_PATH"
+)
 
-// ImportFromCSV imports the passwords entries from the given CSV file.
-func (p *Repository) ImportFromCSV(csvFilePath string) error {
-	csvFile, err := os.Open(csvFilePath)
+// CSVExporter struct is used to export password entries.
+type CSVExporter struct {
+	path string
+}
+
+// CSVImporter struct is used to import password entries.
+type CSVImporter struct {
+	path string
+}
+
+// Init initialize the CSV Importer.
+func (i *CSVImporter) Init(conf map[string]string) {
+	i.path = conf[ConfKeyCSVPath]
+}
+
+// Init initialize the CSV Exporter.
+func (e *CSVExporter) Init(conf map[string]string) {
+	e.path = conf[ConfKeyCSVPath]
+}
+
+// Import imports password entries from a CSV file.
+func (i *CSVImporter) Import() ([] ImportExportEntry, error) {
+	csvFile, err := os.Open(i.path)
 	if err != nil {
-		return errors.Wrap(err, "Couldn't open the csv file")
+		return nil, errors.Wrap(err, "Couldn't open the CSV file")
 	}
 	r := csv.NewReader(csvFile)
 
+	var entries []ImportExportEntry
 	first := true
 	// Iterate through the records
 	for {
@@ -47,7 +76,7 @@ func (p *Repository) ImportFromCSV(csvFilePath string) error {
 			break
 		}
 		if err != nil {
-			return err
+			return nil, errors.Wrap(err, "unable to read CSV file")
 		}
 		if first {
 			first = false
@@ -57,22 +86,19 @@ func (p *Repository) ImportFromCSV(csvFilePath string) error {
 		uN := record[1]
 		password := record[2]
 		labels := strings.Split(record[3], CSVSeparator)
-
-		err = p.addPasswordEntryToRepo(id, uN, password, labels)
-		if err != nil {
-			return err
-		}
+		entries = append(entries, ImportExportEntry{
+			Entry: Entry{ID: id,
+				Username: uN,
+				Password: password},
+			Labels: labels,
+		})
 	}
-	err = p.saveDB()
-	if err != nil {
-		return err
-	}
-	return nil
+	return entries, nil
 }
 
-// ExportToCSV exports the password database to the given CSV file.
-func (p *Repository) ExportToCSV(csvFilePath string) error {
-	exists, err := fileio.IsFileExists(csvFilePath)
+// Export exports password entries to a CSV file.
+func (e *CSVExporter) Export(entries [] ImportExportEntry) error {
+	exists, err := fileio.IsFileExists(e.path)
 	if err != nil {
 		return errors.Wrapf(err, "cannot inspect the given CSV file path")
 	}
@@ -81,7 +107,7 @@ func (p *Repository) ExportToCSV(csvFilePath string) error {
 		return errors.New("CSV file already exists")
 	}
 
-	csvFile, err := os.Create(csvFilePath)
+	csvFile, err := os.Create(e.path)
 	if err != nil {
 		return errors.Wrapf(err, "unable to create the CSV file")
 	}
@@ -89,17 +115,13 @@ func (p *Repository) ExportToCSV(csvFilePath string) error {
 	writer := csv.NewWriter(csvFile)
 	defer writer.Flush()
 	firstLine := true
-	for id, entry := range p.db.Entries {
+	for _, entry := range entries {
 		var csvEntry []string
 		if firstLine {
 			csvEntry = []string{"id", "username", "password", "labels"}
 			firstLine = false
 		} else {
-			labels, err := p.searchLabelsForID(id)
-			if err != nil {
-				return errors.Wrapf(err, "couldn't find the labels for id %s", id)
-			}
-			csvEntry = []string{id, entry.Username, entry.Password, strings.Join(labels, CSVSeparator)}
+			csvEntry = []string{entry.ID, entry.Username, entry.Password, strings.Join(entry.Labels, CSVSeparator)}
 		}
 		err = writer.Write(csvEntry)
 		if err != nil {

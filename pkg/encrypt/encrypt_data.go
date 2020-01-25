@@ -29,8 +29,8 @@ type Factory struct {
 	ID string
 }
 
-// GetEncryptor method returns an encryptor
-func (f *Factory) GetEncryptor() Encryptor {
+// Encryptor method returns an encryptor
+func (f *Factory) Encryptor() Encryptor {
 	switch f.ID {
 	case utils.AESEncryptID:
 		return &AESEncryptor{}
