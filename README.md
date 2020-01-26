@@ -1,25 +1,21 @@
-# password-manager
+![password-manager](resources/logo.png) 
+# Password Manager
 
-A local Password Manager
+[![Build Status](https://travis-ci.com/ThilinaManamgoda/password-manager.svg?branch=master)](https://travis-ci.com/ThilinaManamgoda/password-manager)
 
+Encrypt your passwords into a file and have access with ease.
 ### Synopsis
 
-A local password manager
+A local password manager which simply encrypts your passwords in to a file and searching passwords made easy ![how-to-install](resources/exclamation-mark.png).
 
-### Options
-
-```
-  -h, --help                    help for password-manager
-  -m, --masterPassword string   Master password
-```
-
+![how-to-install](resources/instalation.png) 
 ### How to install
 
-#### Linux
+#### Linux ![linux](resources/linux.png)
 
 1. Using the command line, add the following to your /etc/apt/sources.list system config file,
 
-    ```sudo echo "deb https://dl.bintray.com/maanafunedu/maanadev-debian stable main" | sudo tee -a /etc/apt/sources.list```
+    `sudo echo "deb https://dl.bintray.com/maanafunedu/maanadev-debian stable main" | sudo tee -a /etc/apt/sources.list`
 1. Update repository,   
       
      ```sudo apt update```
@@ -27,15 +23,16 @@ A local password manager
  
     ```sudo install password-manager```
 
-#### MacOS
+#### MacOS ![macos](resources/macos.png)
 
 1. Tap into password-manager brew formula with the following command,
         
      ```brew tap ThilinaManamgoda/homebrew-password-manager```
-1. Move the downloaded binary to `/usr/local/bin` with the following command,  
+1. Install password-manager, with the following command,  
        
      ```brew install password-manager```
-    
+     
+![How to use](resources/how-to-use.png)   
 ### How to use
 
 1. Initialize the password manager with the following command,
@@ -94,7 +91,71 @@ A local password manager
         password-manager search -l test
     ```
     Once you enter the Master password the a list of password entries will be listed that match the given label. Once the entry is selected, the **password** will be copied to the clipboard.
-     
+ 
+### Configuration
+
+1. Follow the instructions to override default configurations using a configuration file.
+
+    1. Create a password-manager.yaml file with following content. Keep configurations that need to be overridden. 
+        ```$xslt
+        # Set encryptor for encryping passwords. Ex: "AES"
+        encryptorID: "AES"
+        # Maximum list size for selection drop down.
+        selectListSize: 5
+        # Set storage configurations.
+        storage:
+         # Configure File storage configuration.
+          file:
+           # Path for the file. 
+           path: "~/passwordDB"
+           # File permission for given file in the path.
+           permission: 0640
+        ```
+        
+    1. Export Environment vairble to point the configuration file.
+    
+        `export PM_CONF_PATH=${PATH_TO_PASSOWRD_MANAGER_YAML}`
+1. Follow the instructions to override default configurations using environment variables.
+    1. Export required override configuration as environment variable. For example let's assume that you need 
+    to override **file permission** of the File storage type. 
+        ```$xslt
+        export PM_STORAGE_FILE_PERMISSION=0640
+        ```   
+     Environment variable should have the prefix `PM_` and the hierarchy seperation with `_` and keyword **ALL CAPS**.
+    
+     examples:
+    
+        `PM_SELECTLISTSIZE`
+        `PM_ENCRYPTORID=AES`
+        `PM_STORAGE_FILE_PATH=/home/example/path/password_db`
+### Export passwords
+If you need to transfer your passwords to a different PC where you have installed password-manager, 
+it can be achieved by making a copy of your password database file assuming storage type is **File**. 
+
+Also, you can export passwords to **CVS file** with the following command,
+```$xslt
+pasword-manager export --csv-file ${PATH_TO_CSV_FILE}
+```
+
+Exported CSV file will have the following format([Ex: test/mock-data/data.csv](test/mock-data/data.csv)),
+```$xslt
+id,username,password,labels
+foo@foo.com,foo@foo.com,gijggx3MDxZ,"foo,com"
+```
+   
+### Import Passwords
+You can import passwords from a **CSV file** with following command,
+
+```$xslt
+pasword-manager import --csv-file ${PATH_TO_CSV_FILE}
+```
+
+CSV file should be in the following format([Ex: test/mock-data/data.csv](test/mock-data/data.csv)),
+```$xslt
+id,username,password,labels
+foo@foo.com,foo@foo.com,gijggx3MDxZ,"foo,com"
+```
+ 
 ### SEE ALSO
 
 * [password-manager init](doc/password-manager_init.md)	 - Initialize the Password Manager
