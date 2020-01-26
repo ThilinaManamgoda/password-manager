@@ -31,8 +31,8 @@ const FlagInteractiveMode = "interactive"
 // rootCmd represents the base command when called without any sub-commands
 var rootCmd = &cobra.Command{
 	Use:   "password-manager",
-	Short: "A local Password Manager",
-	Long:  `A local password manager`,
+	Short: "Encrypt your passwords into a file and have access with ease.",
+	Long:  `A local password manager which simply encrypts your passwords in to a file and searching passwords easy!.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

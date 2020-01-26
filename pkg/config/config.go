@@ -31,10 +31,10 @@ const (
 	YAMLFileType = "yaml"
 	// EnvPrefix is the environment variable prefix.
 	EnvPrefix = "PM"
-	// ErrMsgUnableToReadConf is an error message
+	// ErrMsgUnableToReadConf is an error message.
 	ErrMsgUnableToReadConf = "Unable to load configuration file %s"
-	// FilePathEnv is env that represents the main configuration path
-	FilePathEnv = "PM_CONF_PATH"
+	// FilePathEnv is env that represents the main configuration path.
+	FilePathEnv = "CONF_PATH"
 	// FlagCSVFile is the CSV file flag.
 	FlagCSVFile = "csv-file"
 	//DefaultFilePermission represents the password db file default permission.
@@ -98,6 +98,7 @@ func Configuration() (*TransformedConfig, error) {
 		SelectListSize: config.SelectListSize,
 	}
 
+	// This logic works since currently there is only one storage type.
 	if config.Storage.File.Path != "" {
 		storageConf := make(map[string]string)
 		storageConf[storage.ConfKeyFilePath] = config.Storage.File.Path
@@ -108,7 +109,7 @@ func Configuration() (*TransformedConfig, error) {
 }
 
 func loadConfigFile() error {
-	confFile, exists := os.LookupEnv(FilePathEnv)
+	confFile, exists := os.LookupEnv(EnvPrefix+"_"+FilePathEnv)
 	if exists {
 		viper.SetConfigFile(confFile)
 		if err := viper.ReadInConfig(); err != nil {
