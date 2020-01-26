@@ -17,11 +17,15 @@ A local password manager
 
 #### Linux
 
-1. Download the binary from the respective release for Linux.
-1. Move the downloaded binary to `/usr/local/bin` with the following command,         
-     ```sudo mv password-manager-darwin /usr/local/bin/password-manager```
-1. Give executable permission for the binary with the following command,  
-    ```sudo chmod +x /usr/local/bin/password-manager```
+1. Using the command line, add the following to your /etc/apt/sources.list system config file,
+
+    ```sudo echo "deb https://dl.bintray.com/maanafunedu/maanadev-debian stable main" | sudo tee -a /etc/apt/sources.list```
+1. Update repository,   
+      
+     ```sudo apt update```
+1. Install password-manager, 
+ 
+    ```sudo install password-manager```
 
 #### MacOS
 
