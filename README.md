@@ -16,6 +16,9 @@ A local password manager which simply encrypts your passwords in to a file and s
 1. Using the command line, add the following to your /etc/apt/sources.list system config file,
 
     `sudo echo "deb https://dl.bintray.com/maanafunedu/maanadev-debian stable main" | sudo tee -a /etc/apt/sources.list`
+1. Configure Bintray public GPG key,
+
+    `sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61`
 1. Update repository,   
       
      ```sudo apt update```
