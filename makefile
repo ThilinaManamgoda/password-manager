@@ -1,6 +1,6 @@
 # Go parameters
 
-TOOL_VERSION=0.8.0
+TOOL_VERSION=v0.8.0
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
@@ -46,10 +46,10 @@ deps:
 		$(DEP) ensure
 
 build-linux:
-		env GOOS="linux" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/linux/v$(TOOL_VERSION)/$(BINARY_NAME)" -v
+		env GOOS="linux" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/linux/$(TOOL_VERSION)/$(BINARY_NAME)" -v
 
 build-windows:
-		env GOOS="windows" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/windows/v$(TOOL_VERSION)/$(BINARY_NAME).exe" -v
+		env GOOS="windows" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/windows/$(TOOL_VERSION)/$(BINARY_NAME).exe" -v
 
 build-darwin:
-		env GOOS="darwin" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/darwin/v$(TOOL_VERSION)/$(BINARY_NAME)" -v
+		env GOOS="darwin" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/darwin/$(TOOL_VERSION)/$(BINARY_NAME)" -v
