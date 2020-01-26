@@ -25,11 +25,12 @@ A local password manager
 
 #### MacOS
 
-1. Download the binary from the respective release for MacOS.
-1. Move the downloaded binary to `/usr/local/bin` with the following command,         
-     ```sudo mv password-manager-darwin /usr/local/bin/password-manager```
-1. Give executable permission for the binary with the following command,  
-    ```sudo chmod +x /usr/local/bin/password-manager```
+1. Tap into password-manager brew formula with the following command,
+        
+     ```brew tap ThilinaManamgoda/homebrew-password-manager```
+1. Move the downloaded binary to `/usr/local/bin` with the following command,  
+       
+     ```brew install password-manager```
     
 ### How to use
 
