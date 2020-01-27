@@ -11,7 +11,7 @@ A local password manager which simply encrypts your passwords in to a file and s
 ![how-to-install](resources/instalation.png) 
 ### How to install
 
-#### Linux ![linux](resources/linux.png)
+#### Ubuntu ![Ubuntu](resources/linux.png)
 
 1. Using the command line, add the following to your /etc/apt/sources.list system config file,
 
