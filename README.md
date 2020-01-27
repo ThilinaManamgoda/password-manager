@@ -21,7 +21,7 @@ A local password manager which simply encrypts your passwords in to a file and s
     `sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61`
 1. Update repository,   
       
-     ```sudo apt update```
+     ```sudo apt install update```
 1. Install password-manager, 
  
     ```sudo install password-manager```
