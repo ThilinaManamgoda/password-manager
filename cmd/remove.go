@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package cmd
 
 import (
@@ -22,16 +21,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-
-)
+const ()
 
 // addCmd represents the add command
 var removeCmd = &cobra.Command{
 	Use:   "remove [ID]",
 	Short: "Remove a password",
 	Long:  `Remove a password`,
-	Args: inputs.HasProvidedValidID(),
+	Args:  inputs.HasProvidedValidID(),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		id := args[0]
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)

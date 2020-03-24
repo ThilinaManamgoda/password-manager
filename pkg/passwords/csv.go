@@ -55,7 +55,7 @@ func (e *CSVExporter) Init(conf map[string]string) {
 }
 
 // Import imports password entries from a CSV file.
-func (i *CSVImporter) Import() ([] ImportExportEntry, error) {
+func (i *CSVImporter) Import() ([]ImportExportEntry, error) {
 	csvFile, err := os.Open(i.path)
 	if err != nil {
 		return nil, errors.Wrap(err, "Couldn't open the CSV file")
@@ -93,7 +93,7 @@ func (i *CSVImporter) Import() ([] ImportExportEntry, error) {
 }
 
 // Export exports password entries to a CSV file.
-func (e *CSVExporter) Export(entries [] ImportExportEntry) error {
+func (e *CSVExporter) Export(entries []ImportExportEntry) error {
 	exists, err := fileio.IsFileExists(e.path)
 	if err != nil {
 		return errors.Wrapf(err, "cannot inspect the given CSV file path")

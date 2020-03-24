@@ -162,11 +162,11 @@ func (p *Repository) GetUsernamePassword(id string, showPassword bool) error {
 	if showPassword {
 		fmt.Println(fmt.Sprintf("Password: %s", passwordEntry.Password))
 	} else {
-		fmt.Println("Password is copied to the clip board")
 		err := clipboard.WriteAll(passwordEntry.Password)
 		if err != nil {
-			return errors.Wrapf(err, "cannot write to clip board")
+			return errors.Wrap(err, "cannot write to clip board")
 		}
+		fmt.Println("Password is copied to the clip board")
 	}
 	return nil
 }
@@ -264,7 +264,7 @@ func (p *Repository) Remove(id string) error {
 	if p.isDBEmpty() {
 		return ErrNoPasswords
 	}
-	if ! p.isIDExists(id) {
+	if !p.isIDExists(id) {
 		return ErrInvalidID(id)
 	}
 	delete(p.db.Entries, id)

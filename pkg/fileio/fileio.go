@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // Package fileio handles the interaction with files.
 package fileio
 
@@ -22,13 +21,12 @@ import (
 	"os"
 )
 
-
 // ErrPathIsADir represents an error.
 var ErrPathIsADir = errors.New("path is a directory")
 
 // File struct represent a file
 type File struct {
-	Path string
+	Path       string
 	Permission os.FileMode
 }
 

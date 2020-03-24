@@ -24,13 +24,13 @@ import (
 )
 
 const (
-	//ConfKeyFilePath represents the password db path key in the conf map.
+	// ConfKeyFilePath represents the password db path key in the conf map.
 	ConfKeyFilePath = "CONF_KEY_FILE_PATH"
-	//ConfKeyFilePermission represents the password db file permission key in the conf map.
+	// ConfKeyFilePermission represents the password db file permission key in the conf map.
 	ConfKeyFilePermission = "CONF_KEY_FILE_PERMISSION"
-	//FilePermissionPattern represents the password db file permission regex.
+	// FilePermissionPattern represents the password db file permission regex.
 	FilePermissionPattern = "[0,2,4,6][0-7][0-7][0-7]"
-	//FileStorageID is the File storage type ID.
+	// FileStorageID is the File storage type ID.
 	FileStorageID = "File"
 )
 
@@ -38,7 +38,7 @@ var (
 	// ErrInvalidPermission represents an invalid permission error.
 	ErrInvalidPermission = func(p string) error { return errors.New(fmt.Sprintf("invalid permission: %s", p)) }
 	// ErrUnableToConfigure represents unable to configure file storage error.
-	ErrUnableToConfigure = func(e error) error { return errors.Wrap(e, "unable to configure file storage") }
+	ErrUnableToConfigure = func(e error) error { return errors.Wrap(e, "unable to configure storage") }
 )
 
 // File represent a file as a storage.

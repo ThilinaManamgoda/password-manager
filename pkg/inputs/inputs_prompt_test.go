@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package inputs
 
 import (
@@ -60,4 +59,3 @@ func testIsArgValidFailedFunc() func(t *testing.T) {
 		assert.Equal(t, false, IsArgValid(""))
 	}
 }
-

@@ -32,6 +32,7 @@ var (
 	errInvalidPassword = errors.New("invalid password")
 	errInvalidContent  = errors.New("invalid content")
 )
+
 // AESEncryptor struct represent the data needed for AES encryption and decryption.
 type AESEncryptor struct {
 }
