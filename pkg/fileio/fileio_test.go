@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package fileio
 
 import (
@@ -67,13 +66,13 @@ func TestIsFileExists(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t,true, exists)
+	assert.Equal(t, true, exists)
 
 	exists, err = IsFileExists("invalid/path")
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t,false,exists)
+	assert.Equal(t, false, exists)
 
 	exists, err = IsFileExists(filepath.Join(wDir, "../../test"))
 	if assert.Error(t, err) {

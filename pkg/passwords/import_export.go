@@ -29,7 +29,7 @@ type Exporter interface {
 	// Init initialises the exporter.
 	Init(conf map[string]string)
 	// Export exports the importExport entries.
-	Export(entries [] ImportExportEntry) error
+	Export(entries []ImportExportEntry) error
 }
 
 // Importer interface is used to import data.
@@ -37,7 +37,7 @@ type Importer interface {
 	// Init initialises the importer.
 	Init(conf map[string]string)
 	// Import imports the importExport entries.
-	Import() ([] ImportExportEntry, error)
+	Import() ([]ImportExportEntry, error)
 }
 
 // ExporterFactory used to create an Exporter.

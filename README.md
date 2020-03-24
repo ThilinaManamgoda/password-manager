@@ -109,13 +109,16 @@ A local password manager which simply encrypts your passwords in to a file and s
         storage:
          # Configure File storage configuration.
           file:
+           # Enable File storage
+           enable: true 
            # Path for the file. 
            path: "~/passwordDB"
            # File permission for given file in the path.
            permission: 0640
+           
         ```
         
-    1. Export Environment vairble to point the configuration file.
+    1. Export Environment variable to point the configuration file.
     
         `export PM_CONF_PATH=${PATH_TO_PASSOWRD_MANAGER_YAML}`
 1. Follow the instructions to override default configurations using environment variables.
@@ -158,6 +161,11 @@ CSV file should be in the following format([Ex: test/mock-data/data.csv](test/mo
 id,username,password,labels
 foo@foo.com,foo@foo.com,gijggx3MDxZ,"foo,com"
 ```
+### STORAGE PRECEDENCE
+If all the Storage types are enabled, the priority will be as follow,
+
+* Google drive storage
+* Local file storage
  
 ### SEE ALSO
 
@@ -167,7 +175,7 @@ foo@foo.com,foo@foo.com,gijggx3MDxZ,"foo,com"
 * [password-manager change-master-password](doc/password-manager_change-master-password.md)	 - Change Master password
 * [password-manager generate-password](doc/password-manager_generate-password.md)	 - Generate a secure password
 * [password-manager get](doc/password-manager_get.md)	 - Get a password
-* [password-manager search](password-manager_search.md)	 - Search Password with ID
+* [password-manager search](doc/password-manager_search.md)	 - Search Password with ID
 * [password-manager import](doc/password-manager_import.md)	 - Import passwords
 * [password-manager export](doc/password-manager_export.md)	 - Export password repository to a file
 * [password-manager remove](doc/password-manager_remove.md)	 - Remove a password

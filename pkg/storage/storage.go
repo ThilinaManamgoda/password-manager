@@ -27,11 +27,11 @@ type Storage interface {
 	// Load loads the storage as a byte array.
 	Load() ([]byte, error)
 
-	// Store store data the storage.
+	// Store store data in the storage.
 	Store(data []byte) error
 }
 
-// Factory struct holds Storages.
+// Factory struct holds Storage.
 type Factory struct {
 	ID string
 }
@@ -41,6 +41,8 @@ func (f *Factory) Storage() Storage {
 	switch f.ID {
 	case FileStorageID:
 		return &File{}
+	case GoogleDriveStorageID:
+		return &GoogleDrive{}
 	default:
 		return &File{}
 	}

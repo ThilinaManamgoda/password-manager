@@ -47,7 +47,7 @@ func GeneratePassword(len int) (string, error) {
 }
 
 // MarshalData marshals the given struct to a byte array.
-func MarshalData(data interface{})([]byte, error){
+func MarshalData(data interface{}) ([]byte, error) {
 	marshaledData, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
