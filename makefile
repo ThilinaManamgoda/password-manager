@@ -39,7 +39,8 @@ build:
 
 unit-test:
 		$(GOTEST) -v $(TEST_PKGS)
-		rm pkg/passwords/testPasswordDB
+		# This directory is created with the password repo unit tests.
+		rm -rf pkg/passwords/password-manager-tmp
 
 lint:
 		$(GOGET) -u golang.org/x/lint/golint

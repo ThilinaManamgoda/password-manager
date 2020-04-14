@@ -39,10 +39,18 @@ const (
 	FlagCSVFile = "csv-file"
 	// DefaultFilePermission represents the password db file default permission.
 	DefaultFilePermission = "0640"
-	// FileStorageEnabled represents whether the File storage is enabled
-	FileStorageEnabled = true
-	// GoogleDriveStorageEnabled represents whether the Google drive storage is enabled
-	GoogleDriveStorageEnabled = !FileStorageEnabled
+	// DefaultFileStorageEnabled default value for whether the File storage is enabled.
+	DefaultFileStorageEnabled = true
+	// DefaultGoogleDriveStorageEnabled default value for whether the Google drive storage is enabled.
+	DefaultGoogleDriveStorageEnabled = !DefaultFileStorageEnabled
+	// DefaultPasswordDBFile default value for password database file name.
+	DefaultPasswordDBFile = "password-db"
+	// DefaultSelectListSize default value for select list size.
+	DefaultSelectListSize = 5
+	// DefaultDirectoryName default value for password-manager directory name.
+	DefaultDirectoryName = "password-manager"
+	// DefaultTokenFileName default value for GDrive token file name.
+	DefaultTokenFileName = "g_drive_tokenFile"
 )
 
 // Config struct represent the configuration for the tool.
@@ -118,7 +126,7 @@ func Configuration() (*TransformedConfig, error) {
 	if isGoogleDriveStorage(config) {
 		storageConf[storage.ConfKeyDirectory] = config.Storage.GoogleDrive.Directory
 		storageConf[storage.ConfKeyPasswordDBFile] = config.Storage.GoogleDrive.PasswordDBFile
-		storageConf[storage.ConfKeyTokenFilePath] = filepath.Join(config.DirectoryPath, "/g_drive_tokenFile")
+		storageConf[storage.ConfKeyTokenFilePath] = filepath.Join(config.DirectoryPath, "/"+DefaultTokenFileName)
 		parsedConfig.StorageID = storage.GoogleDriveStorageID
 	} else if isFileStorage(config) {
 		storageConf[storage.ConfKeyFilePath] = filepath.Join(config.DirectoryPath, config.Storage.File.PasswordDBFile)
@@ -154,15 +162,15 @@ func defaultConf() error {
 	if err != nil {
 		return errors.Wrap(err, "cannot retrieve Home directory path")
 	}
-	directoryPath := filepath.Join(home, "/password-manager")
-	viper.SetDefault("storage.file.enable", FileStorageEnabled)
-	viper.SetDefault("storage.file.passwordDBFile", "password-db")
+	directoryPath := filepath.Join(home, "/"+DefaultDirectoryName)
+	viper.SetDefault("storage.file.enable", DefaultFileStorageEnabled)
+	viper.SetDefault("storage.file.passwordDBFile", DefaultPasswordDBFile)
 	viper.SetDefault("storage.file.permission", DefaultFilePermission)
-	viper.SetDefault("storage.googleDrive.enable", GoogleDriveStorageEnabled)
-	viper.SetDefault("storage.googleDrive.passwordDBFile", "passwordDB")
-	viper.SetDefault("storage.googleDrive.directory", "password-manager")
+	viper.SetDefault("storage.googleDrive.enable", DefaultGoogleDriveStorageEnabled)
+	viper.SetDefault("storage.googleDrive.passwordDBFile", DefaultPasswordDBFile)
+	viper.SetDefault("storage.googleDrive.directory", DefaultDirectoryName)
 	viper.SetDefault("encryptorID", utils.AESEncryptID)
-	viper.SetDefault("selectListSize", 5)
+	viper.SetDefault("selectListSize", DefaultSelectListSize)
 	viper.SetDefault("directoryPath", directoryPath)
 	return nil
 }

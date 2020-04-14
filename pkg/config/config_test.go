@@ -19,15 +19,13 @@ import (
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/mitchellh/go-homedir"
 	"gotest.tools/assert"
+	"os"
 	"path/filepath"
 	"testing"
 )
 
-func TestConfiguration(t *testing.T) {
-	err := defaultConf()
-	if err != nil {
-		t.Error(err)
-	}
+func TestDefaultConfiguration(t *testing.T) {
+	Init()
 	result, err := Configuration()
 	if err != nil {
 		t.Error(err)
@@ -36,6 +34,31 @@ func TestConfiguration(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, filepath.Join(home, "/passwordDB"), result.Storage[storage.ConfKeyFilePath])
+	directoryPath := filepath.Join(home, "/"+DefaultDirectoryName)
+	assert.Equal(t, directoryPath, result.DirectoryPath)
+	assert.Equal(t, filepath.Join(directoryPath, "/"+DefaultPasswordDBFile), result.Storage[storage.ConfKeyFilePath])
+	assert.Equal(t, DefaultFilePermission, result.Storage[storage.ConfKeyFilePermission])
 	assert.Equal(t, utils.AESEncryptID, result.EncryptorID)
+	assert.Equal(t, DefaultSelectListSize, result.SelectListSize)
+}
+
+func TestConfigurationWithEnv(t *testing.T) {
+	Init()
+	err := os.Setenv("PM_STORAGE_GOOGLEDRIVE_ENABLE", "true")
+	if err != nil {
+		t.Error(err)
+	}
+	tmpPath := "/root/user/test"
+	err = os.Setenv("PM_DIRECTORYPATH", tmpPath)
+	if err != nil {
+		t.Error(err)
+	}
+	result, err := Configuration()
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, tmpPath, result.DirectoryPath)
+	assert.Equal(t, DefaultPasswordDBFile, result.Storage[storage.ConfKeyPasswordDBFile])
+	assert.Equal(t, filepath.Join(tmpPath, "/"+DefaultTokenFileName), result.Storage[storage.ConfKeyTokenFilePath])
+	assert.Equal(t, DefaultDirectoryName, result.Storage[storage.ConfKeyDirectory])
 }

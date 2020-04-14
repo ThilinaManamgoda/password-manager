@@ -50,7 +50,7 @@ func init() {
 }
 
 func setupEnvs(wd string) {
-	err := os.Setenv("PM_STORAGE_FILE_PATH", path.Join(wd, "testPasswordDB"))
+	err := os.Setenv("PM_DIRECTORYPATH", path.Join(wd, "password-manager-tmp"))
 	if err != nil {
 		panic(err)
 	}
