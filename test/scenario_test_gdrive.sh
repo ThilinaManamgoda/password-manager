@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019 Thilina Manamgoda
+# Copyright © 2020 Thilina Manamgoda
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,16 +25,16 @@ pushd ../
  make build-darwin TOOL_VERSION=${VERSION} GDRIVE_CLIENT_ID=${GDRIVE_CLIENT_ID} GDRIVE_CLIENT_SEC=${GDRIVE_CLIENT_SEC}
 popd
 
-export PM_STORAGE_FILE_PATH="./testDB"
+PM_DIRECTORYPATH="$(pwd)/password-manager-test"
+export PM_DIRECTORYPATH
 export PM_STORAGE_FILE_ENABLE=false
 export PM_STORAGE_GOOGLEDRIVE_ENABLE=true
 export PM_STORAGE_GOOGLEDRIVE_DIRECTORY="password-manager-test"
 PM_STORAGE_GOOGLEDRIVE_PASSWORDDBFILE="$(uuidgen)"
 export PM_STORAGE_GOOGLEDRIVE_PASSWORDDBFILE
-export PM_STORAGE_GOOGLEDRIVE_TOKENFILE="./tokenfile"
 export PM_SELECTLISTSIZE=2
 
-test -f ./tokenfile && rm ./tokenfile
+test -d ./password-manager-test && rm -rf ./password-manager-test
 test -f ./export-data.csv  && rm ./export-data.csv
 
 ../target/darwin/${VERSION}/password-manager init -m ${MASTER_PASSWORD}
@@ -61,5 +61,5 @@ echo "===Exporting passwords to a CSV file==="
 echo "===Remove a password==="
 ../target/darwin/${VERSION}/password-manager remove test -m ${MASTER_PASSWORD}
 
-test -f ./tokenfile && rm ./tokenfile
+test -d ./password-manager-test && rm -rf ./password-manager-test
 test -f ./export-data.csv  && rm ./export-data.csv

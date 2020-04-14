@@ -49,6 +49,7 @@ const (
 type Config struct {
 	EncryptorID    string  `mapstructure:"encryptorID"`
 	SelectListSize int     `mapstructure:"selectListSize"`
+	DirectoryPath  string  `mapstructure:"directoryPath"`
 	Storage        Storage `mapstructure:"storage"`
 }
 
@@ -58,6 +59,7 @@ type TransformedConfig struct {
 	StorageID      string
 	EncryptorID    string
 	SelectListSize int
+	DirectoryPath  string
 	Storage        map[string]string
 }
 
@@ -69,9 +71,9 @@ type Storage struct {
 
 // File represent file storage configurations.
 type File struct {
-	Enable     bool   `mapstructure:"enable"`
-	Path       string `mapstructure:"path"`
-	Permission string `mapstructure:"permission"`
+	Enable         bool   `mapstructure:"enable"`
+	PasswordDBFile string `mapstructure:"passwordDBFile"`
+	Permission     string `mapstructure:"permission"`
 }
 
 // GoogleDrive represent Google Drive storage configurations.
@@ -79,7 +81,6 @@ type GoogleDrive struct {
 	Enable         bool   `mapstructure:"enable"`
 	Directory      string `mapstructure:"directory"`
 	PasswordDBFile string `mapstructure:"passwordDBFile"`
-	TokenFile      string `mapstructure:"tokenFile"`
 }
 
 // Init function configures the viper.
@@ -110,16 +111,17 @@ func Configuration() (*TransformedConfig, error) {
 	parsedConfig := &TransformedConfig{
 		EncryptorID:    config.EncryptorID,
 		SelectListSize: config.SelectListSize,
+		DirectoryPath:  config.DirectoryPath,
 	}
 
 	storageConf := make(map[string]string)
 	if isGoogleDriveStorage(config) {
 		storageConf[storage.ConfKeyDirectory] = config.Storage.GoogleDrive.Directory
 		storageConf[storage.ConfKeyPasswordDBFile] = config.Storage.GoogleDrive.PasswordDBFile
-		storageConf[storage.ConfKeyTokenFilePath] = config.Storage.GoogleDrive.TokenFile
+		storageConf[storage.ConfKeyTokenFilePath] = filepath.Join(config.DirectoryPath, "/g_drive_tokenFile")
 		parsedConfig.StorageID = storage.GoogleDriveStorageID
 	} else if isFileStorage(config) {
-		storageConf[storage.ConfKeyFilePath] = config.Storage.File.Path
+		storageConf[storage.ConfKeyFilePath] = filepath.Join(config.DirectoryPath, config.Storage.File.PasswordDBFile)
 		storageConf[storage.ConfKeyFilePermission] = config.Storage.File.Permission
 		parsedConfig.StorageID = storage.FileStorageID
 	}
@@ -152,14 +154,15 @@ func defaultConf() error {
 	if err != nil {
 		return errors.Wrap(err, "cannot retrieve Home directory path")
 	}
+	directoryPath := filepath.Join(home, "/password-manager")
 	viper.SetDefault("storage.file.enable", FileStorageEnabled)
-	viper.SetDefault("storage.file.path", filepath.Join(home, "/passwordDB"))
+	viper.SetDefault("storage.file.passwordDBFile", "password-db")
 	viper.SetDefault("storage.file.permission", DefaultFilePermission)
 	viper.SetDefault("storage.googleDrive.enable", GoogleDriveStorageEnabled)
-	viper.SetDefault("storage.googleDrive.tokenFile", filepath.Join(home, "/tokenfile"))
 	viper.SetDefault("storage.googleDrive.passwordDBFile", "passwordDB")
 	viper.SetDefault("storage.googleDrive.directory", "password-manager")
 	viper.SetDefault("encryptorID", utils.AESEncryptID)
 	viper.SetDefault("selectListSize", 5)
+	viper.SetDefault("directoryPath", directoryPath)
 	return nil
 }

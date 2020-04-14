@@ -65,13 +65,13 @@ var searchCmd = &cobra.Command{
 		var passwordIDs []string
 		if !isSearchLabel {
 			searchID := args[0]
-			passwordIDs, err = passwordRepo.SearchID(searchID, showPass)
+			passwordIDs, err = passwordRepo.SearchID(searchID)
 			if err != nil {
 				return errors.Wrapf(err, "cannot search ID %s", searchID)
 			}
 		} else {
 			label := args[0]
-			passwordIDs, err = passwordRepo.SearchLabel(label, showPass)
+			passwordIDs, err = passwordRepo.SearchLabel(label)
 			if err != nil {
 				return errors.Wrapf(err, "cannot search Label %s", label)
 			}

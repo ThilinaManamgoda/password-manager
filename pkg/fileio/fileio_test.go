@@ -33,7 +33,7 @@ func testReadFileSuccessFunc() func(t *testing.T) {
 			t.Error(err)
 		}
 		p := &File{
-			Path: filepath.Join(wDir, "../../test/test_read_file_success"),
+			Path: filepath.Join(wDir, "../../test/test-resources/test_read_file_success"),
 		}
 		result, err := p.Read()
 		if err != nil {
@@ -62,7 +62,7 @@ func TestIsFileExists(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	exists, err := IsFileExists(filepath.Join(wDir, "../../test/test_read_file_success"))
+	exists, err := IsFileExists(filepath.Join(wDir, "../../test/test-resources/test_read_file_success"))
 	if err != nil {
 		t.Error(err)
 	}
@@ -77,5 +77,44 @@ func TestIsFileExists(t *testing.T) {
 	exists, err = IsFileExists(filepath.Join(wDir, "../../test"))
 	if assert.Error(t, err) {
 		assert.Error(t, ErrPathIsADir, err)
+	}
+}
+
+func TestIsDirExists(t *testing.T) {
+	t.Run("TrueTest", testIsFileExistsTrueFunc())
+	t.Run("FalseTest", testIsFileExistsFalseFunc())
+}
+
+func testIsFileExistsFalseFunc() func(t *testing.T) {
+	return func(t *testing.T) {
+		wDir, err := os.Getwd()
+		if err != nil {
+			t.Error(err)
+		}
+		exists, err := IsDirExists(filepath.Join(wDir, "../../test/test-resources/sample-directory-invalid"))
+		if err != nil {
+			t.Error(err)
+		}
+		assert.Equal(t, false, exists)
+		exists, err = IsDirExists(filepath.Join(wDir, "../../test/test-resources/test_read_file_success"))
+		if err != nil {
+			t.Error(err)
+		}
+		assert.Equal(t, false, exists)
+	}
+}
+
+func testIsFileExistsTrueFunc() func(t *testing.T) {
+	return func(t *testing.T) {
+		wDir, err := os.Getwd()
+		if err != nil {
+			t.Error(err)
+		}
+		exists, err := IsDirExists(filepath.Join(wDir, "../../test/test-resources/sample-directory"))
+		if err != nil {
+			t.Error(err)
+		}
+		assert.Equal(t, true, exists)
+
 	}
 }
