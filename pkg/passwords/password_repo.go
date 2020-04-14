@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/config"
 	"github.com/ThilinaManamgoda/password-manager/pkg/encrypt"
+	"github.com/ThilinaManamgoda/password-manager/pkg/fileio"
 	storage2 "github.com/ThilinaManamgoda/password-manager/pkg/storage"
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
@@ -200,7 +201,7 @@ func (p *Repository) ChangePasswordEntry(id string, entry Entry) error {
 }
 
 // SearchID will return the password entries if the password ID contains the provide key.
-func (p *Repository) SearchID(id string, showPassword bool) ([]string, error) {
+func (p *Repository) SearchID(id string) ([]string, error) {
 	if p.isDBEmpty() {
 		return nil, ErrNoPasswords
 	}
@@ -221,7 +222,7 @@ func (p *Repository) isDBEmpty() bool {
 }
 
 // SearchLabel will return the password ids if the password labels contains the provide label.
-func (p *Repository) SearchLabel(label string, showPassword bool) ([]string, error) {
+func (p *Repository) SearchLabel(label string) ([]string, error) {
 	if p.isDBEmpty() {
 		return nil, ErrNoPasswords
 	}
@@ -335,9 +336,22 @@ func InitRepo(mPassword string) error {
 		return errors.Wrap(err, "cannot encrypt password db")
 	}
 
+	err = createConfigDir(conf.DirectoryPath)
+	if err != nil {
+		return errors.Wrap(err, "unable to create configuration directory")
+	}
+
 	err = repo.storage.InitForFirstTime(encryptedData, conf.Storage)
 	if err != nil {
 		return errors.Wrapf(err, "unable initiate password repository")
+	}
+	return nil
+}
+
+func createConfigDir(path string) error {
+	err := fileio.CreateDirectory(path)
+	if err != nil {
+		return err
 	}
 	return nil
 }

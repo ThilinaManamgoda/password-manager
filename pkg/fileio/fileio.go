@@ -53,16 +53,57 @@ func (p *File) Write(data []byte) error {
 }
 
 // IsFileExists checks whether the given file exists.
-func IsFileExists(filename string) (bool, error) {
-	info, err := os.Stat(filename)
+func IsFileExists(filePath string) (bool, error) {
+	exists, info, err := isExits(filePath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		}
 		return false, err
+	}
+	if !exists {
+		return false, nil
 	}
 	if info.IsDir() {
 		return false, ErrPathIsADir
 	}
 	return true, nil
+}
+
+func isExits(path string) (bool, os.FileInfo, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil, nil
+		}
+		return false, nil, err
+	}
+	return true, info, nil
+}
+
+// IsDirExists checks whether the given directory exists.
+func IsDirExists(dirPath string) (bool, error) {
+	exists, info, err := isExits(dirPath)
+	if err != nil {
+		return false, err
+	}
+	if !exists {
+		return false, nil
+	}
+	if !info.IsDir() {
+		return false, nil
+	}
+	return true, nil
+}
+
+// CreateDirectory creates the given directory.
+func CreateDirectory(path string) error {
+	exists, err := IsDirExists(path)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		err = os.Mkdir(path, 0755)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

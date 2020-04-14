@@ -69,18 +69,18 @@ func TestGet(t *testing.T) {
 }
 
 func TestSearchID(t *testing.T) {
-	ids, err := repo.SearchID("bluckcock", false)
+	ids, err := repo.SearchID("bluckcock")
 	if err != nil {
 		t.Error(err)
 	}
 	assert.Equal(t, "bluckcockro@answers.com", ids[0])
 
-	_, err = repo.SearchID("invalid@id.com", false)
+	_, err = repo.SearchID("invalid@id.com")
 	assert.Error(t, err, ErrCannotFindMatchForID("invalid@id.com").Error())
 }
 
 func TestSearchLabel(t *testing.T) {
-	ids, err := repo.SearchLabel("five", false)
+	ids, err := repo.SearchLabel("five")
 	if err != nil {
 		t.Error(err)
 	}
@@ -98,12 +98,12 @@ func TestAdd(t *testing.T) {
 	assert.Equal(t, "test", entry.Username)
 	assert.Equal(t, "password", entry.Password)
 
-	ids, err := repo.SearchLabel("l1", false)
+	ids, err := repo.SearchLabel("l1")
 	if err != nil {
 		t.Error(err)
 	}
 	assert.Equal(t, "test@test.com", ids[0])
-	ids, err = repo.SearchLabel("l2", false)
+	ids, err = repo.SearchLabel("l2")
 	if err != nil {
 		t.Error(err)
 	}

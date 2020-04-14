@@ -101,21 +101,30 @@ A local password manager which simply encrypts your passwords in to a file and s
 
     1. Create a password-manager.yaml file with following content. Keep configurations that need to be overridden. 
         ```$xslt
-        # Set encryptor for encryping passwords. Ex: "AES"
-        encryptorID: "AES"
-        # Maximum list size for selection drop down.
-        selectListSize: 5
-        # Set storage configurations.
-        storage:
-         # Configure File storage configuration.
-          file:
-           # Enable File storage
-           enable: true 
-           # Path for the file. 
-           path: "~/passwordDB"
+       # Set encryptor for encryping passwords. Ex: "AES"
+       encryptorID: "AES"
+       # Maximum list size for selection drop down.
+       selectListSize: 5
+       # Directory which holds the Password manager related files.
+       directoryPath: "~/password-manager"
+       # Set storage configurations.
+       storage:
+         # File storage configuration.
+         file:
+           # Enable File storage.
+           enable: true
+           # Password Database file name.
+           passwordDBFile: "password_db"
            # File permission for given file in the path.
            permission: 0640
-           
+         # Google Drive storage configuration.
+         googleDrive:
+           # Enable Google Drive storage.
+           enable: false
+           # Directory where the password Database file resides.
+           directory: "password-manager"
+           # Password Database file name.
+           passwordDBFile: "password_db"    
         ```
         
     1. Export Environment variable to point the configuration file.
@@ -127,13 +136,13 @@ A local password manager which simply encrypts your passwords in to a file and s
         ```$xslt
         export PM_STORAGE_FILE_PERMISSION=0640
         ```   
-     Environment variable should have the prefix `PM_` and the hierarchy seperation with `_` and keyword **ALL CAPS**.
+     Environment variable should have the prefix `PM_` and the hierarchy separation with `_` and keyword **ALL CAPS**.
     
      examples:
     
-        `PM_SELECTLISTSIZE`
+        `PM_SELECTLISTSIZE=2`
         `PM_ENCRYPTORID=AES`
-        `PM_STORAGE_FILE_PATH=/home/example/path/password_db`
+        `PM_STORAGE_FILE_PASSOWRDDBFILE=password_db`
 ### Export passwords
 If you need to transfer your passwords to a different PC where you have installed password-manager, 
 it can be achieved by making a copy of your password database file assuming storage type is **File**. 
@@ -162,7 +171,7 @@ id,username,password,labels
 foo@foo.com,foo@foo.com,gijggx3MDxZ,"foo,com"
 ```
 ### STORAGE PRECEDENCE
-If all the Storage types are enabled, the priority will be as follow,
+If all the Storage types are enabled, the priority will be given as follow,
 
 * Google drive storage
 * Local file storage

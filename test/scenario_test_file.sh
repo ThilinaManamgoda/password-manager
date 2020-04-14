@@ -20,11 +20,12 @@ NEW_MASTER_PASSWORD="test12345"
 VERSION="v0.8.0"
 
 pushd ../
- make build-darwin
+ make build-darwin TOOL_VERSION=${VERSION}
 popd
 
-export PM_STORAGE_FILE_PATH=./testDB
-test -f ./testDB && rm ./testDB
+PM_DIRECTORYPATH="$(pwd)/password-manager-test"
+export  PM_DIRECTORYPATH
+test -d ./password-manager-test && rm -rf ./password-manager-test
 test -f ./export-data.csv  && rm ./export-data.csv
 
 ../target/darwin/${VERSION}/password-manager init -m ${MASTER_PASSWORD}
@@ -51,5 +52,5 @@ echo "===Exporting passwords to a CSV file==="
 echo "===Remove a password==="
 ../target/darwin/${VERSION}/password-manager remove test -m ${MASTER_PASSWORD}
 
-test -f ./testDB && rm ./testDB
+test -d ./password-manager-test && rm -rf ./password-manager-test
 test -f ./export-data.csv  && rm ./export-data.csv
