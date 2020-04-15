@@ -10,22 +10,6 @@
   version = "v0.55.0"
 
 [[projects]]
-  digest = "1:9afc639ef88d907f2e87ab68cbc63117b88d0d84238fd6b08224515d00a8136a"
-  name = "github.com/alecthomas/gometalinter"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "df395bfa67c5d0630d936c0044cf07ff05086655"
-  version = "v3.0.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:272de46b796b453a750d723a6ba064c2c1e1b579d9f1228dfab743f4dae3191d"
-  name = "github.com/alecthomas/units"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c3de453c63f4bdb4dadffab9805ec00426c505f7"
-
-[[projects]]
   digest = "1:323ef1c999160d12fafa4074b5a5706511baf1cd91a935ae62494791c94abaf4"
   name = "github.com/atotto/clipboard"
   packages = ["."]
@@ -40,17 +24,6 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "2972be24d48e78746da79ba8e24e8b488c9880de"
-
-[[projects]]
-  digest = "1:848ef40f818e59905140552cc49ff3dc1a15f955e4b56d1c5c2cc4b54dbadf0c"
-  name = "github.com/client9/misspell"
-  packages = [
-    ".",
-    "cmd/misspell",
-  ]
-  pruneopts = "UT"
-  revision = "b90dc15cfd220ecf8bbc9043ecb928cef381f011"
-  version = "v0.3.4"
 
 [[projects]]
   digest = "1:7cb4fdca4c251b3ef8027c90ea35f70c7b661a593b9eeae34753c65499098bb1"
@@ -85,17 +58,6 @@
   revision = "8c9f03a8e57eb486e42badaed3fb287da51807ba"
 
 [[projects]]
-  branch = "travis-1.9"
-  digest = "1:e8f5d9c09a7209c740e769713376abda388c41b777ba8e9ed52767e21acf379f"
-  name = "github.com/golang/lint"
-  packages = [
-    ".",
-    "golint",
-  ]
-  pruneopts = "UT"
-  revision = "883fe33ffc4344bad1ecd881f61afd5ec5d80e0a"
-
-[[projects]]
   digest = "1:ecd73c8c5c5e48f9079e042ae733c3f3ab021218d6c4da3411d82727fd5a412a"
   name = "github.com/golang/protobuf"
   packages = [
@@ -123,28 +85,12 @@
   version = "v0.2.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:473e7c5cbc58c538bce66e0ca2a033d31a3e7d9c6d5d96c6df1657b588bddac3"
-  name = "github.com/google/shlex"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c34317bd91bf98fab745d77b03933cf8769299fe"
-
-[[projects]]
   digest = "1:766102087520f9d54f2acc72bd6637045900ac735b4a419b128d216f0c5c4876"
   name = "github.com/googleapis/gax-go"
   packages = ["v2"]
   pruneopts = "UT"
   revision = "bd5b16380fd03dc758d11cef74ba2e3bc8b0e8c2"
   version = "v2.0.5"
-
-[[projects]]
-  branch = "master"
-  digest = "1:00d592bdacdeb0412b09f8eb2f98c6cc04470c4b72150f20733511e0821225c1"
-  name = "github.com/gordonklaus/ineffassign"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "ed7b1b5ee0f816bbc0ff35bf7c6fdb4f53b6c59a"
 
 [[projects]]
   digest = "1:c0d19ab64b32ce9fe5cf4ddceba78d5bc9807f0016db6b1183599da3dcc24d10"
@@ -201,7 +147,7 @@
   version = "v1.8.1"
 
 [[projects]]
-  digest = "1:2a2a76072bd413b3484a0b5bb2fbb078b0b7dd8950e9276c900e14dce2354679"
+  digest = "1:f2b92e72b56816dae962f7682fe8a9ff9689e51e26fef937910a1704e8514336"
   name = "github.com/manifoldco/promptui"
   packages = [
     ".",
@@ -209,8 +155,8 @@
     "screenbuf",
   ]
   pruneopts = "UT"
-  revision = "20f2a94120aa14a334121a6de66616a7fa89a5cd"
-  version = "v0.3.2"
+  revision = "e15db710812c111cce939cc7028ca3d15a6e7b8b"
+  version = "v0.7.0"
 
 [[projects]]
   digest = "1:7c084e0e780596dd2a7e20d25803909a9a43689c153de953520dfbc0b0e51166"
@@ -243,19 +189,6 @@
   pruneopts = "UT"
   revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
   version = "v1.1.2"
-
-[[projects]]
-  digest = "1:7157fd3f337f20f9058789e47f3341ae5cb77081fa01c1d678af5a03afea6f3e"
-  name = "github.com/nicksnyder/go-i18n"
-  packages = [
-    "i18n",
-    "i18n/bundle",
-    "i18n/language",
-    "i18n/translation",
-  ]
-  pruneopts = "UT"
-  revision = "3c6ee9071cf061f4b0101e14412f74d6e7a8ada6"
-  version = "v2.0.0"
 
 [[projects]]
   digest = "1:93131d8002d7025da13582877c32d1fc302486775a1b06f62241741006428c5e"
@@ -360,14 +293,6 @@
   version = "v1.4.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:ba52e5a5fb800ce55108b7a5f181bb809aab71c16736051312b0aa969f82ad39"
-  name = "github.com/tsenart/deadcode"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "210d2dc333e90c7e3eedf4f2242507a8e83ed4ab"
-
-[[projects]]
   digest = "1:5dae67f1206b3c9fe0ba183912b1ec204f2b688b8875116c245887c4a0d5ee77"
   name = "go.opencensus.io"
   packages = [
@@ -455,19 +380,6 @@
   pruneopts = "UT"
   revision = "342b2e1fbaa52c93f31447ad2c6abc048c63e475"
   version = "v0.3.2"
-
-[[projects]]
-  branch = "master"
-  digest = "1:a45ec3bb7c73e52430410dff3e0a5534ce518f72a8eb4355bc8502c546b91ecc"
-  name = "golang.org/x/tools"
-  packages = [
-    "go/ast/astutil",
-    "go/gcexportdata",
-    "go/internal/gcimporter",
-    "go/types/typeutil",
-  ]
-  pruneopts = "UT"
-  revision = "6889da9d54793ea182dd07be58824cf86bf0746b"
 
 [[projects]]
   digest = "1:c2fc2f5d28636e5fb037d94d5a7934a2a482ab91b01dadea35f8aa6cc094d2da"
@@ -562,14 +474,6 @@
   pruneopts = "UT"
   revision = "142182889d38b76209f1d9f1d8e91d7608aff542"
   version = "v1.28.0"
-
-[[projects]]
-  branch = "v3-unstable"
-  digest = "1:9e71973a6f518a213cbbfa8c24feab33046b2835684818cb6b2c9ea73e823639"
-  name = "gopkg.in/alecthomas/kingpin.v3-unstable"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "df19058c872cddcd279411d709047160e543a700"
 
 [[projects]]
   digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"

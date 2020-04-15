@@ -68,3 +68,6 @@ build-windows:
 
 build-darwin:
 		env GOOS="darwin" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/darwin/$(TOOL_VERSION)/$(BINARY_NAME)" -v
+
+build-docker-image:
+	    docker build -t password-manager:$(TOOL_VERSION) ./ --file test/dockerfile/Dockerfile
