@@ -20,6 +20,7 @@ import (
 	"gotest.tools/assert"
 	"os"
 	"path"
+	"strings"
 	"testing"
 )
 
@@ -50,9 +51,26 @@ func init() {
 }
 
 func setupEnvs(wd string) {
-	err := os.Setenv("PM_DIRECTORYPATH", path.Join(wd, "password-manager-tmp"))
+	unSetEnvs()
+	setEnv("PM_DIRECTORYPATH", path.Join(wd, "password-manager-tmp"))
+}
+
+func setEnv(env, val string) {
+	err := os.Setenv(env, val)
 	if err != nil {
 		panic(err)
+	}
+}
+
+func unSetEnvs() {
+	for _, val := range os.Environ() {
+		key := strings.SplitN(val, "=", 2)[0]
+		if strings.HasPrefix(key, "PM_") {
+			err := os.Unsetenv(key)
+			if err != nil {
+				panic(err)
+			}
+		}
 	}
 }
 
