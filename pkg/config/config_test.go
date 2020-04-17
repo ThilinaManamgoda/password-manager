@@ -21,11 +21,13 @@ import (
 	"gotest.tools/assert"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
 func TestDefaultConfiguration(t *testing.T) {
 	Init()
+	unSetEnvs()
 	result, err := Configuration()
 	if err != nil {
 		t.Error(err)
@@ -44,15 +46,11 @@ func TestDefaultConfiguration(t *testing.T) {
 
 func TestConfigurationWithEnv(t *testing.T) {
 	Init()
-	err := os.Setenv("PM_STORAGE_GOOGLEDRIVE_ENABLE", "true")
-	if err != nil {
-		t.Error(err)
-	}
+	unSetEnvs()
+	setEnv("PM_STORAGE_GOOGLEDRIVE_ENABLE", "true")
 	tmpPath := "/root/user/test"
-	err = os.Setenv("PM_DIRECTORYPATH", tmpPath)
-	if err != nil {
-		t.Error(err)
-	}
+	setEnv("PM_DIRECTORYPATH", tmpPath)
+
 	result, err := Configuration()
 	if err != nil {
 		t.Error(err)
@@ -61,4 +59,23 @@ func TestConfigurationWithEnv(t *testing.T) {
 	assert.Equal(t, DefaultPasswordDBFile, result.Storage[storage.ConfKeyPasswordDBFile])
 	assert.Equal(t, filepath.Join(tmpPath, "/"+DefaultTokenFileName), result.Storage[storage.ConfKeyTokenFilePath])
 	assert.Equal(t, DefaultDirectoryName, result.Storage[storage.ConfKeyDirectory])
+}
+
+func setEnv(env, val string) {
+	err := os.Setenv(env, val)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func unSetEnvs() {
+	for _,val := range os.Environ() {
+		key := strings.SplitN(val, "=", 2)[0]
+		if strings.HasPrefix(key, "PM_") {
+			err := os.Unsetenv(key)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
 }
