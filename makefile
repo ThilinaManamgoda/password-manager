@@ -54,7 +54,7 @@ fmt:
 		$(GOFMT) $(FMT_PKGS)
 
 run:
-		$(GOBUILD) -o $(BINARY_NAME) -v ./...
+		$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_NAME) -v ./...
 		./$(BINARY_NAME)
 
 deps:
@@ -68,6 +68,14 @@ build-windows:
 
 build-darwin:
 		env GOOS="darwin" GOARCH="amd64" $(GOBUILD) -ldflags "$(LDFLAGS)" -o "target/darwin/$(TOOL_VERSION)/$(BINARY_NAME)" -v
+
+build-darwin-tar:
+		cd "target/darwin/$(TOOL_VERSION)"; tar -cvf password-manager-darwin-$(TOOL_VERSION).tar.gz $(BINARY_NAME);
+
+build-linux-deb:
+		./resources/release-scripts/build-debian-package.sh $(TOOL_VERSION)
+
+release-artifcats: all build-darwin-tar build-linux-deb
 
 build-docker-image:
 	    docker build -t password-manager:$(TOOL_VERSION) ./ --file test/dockerfile/Dockerfile
