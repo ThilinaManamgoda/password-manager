@@ -38,7 +38,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	repo, err = LoadRepo("mPassword")
+	repo, err = LoadRepo("mPassword", false)
 	if err != nil {
 		panic(err)
 	}

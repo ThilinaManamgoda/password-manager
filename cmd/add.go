@@ -50,7 +50,7 @@ var addCmd = &cobra.Command{
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
 		}
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		passwordRepo, err := passwords.LoadRepo(mPassword, false)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

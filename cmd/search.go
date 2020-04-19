@@ -57,7 +57,7 @@ var searchCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrapf(err, "cannot get configuration")
 		}
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		passwordRepo, err := passwords.LoadRepo(mPassword, false)
 		if err != nil {
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}

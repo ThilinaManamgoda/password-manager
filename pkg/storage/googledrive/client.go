@@ -229,7 +229,20 @@ func (d *Client) CreateFile(name string, mimeType string, content io.Reader, par
 	file, err := d.srv.Files.Create(f).Media(content).Do()
 
 	if err != nil {
-		log.Println("Could not create file: " + err.Error())
+		return nil, err
+	}
+	return file, nil
+}
+
+// CopyFile method copies the given file.
+func (d *Client) CopyFile(fileID, name, mimeType string, parentID string) (*drive.File, error) {
+	f := &drive.File{
+		MimeType: mimeType,
+		Name:     name,
+		Parents:  []string{parentID},
+	}
+	file, err := d.srv.Files.Copy(fileID, f).Do()
+	if err != nil {
 		return nil, err
 	}
 	return file, nil

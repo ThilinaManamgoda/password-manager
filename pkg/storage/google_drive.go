@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/storage/googledrive"
 	"github.com/pkg/errors"
+	"time"
 )
 
 const (
@@ -160,4 +161,27 @@ func (g *GoogleDrive) Store(data []byte) error {
 		return errUnableToGetPasswordDBFileID(err)
 	}
 	return g.client.UpdateFileContent(fileID, data)
+}
+
+// Backup backups the given password database data in the GoogleDrive storage.
+func (g *GoogleDrive) Backup() error {
+	ok, dirID, err := g.client.IsDirExists(g.directory)
+	if err != nil {
+		return errUnableToSearchDir(err, g.directory)
+	}
+	if ok {
+		fileExists, fileID, err := g.client.IsFileExists(dirID, g.passwordDBFile)
+		if err != nil {
+			return errUnableToSearchFile(err, g.passwordDBFile)
+		}
+		if !fileExists {
+			return errors.Wrapf(err, "password DB file: %s doesn't exists", g.passwordDBFile)
+		}
+		// Ignoring the copied file object since no further operations are performed on it.
+		_, err = g.client.CopyFile(fileID, g.passwordDBFile+"_backup_"+time.Now().Format("2006-01-02"),
+			googledrive.FileMimeType, dirID)
+	} else {
+		return errors.New(fmt.Sprintf("password directory: %s doesn't exists", g.directory))
+	}
+	return nil
 }

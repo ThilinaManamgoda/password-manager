@@ -29,6 +29,9 @@ type Storage interface {
 
 	// Store store data in the storage.
 	Store(data []byte) error
+
+	// Backup backups the file in the storage.
+	Backup() error
 }
 
 // Factory struct holds Storage.

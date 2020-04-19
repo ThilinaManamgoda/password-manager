@@ -38,6 +38,8 @@ type Entry struct {
 }
 
 var (
+	// DatabaseVersion represents the database version.
+	DatabaseVersion string
 	// ErrInvalidID represents the invalid ID error.
 	ErrInvalidID = func(id string) error {
 		return errors.New(fmt.Sprintf("Invalid ID:  %s", id))
@@ -179,10 +181,10 @@ func (p *Repository) GetUsernamePassword(id string, showPassword bool) error {
 
 // GetPasswordEntry gets the password entry from password db.
 func (p *Repository) GetPasswordEntry(id string) (Entry, error) {
-	passwordDB := p.db.Entries
-	if len(passwordDB) == 0 {
+	if p.isDBEmpty() {
 		return Entry{}, ErrNoPasswords
 	}
+	passwordDB := p.db.Entries
 	var result Entry
 	result, ok := passwordDB[id]
 	if !ok {
@@ -193,10 +195,10 @@ func (p *Repository) GetPasswordEntry(id string) (Entry, error) {
 
 // ChangePasswordEntry changes the password entry.
 func (p *Repository) ChangePasswordEntry(id string, entry Entry) error {
-	passwordDB := p.db.Entries
-	if len(passwordDB) == 0 {
+	if p.isDBEmpty() {
 		return ErrNoPasswords
 	}
+	passwordDB := p.db.Entries
 	passwordDB[id] = entry
 	err := p.saveDB()
 	if err != nil {
@@ -253,8 +255,7 @@ func (p *Repository) searchLabelsForID(id string) ([]string, error) {
 	}
 	var labels []string
 	for key, val := range p.db.Labels {
-		i := sort.SearchStrings(val, id)
-		if i != len(val) && val[i] == id {
+		if utils.StringSliceContains(val, id) {
 			labels = append(labels, key)
 		}
 	}
@@ -272,16 +273,12 @@ func (p *Repository) assignLabels(id string, labels []string) {
 	}
 }
 
-func (p *Repository) removeIDFromLabels(id string) error {
-	labels, err := p.searchLabelsForID(id)
-	if err != nil {
-		fmt.Println("1")
-		return err
+func (p *Repository) removeIDFromLabels(id string) {
+	for key, val := range p.db.Labels {
+		if utils.StringSliceContains(val, id) {
+			p.db.Labels[key] = utils.RemoveKeyFromSortedSlice(p.db.Labels[key], id)
+		}
 	}
-	for _, l := range labels {
-		p.db.Labels[l] = utils.RemoveKeyFromSlice(p.db.Labels[l], id)
-	}
-	return nil
 }
 
 // Remove removes the password entry of the given id.
@@ -292,19 +289,16 @@ func (p *Repository) Remove(id string) error {
 	if !p.isIDExists(id) {
 		return ErrInvalidID(id)
 	}
-	err := p.removeIDFromLabels(id)
-	if err != nil {
-		return err
-	}
+	p.removeIDFromLabels(id)
 	delete(p.db.Entries, id)
-	err = p.saveDB()
+	err := p.saveDB()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Repository) loadDB() error {
+func (p *Repository) loadDB(withoutVersionCheck bool) error {
 	encryptedData, err := p.storage.Load()
 	if err != nil {
 		return errors.Wrap(err, "unable to password DB")
@@ -322,8 +316,35 @@ func (p *Repository) loadDB() error {
 	if err := json.Unmarshal(decryptedData, &db); err != nil {
 		return errors.Wrapf(err, "cannot unmarshal password repository")
 	}
+	if !withoutVersionCheck && db.Version != DatabaseVersion {
+		return errors.New(fmt.Sprintf("Unsupported password database version %s. Please migrate database to "+
+			"version %s.", db.Version, DatabaseVersion))
+	}
 	p.db = &db
 	return nil
+}
+
+// UpgradeDB method upgrades the password database to the latest version.
+func (p *Repository) UpgradeDB() error {
+	if p.db.Version == DatabaseVersion {
+		return errors.New(fmt.Sprintf("Database is at the latest version %s", DatabaseVersion))
+	}
+	fmt.Println("Backup password database..")
+	err := p.storage.Backup()
+	if err != nil {
+		return errors.Wrap(err, "could not backup password database")
+	}
+	fmt.Println("Upgrade password database")
+	// Upgrade to version v0.9.1
+	for _, val := range p.db.Labels {
+		sort.Strings(val)
+	}
+	p.db.Version = DatabaseVersion
+	err = p.saveDB()
+	if err != nil {
+		return errors.Wrap(err, "cannot encrypt password db")
+	}
+	return p.saveDB()
 }
 
 func uniqueStringSlice(input []string) []string {
@@ -346,6 +367,7 @@ func InitRepo(mPassword string) error {
 	}
 
 	db := &DB{
+		Version: DatabaseVersion,
 		Entries: map[string]Entry{},
 		Labels:  map[string][]string{},
 	}
@@ -377,16 +399,12 @@ func InitRepo(mPassword string) error {
 }
 
 func createConfigDir(path string) error {
-	err := fileio.CreateDirectory(path)
-	if err != nil {
-		return err
-	}
-	return nil
+	return fileio.CreateDirectory(path)
 }
 
 // LoadRepo initializes the Password repository.
 // This function initialises each component of the password repository.
-func LoadRepo(mPassword string) (*Repository, error) {
+func LoadRepo(mPassword string, withoutVersionCheck bool) (*Repository, error) {
 	conf, err := config.Configuration()
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get configuration")
@@ -406,7 +424,7 @@ func LoadRepo(mPassword string) (*Repository, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "unable to init password storage")
 	}
-	err = repo.loadDB()
+	err = repo.loadDB(withoutVersionCheck)
 	if err != nil {
 		return nil, errors.Wrapf(err, "unable to load password DB")
 	}

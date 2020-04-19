@@ -16,6 +16,7 @@ package utils
 
 import (
 	"gotest.tools/assert"
+	"sort"
 	"testing"
 )
 
@@ -53,21 +54,27 @@ func TestStringSliceContains(t *testing.T) {
 
 func testStringSliceContainsSuccessFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		assert.Equal(t, true, StringSliceContains("test", []string{"test"}))
+		assert.Equal(t, true, StringSliceContains([]string{"test"}, "test"))
 	}
 }
 
 func testStringSliceContainsFailedFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		assert.Equal(t, false, StringSliceContains("invalid-key", []string{"test"}))
+		assert.Equal(t, false, StringSliceContains([]string{"test"}, "invalid-key"))
 	}
 }
 
-func TestRemoveKeyFromSlice(t *testing.T) {
-	removeB := RemoveKeyFromSlice([]string{"a", "b", "c"}, "b")
-	removeD := RemoveKeyFromSlice([]string{"a", "b", "c"}, "d")
+func TestRemoveKeyFromSortedSlice(t *testing.T) {
+	arr1 := []string{"a", "b", "c"}
+	sort.Strings(arr1)
+	assert.Equal(t,true, sort.StringsAreSorted(arr1))
+	removeB:= RemoveKeyFromSortedSlice(arr1, "b")
 	assert.Equal(t, 2, len(removeB))
-	assert.Equal(t, 3, len(removeD))
-	assert.Equal(t, "a",removeB[0])
-	assert.Equal(t, "c",removeB[1])
+	removeD:= RemoveKeyFromSortedSlice(removeB, "d")
+	assert.Equal(t, 2, len(removeD))
+	removeC:= RemoveKeyFromSortedSlice(removeD, "c")
+	assert.Equal(t, 1, len(removeC))
+	assert.Equal(t, "a", removeC[0])
+	removeA:= RemoveKeyFromSortedSlice(removeC, "a")
+	assert.Equal(t, 0, len(removeA))
 }
