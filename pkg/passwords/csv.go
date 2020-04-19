@@ -81,11 +81,14 @@ func (i *CSVImporter) Import() ([]ImportExportEntry, error) {
 		id := record[0]
 		uN := record[1]
 		password := record[2]
-		labels := strings.Split(record[3], CSVSeparator)
+		desc := record[3]
+		labels := strings.Split(record[4], CSVSeparator)
 		entries = append(entries, ImportExportEntry{
 			Entry: Entry{ID: id,
-				Username: uN,
-				Password: password},
+				Username:    uN,
+				Password:    password,
+				Description: desc,
+			},
 			Labels: labels,
 		})
 	}
@@ -114,10 +117,10 @@ func (e *CSVExporter) Export(entries []ImportExportEntry) error {
 	for _, entry := range entries {
 		var csvEntry []string
 		if firstLine {
-			csvEntry = []string{"id", "username", "password", "labels"}
+			csvEntry = []string{"id", "username", "password", "description", "labels"}
 			firstLine = false
 		} else {
-			csvEntry = []string{entry.ID, entry.Username, entry.Password, strings.Join(entry.Labels, CSVSeparator)}
+			csvEntry = []string{entry.ID, entry.Username, entry.Password, entry.Description, strings.Join(entry.Labels, CSVSeparator)}
 		}
 		err = writer.Write(csvEntry)
 		if err != nil {

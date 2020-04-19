@@ -25,6 +25,11 @@ pushd ../
  make build-darwin TOOL_VERSION=${VERSION} GDRIVE_CLIENT_ID=${GDRIVE_CLIENT_ID} GDRIVE_CLIENT_SEC=${GDRIVE_CLIENT_SEC}
 popd
 
+for e in $(env | grep PM_)
+do
+  unset "$(echo $e | awk '{split($0,a,"="); print a[1]}')"
+done
+
 PM_DIRECTORYPATH="$(pwd)/password-manager-test"
 export PM_DIRECTORYPATH
 export PM_STORAGE_FILE_ENABLE=false
@@ -39,11 +44,11 @@ test -f ./export-data.csv  && rm ./export-data.csv
 
 ../target/darwin/${VERSION}/password-manager init -m ${MASTER_PASSWORD}
 ../target/darwin/${VERSION}/password-manager add test -u test.com -p test12345 -l "fb,gmail" -m ${MASTER_PASSWORD}
-../target/darwin/${VERSION}/password-manager get test -m ${MASTER_PASSWORD} -s
+../target/darwin/${VERSION}/password-manager get test -m ${MASTER_PASSWORD} -s | grep "test12345"
 echo "===Searching password==="
-../target/darwin/${VERSION}/password-manager search test -s -m ${MASTER_PASSWORD}
+../target/darwin/${VERSION}/password-manager search test -s -m ${MASTER_PASSWORD} | grep "test12345"
 echo "===Searching password with a label==="
-../target/darwin/${VERSION}/password-manager search -l "fb" -s -m ${MASTER_PASSWORD}
+../target/darwin/${VERSION}/password-manager search -l "fb" -s -m ${MASTER_PASSWORD} | grep "test12345"
 
 echo "===Entering new Master password==="
 ../target/darwin/${VERSION}/password-manager change-master-password -m ${MASTER_PASSWORD} -n ${NEW_MASTER_PASSWORD}
@@ -53,7 +58,7 @@ MASTER_PASSWORD=${NEW_MASTER_PASSWORD}
 
 echo "===Importing password from a CSV file==="
 ../target/darwin/${VERSION}/password-manager import --csv-file ./mock-data/data.csv -m ${MASTER_PASSWORD}
-../target/darwin/${VERSION}/password-manager get ryendalll@latimes.com -m ${MASTER_PASSWORD} -s
+../target/darwin/${VERSION}/password-manager get ryendalll@latimes.com -m ${MASTER_PASSWORD} -s | grep "3KVu0V"
 
 echo "===Exporting passwords to a CSV file==="
 ../target/darwin/${VERSION}/password-manager export --csv-file ./export-data.csv -m ${MASTER_PASSWORD}

@@ -28,6 +28,8 @@ const (
 	FlagLabels = "labels"
 	// FlagMasterPassword is the flag name for masterPassword.
 	FlagMasterPassword = "masterPassword"
+	// FlagDescription is the flag name for description.
+	FlagDescription = "description"
 	// FlagNewMasterPassword is the flag name for new masterPassword.
 	FlagNewMasterPassword = "newMasterPassword"
 	// FlagShowPassword flag
@@ -55,7 +57,7 @@ func GetFlagStringArrayVal(cmd *cobra.Command, flag string) ([]string, error) {
 }
 
 // FromFlagsForPasswordEntry functions gets the input values required for Password entry from flags.
-func FromFlagsForPasswordEntry(cmd *cobra.Command, uN, password, mPassword *string, labels *[]string) error {
+func FromFlagsForPasswordEntry(cmd *cobra.Command, uN, password, mPassword,desc *string, labels *[]string) error {
 	if uN != nil {
 		uNVal, err := GetFlagStringVal(cmd, FlagUsername)
 		if err != nil {
@@ -70,6 +72,14 @@ func FromFlagsForPasswordEntry(cmd *cobra.Command, uN, password, mPassword *stri
 			return errors.Wrapf(err, ErrMsgCannotGetFlag, FlagPassword)
 		}
 		*password = passwordVal
+	}
+
+	if desc != nil {
+		descVal, err := GetFlagStringVal(cmd, FlagDescription)
+		if err != nil {
+			return errors.Wrapf(err, ErrMsgCannotGetFlag, FlagDescription)
+		}
+		*desc = descVal
 	}
 
 	if labels != nil {

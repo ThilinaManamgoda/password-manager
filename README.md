@@ -154,8 +154,8 @@ pasword-manager export --csv-file ${PATH_TO_CSV_FILE}
 
 Exported CSV file will have the following format([Ex: test/mock-data/data.csv](test/mock-data/data.csv)),
 ```$xslt
-id,username,password,labels
-foo@foo.com,foo@foo.com,gijggx3MDxZ,"foo,com"
+id,username,password,description,labels
+foo@foo.com,foo@foo.com,gijggx3MDxZ,"Desciption of the password","foo,com"
 ```
    
 ### Import Passwords
@@ -167,8 +167,8 @@ pasword-manager import --csv-file ${PATH_TO_CSV_FILE}
 
 CSV file should be in the following format([Ex: test/mock-data/data.csv](test/mock-data/data.csv)),
 ```$xslt
-id,username,password,labels
-foo@foo.com,foo@foo.com,gijggx3MDxZ,"foo,com"
+id,username,password,description,labels
+foo@foo.com,foo@foo.com,gijggx3MDxZ,"Desciption of the password","foo,com"
 ```
 ### STORAGE PRECEDENCE
 If all the Storage types are enabled, the priority will be given as follow,
