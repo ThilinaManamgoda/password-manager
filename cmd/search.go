@@ -62,23 +62,30 @@ var searchCmd = &cobra.Command{
 			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 
-		var passwordIDs []string
+		var passwordEntries []passwords.Entry
 		if !isSearchLabel {
 			searchID := args[0]
-			passwordIDs, err = passwordRepo.SearchID(searchID)
+			passwordEntries, err = passwordRepo.SearchEntriesByID(searchID)
 			if err != nil {
 				return errors.Wrapf(err, "cannot search ID %s", searchID)
 			}
 		} else {
 			label := args[0]
-			passwordIDs, err = passwordRepo.SearchLabel(label)
+			passwordEntries, err = passwordRepo.SearchLabel(label)
 			if err != nil {
 				return errors.Wrapf(err, "cannot search Label %s", label)
 			}
 		}
 
-		if len(passwordIDs) != 0 {
-			sID, err := inputs.PromptForSelect("Choose", conf.SelectListSize, passwordIDs)
+		if len(passwordEntries) != 0 {
+			var psi []inputs.PromptSelectInfo
+			for _, e := range passwordEntries {
+				psi = append(psi, inputs.PromptSelectInfo{
+					ID:          e.ID,
+					Description: e.Description,
+				})
+			}
+			sID, err := inputs.PromptForSelect("Choose", conf.SelectListSize, psi)
 			if err != nil {
 				return errors.Wrap(err, "cannot get prompt for select")
 			}

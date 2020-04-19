@@ -30,9 +30,10 @@ import (
 
 // Entry struct represents entry in the password db.
 type Entry struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	ID          string `json:"id"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	Description string `json:"description,omitempty"`
 }
 
 var (
@@ -112,26 +113,27 @@ func (p *Repository) saveDB() error {
 	return nil
 }
 
-func (p *Repository) addPasswordEntryToRepo(id, uN, password string, labels []string) error {
+func (p *Repository) addPasswordEntryToRepo(id, uN, password, desc string, labels []string) error {
 	if p.isIDExists(id) {
 		return errors.New(fmt.Sprintf("ID: %s is already there !", id))
 	}
 	entries := p.db.Entries
 	entries[id] = Entry{
-		ID:       id,
-		Username: uN,
-		Password: password,
+		ID:          id,
+		Username:    uN,
+		Password:    password,
+		Description: desc,
 	}
 	p.assignLabels(id, labels)
 	return nil
 }
 
 // Add method add new password entry to Password db.
-func (p *Repository) Add(id, uN, password string, labels []string) error {
+func (p *Repository) Add(id, uN, password, desc string, labels []string) error {
 	if id == "" {
 		return errors.New("invalid the ID")
 	}
-	err := p.addPasswordEntryToRepo(id, uN, password, labels)
+	err := p.addPasswordEntryToRepo(id, uN, password, desc, labels)
 	if err != nil {
 		return err
 	}
@@ -160,6 +162,7 @@ func (p *Repository) GetUsernamePassword(id string, showPassword bool) error {
 		return err
 	}
 	fmt.Println(fmt.Sprintf("Username: %s", passwordEntry.Username))
+	fmt.Println(fmt.Sprintf("Description: %s", passwordEntry.Description))
 	if showPassword {
 		fmt.Println(fmt.Sprintf("Password: %s", passwordEntry.Password))
 	} else {
@@ -200,15 +203,15 @@ func (p *Repository) ChangePasswordEntry(id string, entry Entry) error {
 	return nil
 }
 
-// SearchID will return the password entries if the password ID contains the provide key.
-func (p *Repository) SearchID(id string) ([]string, error) {
+// SearchEntriesByID will return the password entries if the password ID contains the provide key.
+func (p *Repository) SearchEntriesByID(id string) ([]Entry, error) {
 	if p.isDBEmpty() {
 		return nil, ErrNoPasswords
 	}
-	var result []string
-	for key := range p.db.Entries {
+	var result []Entry
+	for key, val := range p.db.Entries {
 		if strings.Contains(key, id) {
-			result = append(result, key)
+			result = append(result, val)
 		}
 	}
 	if len(result) == 0 {
@@ -221,8 +224,8 @@ func (p *Repository) isDBEmpty() bool {
 	return len(p.db.Entries) == 0
 }
 
-// SearchLabel will return the password ids if the password labels contains the provide label.
-func (p *Repository) SearchLabel(label string) ([]string, error) {
+// SearchLabel will return the password entries if the password labels contains the provide label.
+func (p *Repository) SearchLabel(label string) ([]Entry, error) {
 	if p.isDBEmpty() {
 		return nil, ErrNoPasswords
 	}
@@ -233,7 +236,11 @@ func (p *Repository) SearchLabel(label string) ([]string, error) {
 		}
 	}
 	uniqueIDs := uniqueStringSlice(ids)
-	return uniqueIDs, nil
+	var entries []Entry
+	for _, val := range uniqueIDs {
+		entries = append(entries, p.db.Entries[val])
+	}
+	return entries, nil
 }
 
 // searchLabelsForID will return the list of labels for given ID.

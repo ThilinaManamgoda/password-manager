@@ -89,7 +89,7 @@ func (p *Repository) Import(importerID string, conf map[string]string) error {
 	}
 
 	for _, entry := range entries {
-		err = p.addPasswordEntryToRepo(entry.ID, entry.Username, entry.Password, entry.Labels)
+		err = p.addPasswordEntryToRepo(entry.ID, entry.Username, entry.Password, entry.Description, entry.Labels)
 		if err != nil {
 			return errors.Wrap(err, "cannot import passwords")
 		}

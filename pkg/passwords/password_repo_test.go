@@ -16,7 +16,6 @@ package passwords
 
 import (
 	"github.com/ThilinaManamgoda/password-manager/pkg/config"
-	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"gotest.tools/assert"
 	"os"
 	"path"
@@ -39,7 +38,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	config.Init()
 	repo, err = LoadRepo("mPassword")
 	if err != nil {
 		panic(err)
@@ -87,27 +85,36 @@ func TestGet(t *testing.T) {
 }
 
 func TestSearchID(t *testing.T) {
-	ids, err := repo.SearchID("bluckcock")
+	entries, err := repo.SearchEntriesByID("bluckcock")
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, "bluckcockro@answers.com", ids[0])
+	assert.Equal(t, "bluckcockro@answers.com", entries[0].ID)
 
-	_, err = repo.SearchID("invalid@id.com")
+	_, err = repo.SearchEntriesByID("invalid@id.com")
 	assert.Error(t, err, ErrCannotFindMatchForID("invalid@id.com").Error())
 }
 
 func TestSearchLabel(t *testing.T) {
-	ids, err := repo.SearchLabel("five")
+	entries, err := repo.SearchLabel("five")
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, 130, len(ids))
-	assert.Equal(t, true, utils.StringSliceContains("agwyerb@wisc.edu", ids))
+	assert.Equal(t, 130, len(entries))
+	assert.Equal(t, true, isPasswordEntriesContainsID("agwyerb@wisc.edu", entries))
+}
+
+func isPasswordEntriesContainsID(ID string, entries []Entry) bool {
+	for _, entry := range entries {
+		if entry.ID == ID {
+			return true
+		}
+	}
+	return false
 }
 
 func TestAdd(t *testing.T) {
-	err := repo.Add("test@test.com", "test", "password", []string{"l1", "l2"})
+	err := repo.Add("test@test.com", "test", "password", "test-desc", []string{"l1", "l2"})
 	if err != nil {
 		t.Error(err)
 	}

@@ -20,6 +20,7 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"regexp"
 	"strings"
 )
 
@@ -30,8 +31,10 @@ const (
 	PromptPassword = "Password"
 	// PromptLabels is the flag name for labels.
 	PromptLabels = "Labels"
-	// PromptMasterPassword is the flag name for masterPassword.
+	// PromptMasterPassword is the prompt name for masterPassword.
 	PromptMasterPassword = "Master password"
+	// PromptDescription is the prompt name for description.
+	PromptDescription = "Description"
 	// ErrMSGCannotPrompt is an error message
 	ErrMSGCannotPrompt = "cannot prompt for %s"
 	// ErrMsgCannotGetInput is an error message
@@ -78,6 +81,11 @@ var (
 	userPasswordValidator      = passwordValidator(fmt.Sprintf("password must have more than %d characters", MinPasswordCharacters))
 	newMasterPasswordValidator = passwordValidator(fmt.Sprintf("new master password must have more than %d characters", MinPasswordCharacters))
 )
+
+type PromptSelectInfo struct {
+	ID          string
+	Description string
+}
 
 // IsValidSingleArg method check whether the CMD args are valid or not.
 func IsValidSingleArg(args []string) bool {
@@ -134,14 +142,25 @@ func promptForPassword(label string, validate promptui.ValidateFunc) (string, er
 }
 
 // PromptForSelect start selection and return the selected value.
-func PromptForSelect(l string, size int, items []string) (string, error) {
+func PromptForSelect(l string, size int, items []PromptSelectInfo) (string, error) {
+	templates := &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "{{ .ID | cyan }} {{ .Description | red }}",
+		Inactive: " {{ .ID | cyan }} {{ .Description | red }}",
+		Selected: "{{ .ID | cyan }} {{ .Description | red }}",
+	}
 	prompt := promptui.Select{
-		Label: l,
-		Items: items,
-		Size:  size,
+		Label:     l,
+		Items:     items,
+		Size:      size,
+		Templates: templates,
 	}
 	_, result, err := prompt.Run()
-	return result, err
+	regex, err := regexp.Compile("{(.*) (.*)}")
+	if err != nil {
+		return "", err
+	}
+	return string(regex.FindAllSubmatch([]byte(result), -1)[0][1]), nil
 }
 
 // HasProvidedValidID returns a function which validates the ID input.
@@ -167,12 +186,13 @@ func hasProvidedValidSingleInput(inputType string) func(cmd *cobra.Command, args
 }
 
 // FromPromptForPasswordEntry functions gets the input values required for Password entry by prompting.
-func FromPromptForPasswordEntry(uN, password, mPassword *string, labels *[]string) error {
+func FromPromptForPasswordEntry(uN, password, mPassword, desc *string, labels *[]string) error {
 	uNVal, err := PromptForUsername()
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, PromptUsername)
 	}
 	*uN = uNVal
+
 	passwordVal, err := PromptForPassword()
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, PromptPassword)
@@ -184,16 +204,24 @@ func FromPromptForPasswordEntry(uN, password, mPassword *string, labels *[]strin
 		return errors.Wrapf(err, ErrMSGCannotPrompt, "Again password")
 	}
 
+	descVal, err := PromptForDescription()
+	if err != nil {
+		return errors.Wrapf(err, ErrMSGCannotPrompt, PromptDescription)
+	}
+	*desc = descVal
+
 	labelsVal, err := PromptForLabels()
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, PromptLabels)
 	}
 	*labels = labelsVal
+
 	mPasswordVal, err := PromptForMPassword()
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, PromptMasterPassword)
 	}
 	*mPassword = mPasswordVal
+
 	return nil
 }
 
@@ -205,6 +233,11 @@ func PromptForUsername() (string, error) {
 // PromptForUsernameWithDefault prompt for username with a default value and returns the chosen value.
 func PromptForUsernameWithDefault(defaultVal string) (string, error) {
 	return PromptForStringWithDefault(PromptUsername, defaultVal, userNameValidator)
+}
+
+// PromptForDescWithDefault prompt for description with a default value and returns the chosen value.
+func PromptForDescWithDefault(defaultVal string) (string, error) {
+	return PromptForStringWithDefault(PromptDescription, defaultVal, nil)
 }
 
 // PromptForLabels prompts for labels and returns the given labels.
@@ -236,6 +269,11 @@ func PromptForMPassword() (string, error) {
 // PromptForPassword function prompts for password and returns the input.
 func PromptForPassword() (string, error) {
 	return promptForPassword(PromptPassword, userPasswordValidator)
+}
+
+// PromptForDescription function prompts for description and returns the input.
+func PromptForDescription() (string, error) {
+	return PromptForString(PromptDescription, nil)
 }
 
 // PromptForPasswordSecondTime function prompts for password for second time to validate and returns the input.

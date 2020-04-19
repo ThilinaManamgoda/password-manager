@@ -37,15 +37,15 @@ var addCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		var uN, password, mPassword string
+		var uN, password, mPassword, desc string
 		var labels []string
 		if isInteractiveMode {
-			err := inputs.FromPromptForPasswordEntry(&uN, &password, &mPassword, &labels)
+			err := inputs.FromPromptForPasswordEntry(&uN, &password, &mPassword, &desc, &labels)
 			if err != nil {
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
 		} else {
-			err := inputs.FromFlagsForPasswordEntry(cmd, &uN, &password, &mPassword, &labels)
+			err := inputs.FromFlagsForPasswordEntry(cmd, &uN, &password, &mPassword, &desc, &labels)
 			if err != nil {
 				return errors.Wrapf(err, inputs.ErrMsgCannotGetInput)
 			}
@@ -56,7 +56,7 @@ var addCmd = &cobra.Command{
 		}
 
 		id := args[0]
-		err = passwordRepo.Add(id, uN, password, labels)
+		err = passwordRepo.Add(id, uN, password, desc, labels)
 		if err != nil {
 			return err
 		}
@@ -68,6 +68,7 @@ func init() {
 	rootCmd.AddCommand(addCmd)
 	addCmd.Flags().StringP(inputs.FlagPassword, "p", "", "Password")
 	addCmd.Flags().StringP(inputs.FlagUsername, "u", "", "User Name")
+	addCmd.Flags().StringP(inputs.FlagDescription, "d", "", "Description")
 	addCmd.Flags().StringArrayP(inputs.FlagLabels, "l", nil, "Labels for the password entry")
 	addCmd.Flags().BoolP(FlagInteractiveMode, "i", false, "Enable interactive mode")
 }
