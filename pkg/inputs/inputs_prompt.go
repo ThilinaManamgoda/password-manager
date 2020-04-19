@@ -82,6 +82,7 @@ var (
 	newMasterPasswordValidator = passwordValidator(fmt.Sprintf("new master password must have more than %d characters", MinPasswordCharacters))
 )
 
+// PromptSelectInfo represents the information for prompt select.
 type PromptSelectInfo struct {
 	ID          string
 	Description string

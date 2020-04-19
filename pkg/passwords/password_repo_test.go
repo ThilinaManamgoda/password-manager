@@ -122,17 +122,18 @@ func TestAdd(t *testing.T) {
 	assert.Equal(t, true, ok)
 	assert.Equal(t, "test", entry.Username)
 	assert.Equal(t, "password", entry.Password)
+	assert.Equal(t, "test-desc", entry.Description)
 
 	ids, err := repo.SearchLabel("l1")
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, "test@test.com", ids[0])
+	assert.Equal(t, "test@test.com", ids[0].ID)
 	ids, err = repo.SearchLabel("l2")
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, "test@test.com", ids[0])
+	assert.Equal(t, "test@test.com", ids[0].ID)
 }
 
 func TestRemove(t *testing.T) {

@@ -62,3 +62,12 @@ func testStringSliceContainsFailedFunc() func(t *testing.T) {
 		assert.Equal(t, false, StringSliceContains("invalid-key", []string{"test"}))
 	}
 }
+
+func TestRemoveKeyFromSlice(t *testing.T) {
+	removeB := RemoveKeyFromSlice([]string{"a", "b", "c"}, "b")
+	removeD := RemoveKeyFromSlice([]string{"a", "b", "c"}, "d")
+	assert.Equal(t, 2, len(removeB))
+	assert.Equal(t, 3, len(removeD))
+	assert.Equal(t, "a",removeB[0])
+	assert.Equal(t, "c",removeB[1])
+}
