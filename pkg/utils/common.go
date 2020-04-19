@@ -54,3 +54,13 @@ func MarshalData(data interface{}) ([]byte, error) {
 	}
 	return marshaledData, nil
 }
+
+// RemoveKeyFromSlice removes the given key from the sclice.
+func RemoveKeyFromSlice(s []string, key string) []string {
+	for index, val := range s {
+		if val == key {
+			return append(s[:index], s[index+1:]...)
+		}
+	}
+	return s
+}

@@ -235,6 +235,7 @@ func (p *Repository) SearchLabel(label string) ([]Entry, error) {
 			ids = append(ids, val...)
 		}
 	}
+
 	uniqueIDs := uniqueStringSlice(ids)
 	var entries []Entry
 	for _, val := range uniqueIDs {
@@ -267,6 +268,18 @@ func (p *Repository) assignLabels(id string, labels []string) {
 	}
 }
 
+func (p *Repository) removeIDFromLabels(id string) error {
+	labels, err := p.searchLabelsForID(id)
+	if err != nil {
+		fmt.Println("1")
+		return err
+	}
+	for _, l := range labels {
+		p.db.Labels[l] = utils.RemoveKeyFromSlice(p.db.Labels[l], id)
+	}
+	return nil
+}
+
 // Remove removes the password entry of the given id.
 func (p *Repository) Remove(id string) error {
 	if p.isDBEmpty() {
@@ -275,8 +288,12 @@ func (p *Repository) Remove(id string) error {
 	if !p.isIDExists(id) {
 		return ErrInvalidID(id)
 	}
+	err := p.removeIDFromLabels(id)
+	if err != nil {
+		return err
+	}
 	delete(p.db.Entries, id)
-	err := p.saveDB()
+	err = p.saveDB()
 	if err != nil {
 		return err
 	}
