@@ -21,6 +21,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 const (
@@ -95,10 +96,44 @@ func (f *File) Load() ([]byte, error) {
 
 // Store store data in the file storage.
 func (f *File) Store(data []byte) error {
-	file := fileio.File{Path: f.path, Permission: f.permission}
+	err := store(f.path, f.permission, data)
+	if err != nil {
+		return errors.Wrap(err, "unable store file")
+	}
+	return nil
+}
+
+// Backup backups file in the file storage.
+func (f *File) Backup() error {
+	data, err := f.Load()
+	if err != nil {
+		return errors.Wrap(err, "unable read current file")
+	}
+	backupFilePath := f.path + "_backup_" + time.Now().Format("2006-01-02")
+	exists, err := fileio.IsFileExists(backupFilePath)
+	if err != nil {
+		return errors.Wrapf(err, "cannot inspect the file storage for backup")
+	}
+	if exists {
+		return errors.New(fmt.Sprintf("backup file: %s already exists", backupFilePath))
+	}
+	// Ignoring the returned pointer to os.File since it is not required.
+	_, err = os.Create(backupFilePath)
+	if err != nil {
+		return errors.Wrapf(err, "unable to create storage file")
+	}
+	err = store(backupFilePath, f.permission, data)
+	if err != nil {
+		return errors.Wrap(err, "unable backup file")
+	}
+	return nil
+}
+
+func store(path string, permission os.FileMode, data []byte) error {
+	file := fileio.File{Path: path, Permission: permission}
 	err := file.Write(data)
 	if err != nil {
-		return errors.Wrap(err, "unable to write to file")
+		return errors.Wrap(err, "unable to write data to file")
 	}
 	return nil
 }

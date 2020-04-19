@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TOOL_VERSION=v0.9.0
+TOOL_VERSION=v0.9.1
+DATABASE_VERSION="v0.9.1"
 GDRIVE_CLIENT_ID=""
 GDRIVE_CLIENT_SEC=""
 GOCMD=go
@@ -27,7 +28,7 @@ GOFMT=$(GOCMD) fmt
 
 TEST_PKGS=./pkg/...
 FMT_PKGS=./cmd/... ./pkg/...
-LDFLAGS=-X 'github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSION)' -X 'github.com/ThilinaManamgoda/password-manager/pkg/storage/googledrive.ClientID=$(GDRIVE_CLIENT_ID)' -X 'github.com/ThilinaManamgoda/password-manager/pkg/storage/googledrive.ClientSecret=$(GDRIVE_CLIENT_SEC)'
+LDFLAGS=-X 'github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSION)' -X 'github.com/ThilinaManamgoda/password-manager/pkg/storage/googledrive.ClientID=$(GDRIVE_CLIENT_ID)' -X 'github.com/ThilinaManamgoda/password-manager/pkg/storage/googledrive.ClientSecret=$(GDRIVE_CLIENT_SEC)' -X 'github.com/ThilinaManamgoda/password-manager/pkg/passwords.DatabaseVersion=$(DATABASE_VERSION)'
 
 all: clean deps lint unit-test build-linux build-darwin build-windows
 

@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"github.com/ThilinaManamgoda/password-manager/pkg/config"
+	"fmt"
 	"github.com/ThilinaManamgoda/password-manager/pkg/inputs"
 	"github.com/ThilinaManamgoda/password-manager/pkg/passwords"
 	"github.com/pkg/errors"
@@ -23,10 +23,10 @@ import (
 )
 
 // getCmd represents the get command
-var importCmd = &cobra.Command{
-	Use:   "import ",
-	Short: "Import passwords",
-	Long:  `Import passwords`,
+var upgradeDBCmd = &cobra.Command{
+	Use:   "upgrade-db",
+	Short: fmt.Sprintf("Upgrade password database to verion %s", passwords.DatabaseVersion),
+	Long:  fmt.Sprintf("Upgrade password database to verion %s", passwords.DatabaseVersion),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
@@ -38,27 +38,21 @@ var importCmd = &cobra.Command{
 				return errors.Wrap(err, "cannot prompt for Master password")
 			}
 		}
-		csvFile, err := inputs.GetFlagStringVal(cmd, config.FlagCSVFile)
+
+		passwordRepo, err := passwords.LoadRepo(mPassword, true)
 		if err != nil {
-			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.FlagCSVFile)
-		}
-		if csvFile == "" {
-			return errors.New("must provide a medium to import")
-		}
-		passwordRepo, err := passwords.LoadRepo(mPassword, false)
-		if err != nil {
-			return errors.Wrap(err, "couldn't initialize password repository")
+			return errors.Wrapf(err, "cannot initialize password repository")
 		}
 
-		err = passwordRepo.Import(passwords.CSVImporterID, map[string]string{passwords.ConfKeyCSVFilePath: csvFile})
+		err = passwordRepo.UpgradeDB()
 		if err != nil {
-			return errors.Wrap(err, "couldn't import the CSV file")
+			return err
 		}
+		fmt.Println("Password database successfully upgraded")
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(importCmd)
-	importCmd.Flags().StringP(config.FlagCSVFile, "f", "", "Import passwords")
+	rootCmd.AddCommand(upgradeDBCmd)
 }

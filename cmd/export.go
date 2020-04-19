@@ -46,7 +46,7 @@ var exportCmd = &cobra.Command{
 		if csvFile == "" {
 			return errors.New("must provide a medium to export")
 		}
-		passwordRepo, err := passwords.LoadRepo(mPassword)
+		passwordRepo, err := passwords.LoadRepo(mPassword, false)
 		if err != nil {
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}

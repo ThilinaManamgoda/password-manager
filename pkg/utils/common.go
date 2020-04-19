@@ -17,6 +17,7 @@ package utils
 import (
 	"encoding/json"
 	"github.com/sethvargo/go-password/password"
+	"sort"
 )
 
 // AESEncryptID is the unique identifier for this encryptor.
@@ -27,14 +28,10 @@ func IsValidByteSlice(data []byte) bool {
 	return (data != nil) && (len(data) != 0)
 }
 
-// StringSliceContains check whether the specified key is in the String slice.
-func StringSliceContains(key string, s []string) bool {
-	for _, v := range s {
-		if key == v {
-			return true
-		}
-	}
-	return false
+// StringSliceContains check whether the specified key is in the sorted String slice.
+func StringSliceContains(s []string, key string) bool {
+	i := sort.SearchStrings(s, key)
+	return i != len(s) && s[i] == key
 }
 
 // GeneratePassword generates a password of given length.
@@ -55,12 +52,13 @@ func MarshalData(data interface{}) ([]byte, error) {
 	return marshaledData, nil
 }
 
-// RemoveKeyFromSlice removes the given key from the sclice.
-func RemoveKeyFromSlice(s []string, key string) []string {
-	for index, val := range s {
-		if val == key {
-			return append(s[:index], s[index+1:]...)
-		}
+// RemoveKeyFromSortedSlice removes the given key from the sorted slice.
+func RemoveKeyFromSortedSlice(s []string, key string)[]string {
+	i := sort.SearchStrings(s, key)
+	if i == len(s) {
+		return s
 	}
-	return s
+	copy(s[i:], s[i+1:]) // Shift a[i+1:] left one index
+	s[len(s)-1] = ""     // Erase last element (write zero value)
+	return s[:len(s)-1]
 }
