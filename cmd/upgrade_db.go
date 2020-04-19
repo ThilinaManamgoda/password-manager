@@ -25,8 +25,8 @@ import (
 // getCmd represents the get command
 var upgradeDBCmd = &cobra.Command{
 	Use:   "upgrade-db",
-	Short: fmt.Sprintf("Upgrade password database to verion %s", passwords.DatabaseVersion),
-	Long:  fmt.Sprintf("Upgrade password database to verion %s", passwords.DatabaseVersion),
+	Short: "Upgrade password database to latest version",
+	Long:  "Upgrade password database to latest version and create a backup of the current password database",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mPassword, err := inputs.GetFlagStringVal(cmd, inputs.FlagMasterPassword)
 		if err != nil {
