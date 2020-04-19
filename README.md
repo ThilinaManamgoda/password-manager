@@ -176,6 +176,17 @@ If all the Storage types are enabled, the priority will be given as follow,
 * Google drive storage
 * Local file storage
  
+### Upgrading password database version 
+When upgrading password-manager cli, please make sure that whether it is required to upgrade the password database as well.
+**It will be mentioned in the release note**. If it is mentioned in the release note that the password-database must be upgraded,
+ then after installing run the following command,
+  
+`password-manager upgrade-db`
+
+
+This command upgrades the password database to latest version and creates a backup of the current password database. 
+Please find more details on `upgrade-db` command [here](doc/password-manager_upgrade-db.md).
+
 ### SEE ALSO
 
 * [password-manager init](doc/password-manager_init.md)	 - Initialize the Password Manager
@@ -188,6 +199,7 @@ If all the Storage types are enabled, the priority will be given as follow,
 * [password-manager import](doc/password-manager_import.md)	 - Import passwords
 * [password-manager export](doc/password-manager_export.md)	 - Export password repository to a file
 * [password-manager remove](doc/password-manager_remove.md)	 - Remove a password
+* [password-manager upgrade-db](doc/password-manager_upgrade-db.md)	 - Upgrade password database to verion 
 
 
 
