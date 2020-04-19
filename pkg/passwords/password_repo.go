@@ -25,6 +25,7 @@ import (
 	"github.com/ThilinaManamgoda/password-manager/pkg/utils"
 	"github.com/atotto/clipboard"
 	"github.com/pkg/errors"
+	"sort"
 	"strings"
 )
 
@@ -55,6 +56,7 @@ var (
 
 // DB struct represents password db.
 type DB struct {
+	Version string              `json:"version"`
 	Entries map[string]Entry    `json:"entries"`
 	Labels  map[string][]string `json:"labels"`
 }
@@ -251,7 +253,8 @@ func (p *Repository) searchLabelsForID(id string) ([]string, error) {
 	}
 	var labels []string
 	for key, val := range p.db.Labels {
-		if utils.StringSliceContains(id, val) {
+		i := sort.SearchStrings(val, id)
+		if i != len(val) && val[i] == id {
 			labels = append(labels, key)
 		}
 	}
@@ -265,6 +268,7 @@ func (p *Repository) assignLabels(id string, labels []string) {
 		} else {
 			p.db.Labels[val] = []string{id}
 		}
+		sort.Strings(p.db.Labels[val])
 	}
 }
 
