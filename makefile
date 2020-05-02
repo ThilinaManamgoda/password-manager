@@ -30,7 +30,7 @@ TEST_PKGS=./pkg/...
 FMT_PKGS=./cmd/... ./pkg/...
 LDFLAGS=-X 'github.com/ThilinaManamgoda/password-manager/cmd.Version=$(TOOL_VERSION)' -X 'github.com/ThilinaManamgoda/password-manager/pkg/storage/googledrive.ClientID=$(GDRIVE_CLIENT_ID)' -X 'github.com/ThilinaManamgoda/password-manager/pkg/storage/googledrive.ClientSecret=$(GDRIVE_CLIENT_SEC)' -X 'github.com/ThilinaManamgoda/password-manager/pkg/passwords.DatabaseVersion=$(DATABASE_VERSION)'
 
-all: clean deps lint unit-test build-linux build-darwin build-windows non-interactive-sce-test
+all: clean deps lint ineffassign unit-test build-linux build-darwin build-windows non-interactive-sce-test
 
 build-doc:
 		$(GOBUILD) -tags doc  -o gen_doc -v
@@ -83,3 +83,7 @@ build-docker-image:
 
 non-interactive-sce-test:
 		cd "./test";./non_interactive_scenario_test.sh $(TOOL_VERSION);
+
+ineffassign:
+		$(GOGET) -u github.com/gordonklaus/ineffassign
+		ineffassign main.go cmd/* pkg/*
