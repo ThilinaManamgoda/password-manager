@@ -199,7 +199,7 @@ Please find more details on `upgrade-db` command [here](doc/password-manager_upg
 * [password-manager import](doc/password-manager_import.md)	 - Import passwords
 * [password-manager export](doc/password-manager_export.md)	 - Export password repository to a file
 * [password-manager remove](doc/password-manager_remove.md)	 - Remove a password
-* [password-manager upgrade-db](doc/password-manager_upgrade-db.md)	 - Upgrade password database to verion 
+* [password-manager upgrade-db](doc/password-manager_upgrade-db.md)	 - Upgrade password database to version 
 
 
 
