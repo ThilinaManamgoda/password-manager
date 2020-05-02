@@ -180,6 +180,9 @@ func (g *GoogleDrive) Backup() error {
 		// Ignoring the copied file object since no further operations are performed on it.
 		_, err = g.client.CopyFile(fileID, g.passwordDBFile+"_backup_"+time.Now().Format("2006-01-02"),
 			googledrive.FileMimeType, dirID)
+		if err != nil {
+			return errors.Wrap(err, "unable to copy file")
+		}
 	} else {
 		return errors.New(fmt.Sprintf("password directory: %s doesn't exists", g.directory))
 	}

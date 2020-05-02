@@ -196,12 +196,12 @@ func FromPromptForPasswordEntry(uN, password, mPassword, desc *string, labels *[
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, PromptPassword)
 	}
-	*password = passwordVal
 
 	passwordVal, err = PromptForPasswordSecondTime(passwordVal)
 	if err != nil {
 		return errors.Wrapf(err, ErrMSGCannotPrompt, "Again password")
 	}
+	*password = passwordVal
 
 	descVal, err := PromptForDescription()
 	if err != nil {
