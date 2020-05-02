@@ -74,7 +74,7 @@ func TestIsFileExists(t *testing.T) {
 	}
 	assert.Equal(t, false, exists)
 
-	exists, err = IsFileExists(filepath.Join(wDir, "../../test"))
+	_, err = IsFileExists(filepath.Join(wDir, "../../test"))
 	if assert.Error(t, err) {
 		assert.Error(t, ErrPathIsADir, err)
 	}
