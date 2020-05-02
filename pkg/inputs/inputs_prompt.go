@@ -20,7 +20,6 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"regexp"
 	"strings"
 )
 
@@ -156,12 +155,11 @@ func PromptForSelect(l string, size int, items []PromptSelectInfo) (string, erro
 		Size:      size,
 		Templates: templates,
 	}
-	_, result, err := prompt.Run()
-	regex, err := regexp.Compile("{(.*) (.*)}")
+	index, _, err := prompt.Run()
 	if err != nil {
 		return "", err
 	}
-	return string(regex.FindAllSubmatch([]byte(result), -1)[0][1]), nil
+	return items[index].ID, nil
 }
 
 // HasProvidedValidID returns a function which validates the ID input.

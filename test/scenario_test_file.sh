@@ -17,7 +17,7 @@
 set -e
 MASTER_PASSWORD="test1234"
 NEW_MASTER_PASSWORD="test12345"
-VERSION="v0.9.0"
+VERSION="v0.9.2"
 
 pushd ../
  make build-darwin TOOL_VERSION=${VERSION}
@@ -34,7 +34,7 @@ test -d ./password-manager-test && rm -rf ./password-manager-test
 test -f ./export-data.csv  && rm ./export-data.csv
 
 ../target/darwin/${VERSION}/password-manager init -m ${MASTER_PASSWORD}
-../target/darwin/${VERSION}/password-manager add test -u test.com -p test12345 -l "fb,gmail" -m ${MASTER_PASSWORD}
+../target/darwin/${VERSION}/password-manager add test -u test.com -p test12345 -l "fb,gmail" -d "Test description @maanadev" -m ${MASTER_PASSWORD}
 ../target/darwin/${VERSION}/password-manager get test -m ${MASTER_PASSWORD} -s | grep "test12345"
 echo "===Searching password==="
 ../target/darwin/${VERSION}/password-manager search test -s -m ${MASTER_PASSWORD} | grep "test12345"
