@@ -1,7 +1,7 @@
 ![password-manager](resources/logo.png) 
 # Password Manager
 
-[![Build Status](https://travis-ci.com/ThilinaManamgoda/password-manager.svg?branch=master)](https://travis-ci.com/ThilinaManamgoda/password-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/ThilinaManamgoda/password-manager)](https://goreportcard.com/report/github.com/ThilinaManamgoda/password-manager)
+[![Build Status](https://travis-ci.com/ThilinaManamgoda/password-manager.svg?branch=master)](https://travis-ci.com/ThilinaManamgoda/password-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/ThilinaManamgoda/password-manager)](https://goreportcard.com/report/github.com/ThilinaManamgoda/password-manager) [![Join the chat at https://gitter.im/ThilinaManamgoda/password-manager](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ThilinaManamgoda/password-manager)
 
 Encrypt your passwords into a file and have access with ease.
 ### Synopsis
