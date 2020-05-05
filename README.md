@@ -55,6 +55,7 @@ A local password manager which simply encrypts your passwords in to a file and s
         Username: <Enter the username for this password entry>
         Password: <Enter the password for this password entry>
         Enter the Password again: <Enter the password again for this password entry>
+        Description: <Enter the password description>
         Lables: <Enter lables that can be used for searching. This can be list of comma seperated values>
         Master password: <Enter Master password>
         
@@ -63,6 +64,7 @@ A local password manager which simply encrypts your passwords in to a file and s
         Username: username@test.com
         Password: ***********
         Enter the Password again: ***********
+        Description: Test descritption
         Lables: test,first,firstTime
         Master password: <Enter Master password>
     ```
@@ -145,7 +147,8 @@ A local password manager which simply encrypts your passwords in to a file and s
         `PM_STORAGE_FILE_PASSOWRDDBFILE=password_db`
 ### Export passwords
 If you need to transfer your passwords to a different PC where you have installed password-manager, 
-it can be achieved by making a copy of your password database file assuming storage type is **File**. 
+it can be achieved by making a copy of your password database file assuming storage type is **File**. This is not required
+if the storage type is **Google Drive**.
 
 Also, you can export passwords to **CVS file** with the following command,
 ```$xslt
