@@ -7,11 +7,12 @@ layout: default
 
 [![Build Status](https://travis-ci.com/ThilinaManamgoda/password-manager.svg?branch=master)](https://travis-ci.com/ThilinaManamgoda/password-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/ThilinaManamgoda/password-manager)](https://goreportcard.com/report/github.com/ThilinaManamgoda/password-manager) [![Join the chat at https://gitter.im/ThilinaManamgoda/password-manager](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ThilinaManamgoda/password-manager)
 
-A local password manager which simply encrypts your passwords in to a file and searching passwords made easy !.
+A local password manager which simply encrypts your passwords in to a file and managing passwords made easy
 
-<h2><img src="https://img.icons8.com/nolan/35/software-installer.png" width="35" height="35" style="float:left;" padding="10px,10px,10px,10px;">How to install</h2>
+<!--h2><img src="https://img.icons8.com/nolan/35/software-installer.png" width="35" height="35" style="float:left;" padding="10px,10px,10px,10px;">How to install</h2-->
+## How to install
 
-<h3>Ubuntu<img src="https://img.icons8.com/color/30/000000/ubuntu--v1.png" title="test" width="25" height="25" style="float:left;"></h3>
+### Ubuntu
 
 1. Using the command line, add the following to your /etc/apt/sources.list system config file,
 
@@ -48,7 +49,7 @@ A local password manager which simply encrypts your passwords in to a file and s
      ```
      
   
-### How to use
+## How to use
 
 1. Initialize the password manager with the following command,
     ```bash
