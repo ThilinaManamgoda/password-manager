@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TOOL_VERSION=v0.9.2
+TOOL_VERSION=v0.9.3
 DATABASE_VERSION="v0.9.1"
 GDRIVE_CLIENT_ID=""
 GDRIVE_CLIENT_SEC=""

@@ -17,7 +17,7 @@
 set -e
 MASTER_PASSWORD="test1234"
 NEW_MASTER_PASSWORD="test12345"
-VERSION="v0.9.2"
+VERSION="v0.9.3"
 
 pushd ../
  make build-darwin TOOL_VERSION=${VERSION}
