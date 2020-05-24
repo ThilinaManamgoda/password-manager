@@ -34,7 +34,7 @@ A local password manager which simply encrypts your passwords in to a file and s
     sudo install password-manager
     ```
 
-#### MacOS ![macos](resources/macos.png)
+#### MacOS 
 
 1. Tap into password-manager brew formula with the following command,
         
@@ -47,7 +47,7 @@ A local password manager which simply encrypts your passwords in to a file and s
      brew install password-manager
      ```
      
-![How to use](resources/how-to-use.png)   
+  
 ### How to use
 
 1. Initialize the password manager with the following command,
