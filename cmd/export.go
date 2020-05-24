@@ -42,23 +42,38 @@ var exportCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.FlagCSVFile)
 		}
-
-		if csvFile == "" {
+		htmlFile, err := inputs.GetFlagStringVal(cmd, config.FlagHTMLFile)
+		if err != nil {
+			return errors.Wrapf(err, inputs.ErrMsgCannotGetFlag, config.FlagHTMLFile)
+		}
+		if csvFile == "" && htmlFile == "" {
 			return errors.New("must provide a medium to export")
+		}
+		if csvFile != "" && htmlFile != "" {
+			return errors.New("must provide a single medium to export")
 		}
 		passwordRepo, err := passwords.LoadRepo(mPassword, false)
 		if err != nil {
 			return errors.Wrap(err, "couldn't initialize password repository")
 		}
-		err = passwordRepo.Export(passwords.CSVExporterID, map[string]string{passwords.ConfKeyCSVFilePath: csvFile})
-		if err != nil {
-			return errors.Wrap(err, "couldn't export password repository to the CSV file")
+		if csvFile != "" {
+			err = passwordRepo.Export(passwords.CSVExporterID, map[string]string{passwords.ConfKeyCSVFilePath: csvFile})
+			if err != nil {
+				return errors.Wrap(err, "couldn't export password repository to the CSV file")
+			}
+		} else {
+			err = passwordRepo.Export(passwords.HTMLExporterID, map[string]string{passwords.ConfKeyHTMLFilePath: htmlFile})
+			if err != nil {
+				return errors.Wrap(err, "couldn't export password repository to the HTML file")
+			}
 		}
+
 		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(exportCmd)
-	exportCmd.Flags().StringP(config.FlagCSVFile, "f", "", "export passwords to a csv file")
+	exportCmd.Flags().StringP(config.FlagCSVFile, "c", "", "export passwords to a csv file")
+	exportCmd.Flags().StringP(config.FlagHTMLFile, "y", "", "export passwords to a HTML file")
 }

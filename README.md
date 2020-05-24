@@ -39,19 +39,19 @@ A local password manager which simply encrypts your passwords in to a file and m
 ### How to use
 
 1. Initialize the password manager with the following command,
-    ```$xslt
+    ```bash
     password-manager init
     ```
     Enter the Master password once prompted.
     
 2. Add a password entry with the following command,
-    ```$xslt
+    ```bash
     password-manager add TEST -i
     ```
     Here password entry id is **TEST** which always should be a unique value. By passing **-i** parameter we are enabling
     the **Interactive** mode. Once this command is executed, the following entries will be listed,
     
-    ```$xslt
+    ```bash
         Username: <Enter the username for this password entry>
         Password: <Enter the password for this password entry>
         Enter the Password again: <Enter the password again for this password entry>
@@ -70,29 +70,29 @@ A local password manager which simply encrypts your passwords in to a file and m
     ```
 
 1. Get a password entry with **ID**
-    ```$xslt
+    ```bash
         password-manager get <ID> 
     ```     
     Enter the Master password once prompted. For an example,
-    ```$xslt
+    ```bash
         password-manager get TEST
     ```
 1. Search a password entry with a **ID**
-    ```$xslt
+    ```bash
         password-manager search <ID>
     ```
     Enter the Master password once prompted. For an example,
-    ```$xslt
+    ```bash
         password-manager search test
     ```
     Once you enter the Master password, a list of password entries will be listed that match the given label. Once the entry is selected, the **password** will be copied to the clipboard.
      
 1. Search a password entry with a **label**
-    ```$xslt
+    ```bash
         password-manager search -l <LABEL>
     ```
     Enter the Master password once prompted. For an example,
-    ```$xslt
+    ```bash
         password-manager search -l test
     ```
     Once you enter the Master password, a list of password entries will be listed that match the given label. Once the entry is selected, the **password** will be copied to the clipboard.
@@ -102,7 +102,7 @@ A local password manager which simply encrypts your passwords in to a file and m
 1. Follow the instructions to override default configurations using a configuration file.
 
     1. Create a password-manager.yaml file with following content. Keep configurations that need to be overridden. 
-        ```$xslt
+        ```yaml
        # Set encryptor for encryping passwords. Ex: "AES"
        encryptorID: "AES"
        # Maximum list size for selection drop down.
@@ -135,7 +135,7 @@ A local password manager which simply encrypts your passwords in to a file and m
 1. Follow the instructions to override default configurations using environment variables.
     1. Export required override configuration as environment variable. For example let's assume that you need 
     to override **file permission** of the File storage type. 
-        ```$xslt
+        ```bash
         export PM_STORAGE_FILE_PERMISSION=0640
         ```   
      Environment variable should have the prefix `PM_` and the hierarchy separation with `_` and keyword **ALL CAPS**.
@@ -150,26 +150,30 @@ If you need to transfer your passwords to a different PC where you have installe
 it can be achieved by making a copy of your password database file assuming storage type is **File**. This is not required
 if the storage type is **Google Drive**.
 
-Also, you can export passwords to **CVS file** with the following command,
-```$xslt
-pasword-manager export --csv-file ${PATH_TO_CSV_FILE}
-```
-
-Exported CSV file will have the following format([Ex: test/mock-data/data.csv](test/mock-data/data.csv)),
-```$xslt
-id,username,password,description,labels
-foo@foo.com,foo@foo.com,gijggx3MDxZ,"Desciption of the password","foo,com"
-```
-   
+1. Export passwords to **CVS file** with the following command,
+    ```bash
+    pasword-manager export --csv-file ${PATH_TO_CSV_FILE}
+    ```
+    
+    Exported CSV file will have the following format([Ex: test/mock-data/data.csv](test/mock-data/data.csv)),
+    ```bash
+    id,username,password,description,labels
+    foo@foo.com,foo@foo.com,gijggx3MDxZ,"Desciption of the password","foo,com"
+    ```
+1. Export passwords to **HTML file** with the following command,  
+    ```bash
+    pasword-manager export --html-file ${PATH_TO_HTML_FILE}
+    ```
+    
 ### Import Passwords
 You can import passwords from a **CSV file** with following command,
 
-```$xslt
+```bash
 pasword-manager import --csv-file ${PATH_TO_CSV_FILE}
 ```
 
 CSV file should be in the following format([Ex: test/mock-data/data.csv](test/mock-data/data.csv)),
-```$xslt
+```bash
 id,username,password,description,labels
 foo@foo.com,foo@foo.com,gijggx3MDxZ,"Desciption of the password","foo,com"
 ```

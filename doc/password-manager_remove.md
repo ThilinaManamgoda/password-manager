@@ -24,5 +24,6 @@ password-manager remove [ID] [flags]
 
 ### SEE ALSO
 
-* [password-manager](password-manager.md)	 - Encrypt your passwords into a file and have access with ease.
+* [password-manager](password-manager.md)	 - Encrypt your passwords into a file and have easy access.
+
 

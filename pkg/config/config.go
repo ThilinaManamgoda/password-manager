@@ -37,6 +37,8 @@ const (
 	FilePathEnv = "CONF_PATH"
 	// FlagCSVFile is the CSV file flag.
 	FlagCSVFile = "csv-file"
+	// FlagHTMLFile is the HTML file flag.
+	FlagHTMLFile = "html-file"
 	// DefaultFilePermission represents the password db file default permission.
 	DefaultFilePermission = "0640"
 	// DefaultFileStorageEnabled default value for whether the File storage is enabled.

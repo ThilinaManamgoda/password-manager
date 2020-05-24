@@ -13,7 +13,7 @@ password-manager import  [flags]
 ### Options
 
 ```
-  -f, --csv-file string   Import passwords
+  -c, --csv-file string   Import passwords
   -h, --help              help for import
 ```
 
@@ -25,5 +25,6 @@ password-manager import  [flags]
 
 ### SEE ALSO
 
-* [password-manager](password-manager.md)	 - Encrypt your passwords into a file and have access with ease.
+* [password-manager](password-manager.md)	 - Encrypt your passwords into a file and have easy access.
+
 

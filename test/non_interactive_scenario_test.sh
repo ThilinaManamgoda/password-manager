@@ -18,6 +18,7 @@ PM_DIRECTORYPATH="$(pwd)/password-manager-test"
 export  PM_DIRECTORYPATH
 test -d ./password-manager-test && rm -rf ./password-manager-test
 test -f ./export-data.csv  && rm ./export-data.csv
+test -f ./export-data.html && rm ./export-data.html
 
 ../target/${OS}/${VERSION}/password-manager init -m ${MASTER_PASSWORD}
 ../target/${OS}/${VERSION}/password-manager add test -u test.com -p test12345 -l "fb,gmail" -d "Test description @maanadev" -m ${MASTER_PASSWORD}
@@ -37,8 +38,13 @@ echo "===Exporting passwords to a CSV file==="
 cat ./export-data.csv | grep karmit8@github.io | tr ',' ' '| awk '{print $2}'| grep "Karlik"
 cat ./export-data.csv | grep karmit8@github.io | tr ',' ' '| awk '{print $3}'| grep "lfuqz1k"
 
+echo "===Exporting passwords to a HTML file==="
+../target/${OS}/${VERSION}/password-manager export --html-file ./export-data.html -m ${MASTER_PASSWORD}
+cat ./export-data.html | grep karmit8@github.io
+
 echo "===Remove a password==="
 ../target/${OS}/${VERSION}/password-manager remove test -m ${MASTER_PASSWORD}
 
 test -d ./password-manager-test && rm -rf ./password-manager-test
-#test -f ./export-data.csv  && rm ./export-data.csv
+test -f ./export-data.csv  && rm ./export-data.csv
+test -f ./export-data.html && rm ./export-data.html
