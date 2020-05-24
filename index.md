@@ -98,7 +98,7 @@ A local password manager which simply encrypts your passwords in to a file and m
     ```bash
         password-manager search test
     ```
-    Once you enter the Master password the a list of password entries will be listed that match the given label. Once the entry is selected, the **password** will be copied to the clipboard.
+    Once you enter the Master password, a list of password entries will be listed that match the given label. Once the entry is selected, the **password** will be copied to the clipboard.
      
 1. Search a password entry with a **label**
     ```bash
@@ -108,7 +108,7 @@ A local password manager which simply encrypts your passwords in to a file and m
     ```bash
         password-manager search -l test
     ```
-    Once you enter the Master password the a list of password entries will be listed that match the given label. Once the entry is selected, the **password** will be copied to the clipboard.
+    Once you enter the Master password, a list of password entries will be listed that match the given label. Once the entry is selected, the **password** will be copied to the clipboard.
  
 ### Configuration
 
