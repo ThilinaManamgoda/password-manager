@@ -167,17 +167,21 @@ If you need to transfer your passwords to a different PC where you have installe
 it can be achieved by making a copy of your password database file assuming storage type is **File**. This is not required
 if the storage type is **Google Drive**.
 
-Also, you can export passwords to **CVS file** with the following command,
-```bash
-pasword-manager export --csv-file ${PATH_TO_CSV_FILE}
-```
+1. Export passwords to **CVS file** with the following command,
+    ```bash
+    pasword-manager export --csv-file ${PATH_TO_CSV_FILE}
+    ```
 
-Exported CSV file will have the following format([data.csv](https://github.com/ThilinaManamgoda/password-manager/blob/master/test/mock-data/data.csv)),
-```bash
-id,username,password,description,labels
-foo@foo.com,foo@foo.com,gijggx3MDxZ,"Desciption of the password","foo,com"
-```
-   
+    Exported CSV file will have the following format([data.csv](https://github.com/ThilinaManamgoda/password-manager/blob/master/test/mock-data/data.csv)),
+    ```bash
+    id,username,password,description,labels
+    foo@foo.com,foo@foo.com,gijggx3MDxZ,"Desciption of the password","foo,com"
+    ```
+1. Export passwords to **HTML file** with the following command,  
+    ```bash
+    pasword-manager export --html-file ${PATH_TO_HTML_FILE}
+    ```  
+
 ### Import Passwords
 You can import passwords from a **CSV file** with following command,
 
