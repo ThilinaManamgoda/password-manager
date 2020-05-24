@@ -17,7 +17,7 @@ title: Password Manager
 email: maanadev@apache.org
 description: >- # this means to ignore newlines until "baseurl:"
   Encrypt your passwords into a file and have access with ease
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/password-manager" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: maanadev
 github_username:  ThilinaManamgoda
