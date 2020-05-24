@@ -198,8 +198,7 @@ If all the Storage types are enabled, the priority will be given as follow,
  
 ### Upgrading password database version 
 When upgrading password-manager cli, please make sure that whether it is required to upgrade the password database as well.
-**It will be mentioned in the release note**. If it is mentioned in the release note that the password-database must be upgraded,
- then after installing run the following command,
+**It will be mentioned in the release note**. If it is mentioned in the release note that the password-database must be upgraded, after installing run the following command,
   
 ```bash
 password-manager upgrade-db
