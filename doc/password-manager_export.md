@@ -13,8 +13,9 @@ password-manager export [flags]
 ### Options
 
 ```
-  -f, --csv-file string   export passwords to a csv file
-  -h, --help              help for export
+  -c, --csv-file string    export passwords to a csv file
+  -h, --help               help for export
+  -y, --html-file string   export passwords to a HTML file
 ```
 
 ### Options inherited from parent commands
@@ -25,5 +26,6 @@ password-manager export [flags]
 
 ### SEE ALSO
 
-* [password-manager](password-manager.md)	 - Encrypt your passwords into a file and have access with ease.
+* [password-manager](password-manager.md)	 - Encrypt your passwords into a file and have easy access.
+
 

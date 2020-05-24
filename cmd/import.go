@@ -60,5 +60,5 @@ var importCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(importCmd)
-	importCmd.Flags().StringP(config.FlagCSVFile, "f", "", "Import passwords")
+	importCmd.Flags().StringP(config.FlagCSVFile, "c", "", "Import passwords")
 }

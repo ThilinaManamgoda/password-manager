@@ -50,6 +50,8 @@ func (e *ExporterFactory) Exporter() Exporter {
 	switch e.ID {
 	case CSVExporterID:
 		return &CSVExporter{}
+	case HTMLExporterID:
+		return &HTMLExporter{}
 	default:
 		return &CSVExporter{}
 	}
@@ -78,7 +80,7 @@ func (p *Repository) Import(importerID string, conf map[string]string) error {
 			ID: CSVImporterID,
 		}
 		importer = imFac.Importer()
-		importer.Init(map[string]string{ConfKeyCSVFilePath: conf[ConfKeyCSVFilePath]})
+		importer.Init(conf)
 	} else {
 		return errors.New("No supported import medium provided")
 	}
@@ -110,7 +112,13 @@ func (p *Repository) Export(exporterID string, conf map[string]string) error {
 			ID: CSVImporterID,
 		}
 		exporter = exFac.Exporter()
-		exporter.Init(map[string]string{ConfKeyCSVFilePath: conf[ConfKeyCSVFilePath]})
+		exporter.Init(conf)
+	} else if exporterID == HTMLExporterID {
+		exFac := ExporterFactory{
+			ID: HTMLExporterID,
+		}
+		exporter = exFac.Exporter()
+		exporter.Init(conf)
 	} else {
 		return errors.New("No export medium provided")
 	}
