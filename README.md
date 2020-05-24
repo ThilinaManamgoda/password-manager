@@ -208,5 +208,4 @@ Please find more details on `upgrade-db` command [here](doc/password-manager_upg
 * [password-manager remove](doc/password-manager_remove.md)	 - Remove a password
 * [password-manager upgrade-db](doc/password-manager_upgrade-db.md)	 - Upgrade password database to latest version 
 
-
-
+### [Common issues](doc/common-issues/common-issues.md)
