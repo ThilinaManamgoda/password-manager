@@ -226,4 +226,4 @@ Please find more details on `upgrade-db` command [here](https://github.com/Thili
 * [password-manager remove](https://github.com/ThilinaManamgoda/password-manager/tree/master/doc/password-manager_remove.md)	 - Remove a password
 * [password-manager upgrade-db](https://github.com/ThilinaManamgoda/password-manager/tree/master/doc/password-manager_upgrade-db.md)	 - Upgrade password database to latest version 
 
-
+### [Common Issues](./common-issues.html)
