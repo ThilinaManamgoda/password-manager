@@ -1,0 +1,24 @@
+# Set encryptor for encryping passwords. Ex: "AES"
+encryptorID: "AES"
+# Maximum list size for selection drop down.
+selectListSize: 5
+# Directory which holds the Password manager related files.
+directoryPath: "~/password-manager"
+# Set storage configurations.
+storage:
+  # File storage configuration.
+  file:
+    # Enable File storage.
+    enable: true
+    # Password Database file name.
+    passwordDBFile: "password_db"
+    # File permission for given file in the path.
+    permission: 0640
+  # Google Drive storage configuration.
+  googleDrive:
+    # Enable Google Drive storage.
+    enable: false
+    # Directory where the password Database file resides.
+    directory: "password-manager"
+    # Password Database file name.
+    passwordDBFile: "password_db"
