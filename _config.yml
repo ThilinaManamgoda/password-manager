@@ -30,8 +30,8 @@ theme: jekyll-theme-slate
 
 show_downloads: "true"
 github:
-  zip_url: https://github.com/ThilinaManamgoda/password-manager/archive/v0.9.2.zip
-  tar_url: https://github.com/ThilinaManamgoda/password-manager/archive/v0.9.2.tar.gz
+  zip_url: https://github.com/ThilinaManamgoda/password-manager/archive/v0.9.3.zip
+  tar_url: https://github.com/ThilinaManamgoda/password-manager/archive/v0.9.3.tar.gz
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
